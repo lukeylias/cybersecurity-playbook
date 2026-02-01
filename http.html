@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Protocol - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --success: #4ade80;
+            --redirect: #facc15;
+            --client-error: #f97316;
+            --server-error: #ef4444;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 32px; height: 32px; border: 1px solid var(--accent-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        .page-intro { color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+        /* Section Tabs */
+        .section-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+        .section-tab { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: var(--surface-subtle); border: 1px solid transparent; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+        .section-tab:hover { color: var(--text-primary); background: var(--surface-medium); }
+        .section-tab.active { color: var(--text-primary); background: var(--surface-active); border-color: var(--accent-primary); }
+
+        /* Content Sections */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* Request/Response Visualizer */
+        .http-exchange { display: flex; gap: 40px; align-items: stretch; margin-bottom: 40px; }
+        .http-panel { flex: 1; background: var(--surface-subtle); border-radius: 12px; overflow: hidden; }
+        .http-panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 12px; }
+        .http-panel-icon { font-size: 1.2rem; }
+        .http-panel-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; }
+        .http-panel-body { padding: 20px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; }
+        .http-line { margin-bottom: 4px; }
+        .http-method { color: var(--success); font-weight: 500; }
+        .http-path { color: var(--text-primary); }
+        .http-version { color: var(--text-muted); }
+        .http-header-name { color: var(--accent-light); }
+        .http-header-value { color: var(--text-secondary); }
+        .http-status { font-weight: 500; }
+        .http-status.success { color: var(--success); }
+        .http-body { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+
+        .exchange-arrow { display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--accent-primary); gap: 8px; }
+        .exchange-arrow span { font-size: 1.5rem; }
+        .exchange-arrow-label { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Methods Grid */
+        .methods-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .method-card { background: var(--surface-subtle); border: 1px solid transparent; border-radius: 10px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .method-card:hover { background: var(--surface-medium); border-color: var(--border-subtle); }
+        .method-card.active { background: var(--surface-active); border-color: var(--accent-primary); }
+        .method-name { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 500; color: var(--success); margin-bottom: 8px; }
+        .method-card[data-method="POST"] .method-name { color: #60a5fa; }
+        .method-card[data-method="PUT"] .method-name { color: #facc15; }
+        .method-card[data-method="DELETE"] .method-name { color: #ef4444; }
+        .method-purpose { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; }
+        .method-example { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 4px; }
+
+        /* Status Codes */
+        .status-ranges { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 32px; }
+        .status-range { padding: 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .status-range:hover { transform: translateY(-2px); }
+        .status-range.active { border-color: currentColor; }
+        .status-range[data-range="2xx"] { background: rgba(74, 222, 128, 0.1); color: var(--success); }
+        .status-range[data-range="3xx"] { background: rgba(250, 204, 21, 0.1); color: var(--redirect); }
+        .status-range[data-range="4xx"] { background: rgba(249, 115, 22, 0.1); color: var(--client-error); }
+        .status-range[data-range="5xx"] { background: rgba(239, 68, 68, 0.1); color: var(--server-error); }
+        .status-range-code { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 500; margin-bottom: 4px; }
+        .status-range-name { font-size: 0.8rem; opacity: 0.8; margin-bottom: 4px; }
+        .status-range-hint { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.6; }
+
+        .status-codes-list { background: var(--surface-subtle); border-radius: 12px; overflow: hidden; }
+        .status-code-item { display: grid; grid-template-columns: 80px 180px 1fr; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); align-items: center; transition: background 0.2s; }
+        .status-code-item:last-child { border-bottom: none; }
+        .status-code-item:hover { background: var(--surface-medium); }
+        .status-code-num { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; }
+        .status-code-num.c2xx { color: var(--success); }
+        .status-code-num.c3xx { color: var(--redirect); }
+        .status-code-num.c4xx { color: var(--client-error); }
+        .status-code-num.c5xx { color: var(--server-error); }
+        .status-code-meaning { color: var(--text-primary); font-weight: 500; font-size: 0.9rem; }
+        .status-code-notes { color: var(--text-muted); font-size: 0.85rem; }
+
+        .cat-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-light); text-decoration: none; padding: 10px 16px; background: var(--surface-subtle); border-radius: 6px; transition: all 0.2s; }
+        .cat-link:hover { background: var(--surface-medium); }
+
+        /* Headers Section */
+        .headers-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .headers-column { }
+        .headers-column-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .headers-column-title span { font-size: 1rem; }
+        .header-item { background: var(--surface-subtle); border-radius: 8px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .header-item:hover { background: var(--surface-medium); }
+        .header-item.active { border-color: var(--accent-primary); background: var(--surface-active); }
+        .header-name { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); margin-bottom: 6px; }
+        .header-purpose { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* Detail Panel */
+        .detail-panel { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px 28px; max-width: 500px; width: calc(100% - 48px); box-shadow: 0 10px 40px rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 50; }
+        .detail-panel.visible { opacity: 1; visibility: visible; }
+        .detail-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .detail-panel-title { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); }
+        .detail-panel-close { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px; }
+        .detail-panel-close:hover { color: var(--text-primary); }
+        .detail-panel-content { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+        .detail-panel-example { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-light); background: var(--surface-subtle); padding: 12px; border-radius: 6px; margin-top: 12px; }
+
+        @media (max-width: 768px) {
+            .http-exchange { flex-direction: column; }
+            .exchange-arrow { flex-direction: row; padding: 16px 0; }
+            .exchange-arrow span { transform: rotate(90deg); }
+            .headers-split { grid-template-columns: 1fr; }
+            .status-code-item { grid-template-columns: 60px 1fr; }
+            .status-code-notes { grid-column: span 2; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">CF</div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Systems <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">HTTP Protocol</h1>
+                <p class="page-subtitle">HyperText Transfer Protocol</p>
+                <p class="page-intro">HTTP is how your browser communicates with web servers — requesting pages, submitting forms, and receiving responses. It's the foundation of data exchange on the web.</p>
+            </header>
+
+            <div class="section-tabs">
+                <button class="section-tab active" onclick="showSection('overview')">Overview</button>
+                <button class="section-tab" onclick="showSection('methods')">Methods</button>
+                <button class="section-tab" onclick="showSection('status')">Status Codes</button>
+                <button class="section-tab" onclick="showSection('headers')">Headers</button>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="section-overview" class="content-section active">
+                <div class="http-exchange">
+                    <div class="http-panel">
+                        <div class="http-panel-header">
+                            <span class="http-panel-icon">📤</span>
+                            <span class="http-panel-title">Request</span>
+                        </div>
+                        <div class="http-panel-body">
+                            <div class="http-line"><span class="http-method">GET</span> <span class="http-path">/index.html</span> <span class="http-version">HTTP/1.1</span></div>
+                            <div class="http-line"><span class="http-header-name">Host:</span> <span class="http-header-value">example.com</span></div>
+                            <div class="http-line"><span class="http-header-name">User-Agent:</span> <span class="http-header-value">Mozilla/5.0...</span></div>
+                            <div class="http-line"><span class="http-header-name">Accept:</span> <span class="http-header-value">text/html</span></div>
+                            <div class="http-line"><span class="http-header-name">Cookie:</span> <span class="http-header-value">session=abc123</span></div>
+                        </div>
+                    </div>
+
+                    <div class="exchange-arrow">
+                        <span>→</span>
+                        <span class="exchange-arrow-label">Internet</span>
+                        <span>←</span>
+                    </div>
+
+                    <div class="http-panel">
+                        <div class="http-panel-header">
+                            <span class="http-panel-icon">📥</span>
+                            <span class="http-panel-title">Response</span>
+                        </div>
+                        <div class="http-panel-body">
+                            <div class="http-line"><span class="http-version">HTTP/1.1</span> <span class="http-status success">200 OK</span></div>
+                            <div class="http-line"><span class="http-header-name">Content-Type:</span> <span class="http-header-value">text/html</span></div>
+                            <div class="http-line"><span class="http-header-name">Content-Length:</span> <span class="http-header-value">1234</span></div>
+                            <div class="http-line"><span class="http-header-name">Cache-Control:</span> <span class="http-header-value">max-age=3600</span></div>
+                            <div class="http-body">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="methods-grid">
+                    <div class="method-card" data-method="GET">
+                        <div class="method-name">GET</div>
+                        <div class="method-purpose">Retrieve data from the server</div>
+                        <div class="method-example">Loading a webpage</div>
+                    </div>
+                    <div class="method-card" data-method="POST">
+                        <div class="method-name">POST</div>
+                        <div class="method-purpose">Submit data to create a resource</div>
+                        <div class="method-example">Login forms, uploads</div>
+                    </div>
+                    <div class="method-card" data-method="PUT">
+                        <div class="method-name">PUT</div>
+                        <div class="method-purpose">Update or replace a resource</div>
+                        <div class="method-example">Updating profile info</div>
+                    </div>
+                    <div class="method-card" data-method="DELETE">
+                        <div class="method-name">DELETE</div>
+                        <div class="method-purpose">Remove a resource</div>
+                        <div class="method-example">Deleting a post</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methods Section -->
+            <div id="section-methods" class="content-section">
+                <div class="methods-grid">
+                    <div class="method-card" data-method="GET" onclick="showMethodDetail('GET')">
+                        <div class="method-name">GET</div>
+                        <div class="method-purpose">Retrieve data from the server without modifying anything</div>
+                        <div class="method-example">Loading a webpage, fetching an image, API data retrieval</div>
+                    </div>
+                    <div class="method-card" data-method="POST" onclick="showMethodDetail('POST')">
+                        <div class="method-name">POST</div>
+                        <div class="method-purpose">Submit data to create a new resource on the server</div>
+                        <div class="method-example">Login forms, file uploads, creating accounts, posting comments</div>
+                    </div>
+                    <div class="method-card" data-method="PUT" onclick="showMethodDetail('PUT')">
+                        <div class="method-name">PUT</div>
+                        <div class="method-purpose">Update or completely replace an existing resource</div>
+                        <div class="method-example">Updating profile information, replacing a document</div>
+                    </div>
+                    <div class="method-card" data-method="DELETE" onclick="showMethodDetail('DELETE')">
+                        <div class="method-name">DELETE</div>
+                        <div class="method-purpose">Remove a resource from the server</div>
+                        <div class="method-example">Deleting a post, removing an account, clearing data</div>
+                    </div>
+                </div>
+
+                <div class="methods-grid">
+                    <div class="method-card" data-method="PATCH" onclick="showMethodDetail('PATCH')" style="opacity: 0.7;">
+                        <div class="method-name" style="color: #a78bfa;">PATCH</div>
+                        <div class="method-purpose">Partially modify a resource (unlike PUT which replaces entirely)</div>
+                        <div class="method-example">Updating just your email without sending full profile</div>
+                    </div>
+                    <div class="method-card" data-method="HEAD" onclick="showMethodDetail('HEAD')" style="opacity: 0.7;">
+                        <div class="method-name" style="color: #94a3b8;">HEAD</div>
+                        <div class="method-purpose">Same as GET but returns only headers, no body</div>
+                        <div class="method-example">Checking if a file exists or its size before downloading</div>
+                    </div>
+                    <div class="method-card" data-method="OPTIONS" onclick="showMethodDetail('OPTIONS')" style="opacity: 0.7;">
+                        <div class="method-name" style="color: #94a3b8;">OPTIONS</div>
+                        <div class="method-purpose">Discover what methods a server supports</div>
+                        <div class="method-example">CORS preflight requests</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Codes Section -->
+            <div id="section-status" class="content-section">
+                <div class="status-ranges">
+                    <div class="status-range active" data-range="2xx" onclick="filterStatus('2xx')">
+                        <div class="status-range-code">2xx</div>
+                        <div class="status-range-name">Success</div>
+                        <div class="status-range-hint">It worked!</div>
+                    </div>
+                    <div class="status-range" data-range="3xx" onclick="filterStatus('3xx')">
+                        <div class="status-range-code">3xx</div>
+                        <div class="status-range-name">Redirection</div>
+                        <div class="status-range-hint">Go somewhere else</div>
+                    </div>
+                    <div class="status-range" data-range="4xx" onclick="filterStatus('4xx')">
+                        <div class="status-range-code">4xx</div>
+                        <div class="status-range-name">Client Error</div>
+                        <div class="status-range-hint">You messed up</div>
+                    </div>
+                    <div class="status-range" data-range="5xx" onclick="filterStatus('5xx')">
+                        <div class="status-range-code">5xx</div>
+                        <div class="status-range-name">Server Error</div>
+                        <div class="status-range-hint">They messed up</div>
+                    </div>
+                </div>
+
+                <div class="status-codes-list" id="statusCodesList">
+                    <!-- Populated by JS -->
+                </div>
+
+                <a href="https://http.cat/" target="_blank" class="cat-link">
+                    🐱 See all status codes as cats → http.cat
+                </a>
+            </div>
+
+            <!-- Headers Section -->
+            <div id="section-headers" class="content-section">
+                <div class="headers-split">
+                    <div class="headers-column">
+                        <div class="headers-column-title"><span>📤</span> Request Headers</div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Host')">
+                            <div class="header-name">Host</div>
+                            <div class="header-purpose">Which website you want (servers can host multiple sites)</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('User-Agent')">
+                            <div class="header-name">User-Agent</div>
+                            <div class="header-purpose">Your browser/OS info — helps server format response appropriately</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Content-Length')">
+                            <div class="header-name">Content-Length</div>
+                            <div class="header-purpose">Size of data you're sending (for POST requests)</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Accept-Encoding')">
+                            <div class="header-name">Accept-Encoding</div>
+                            <div class="header-purpose">Compression methods you support (gzip, br, etc.)</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Cookie')">
+                            <div class="header-name">Cookie</div>
+                            <div class="header-purpose">Previously stored data sent back to identify you</div>
+                        </div>
+                    </div>
+
+                    <div class="headers-column">
+                        <div class="headers-column-title"><span>📥</span> Response Headers</div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Set-Cookie')">
+                            <div class="header-name">Set-Cookie</div>
+                            <div class="header-purpose">Tells browser to store this data for future requests</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Cache-Control')">
+                            <div class="header-name">Cache-Control</div>
+                            <div class="header-purpose">How long browser should cache this response</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Content-Type')">
+                            <div class="header-name">Content-Type</div>
+                            <div class="header-purpose">What kind of data this is (text/html, image/png, application/json)</div>
+                        </div>
+                        
+                        <div class="header-item" onclick="showHeaderDetail('Content-Encoding')">
+                            <div class="header-name">Content-Encoding</div>
+                            <div class="header-purpose">How the response was compressed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-panel-header">
+            <span class="detail-panel-title" id="detailTitle"></span>
+            <button class="detail-panel-close" onclick="hideDetail()">×</button>
+        </div>
+        <div class="detail-panel-content" id="detailContent"></div>
+        <div class="detail-panel-example" id="detailExample"></div>
+    </div>
+
+    <script>
+        const statusCodes = [
+            { code: 200, meaning: 'OK', notes: 'Standard success response', range: '2xx' },
+            { code: 201, meaning: 'Created', notes: 'New resource created (typically after POST)', range: '2xx' },
+            { code: 204, meaning: 'No Content', notes: 'Success but nothing to return', range: '2xx' },
+            { code: 301, meaning: 'Moved Permanently', notes: 'Page has a new URL forever — update your bookmarks', range: '3xx' },
+            { code: 302, meaning: 'Found', notes: 'Page temporarily elsewhere (temporary redirect)', range: '3xx' },
+            { code: 304, meaning: 'Not Modified', notes: 'Cached version is still valid', range: '3xx' },
+            { code: 400, meaning: 'Bad Request', notes: 'Malformed request, missing parameters', range: '4xx' },
+            { code: 401, meaning: 'Unauthorised', notes: 'Need to log in first', range: '4xx' },
+            { code: 403, meaning: 'Forbidden', notes: 'Logged in but not allowed access', range: '4xx' },
+            { code: 404, meaning: 'Not Found', notes: 'Resource doesn\'t exist', range: '4xx' },
+            { code: 405, meaning: 'Method Not Allowed', notes: 'Used GET when it expected POST, etc.', range: '4xx' },
+            { code: 429, meaning: 'Too Many Requests', notes: 'Rate limited — slow down!', range: '4xx' },
+            { code: 500, meaning: 'Internal Server Error', notes: 'Generic server failure', range: '5xx' },
+            { code: 502, meaning: 'Bad Gateway', notes: 'Server got invalid response from upstream', range: '5xx' },
+            { code: 503, meaning: 'Service Unavailable', notes: 'Server overloaded or in maintenance', range: '5xx' },
+            { code: 504, meaning: 'Gateway Timeout', notes: 'Upstream server didn\'t respond in time', range: '5xx' }
+        ];
+
+        const headerDetails = {
+            'Host': { desc: 'Specifies the domain name of the server. Essential for virtual hosting where one IP serves multiple websites.', example: 'Host: www.example.com' },
+            'User-Agent': { desc: 'Identifies the client software. Servers use this to serve different content to different browsers.', example: 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0' },
+            'Content-Length': { desc: 'The size of the request/response body in bytes. Helps the receiver know when the message is complete.', example: 'Content-Length: 348' },
+            'Accept-Encoding': { desc: 'Lists compression algorithms the client supports. Servers can compress responses to save bandwidth.', example: 'Accept-Encoding: gzip, deflate, br' },
+            'Cookie': { desc: 'Sends stored cookies back to the server. Used for sessions, authentication, and tracking.', example: 'Cookie: session_id=abc123; user=john' },
+            'Set-Cookie': { desc: 'Tells the browser to store a cookie. Can include expiry, security flags, and scope.', example: 'Set-Cookie: session_id=xyz789; HttpOnly; Secure' },
+            'Cache-Control': { desc: 'Directives for caching. Controls how long and where responses can be cached.', example: 'Cache-Control: max-age=3600, public' },
+            'Content-Type': { desc: 'The MIME type of the content. Tells the browser how to interpret the data.', example: 'Content-Type: application/json; charset=utf-8' },
+            'Content-Encoding': { desc: 'The compression algorithm used on the response body.', example: 'Content-Encoding: gzip' }
+        };
+
+        const methodDetails = {
+            'GET': { desc: 'Requests data from a server. Should be idempotent (same request = same result) and have no side effects. Data is passed via URL parameters.', example: 'GET /api/users?id=123 HTTP/1.1' },
+            'POST': { desc: 'Submits data to be processed. Often causes a change in state or side effects. Data is sent in the request body.', example: 'POST /api/users HTTP/1.1\nContent-Type: application/json\n\n{"name": "John"}' },
+            'PUT': { desc: 'Replaces the entire target resource with the request payload. Idempotent — multiple identical requests have same effect as one.', example: 'PUT /api/users/123 HTTP/1.1\n\n{"name": "John", "email": "john@example.com"}' },
+            'DELETE': { desc: 'Removes the specified resource. Idempotent — deleting something twice has same end result.', example: 'DELETE /api/users/123 HTTP/1.1' },
+            'PATCH': { desc: 'Partially modifies a resource. Unlike PUT, you only send the fields you want to change.', example: 'PATCH /api/users/123 HTTP/1.1\n\n{"email": "new@example.com"}' },
+            'HEAD': { desc: 'Same as GET but server only returns headers, no body. Useful for checking if resource exists or its metadata.', example: 'HEAD /large-file.zip HTTP/1.1' },
+            'OPTIONS': { desc: 'Returns the HTTP methods the server supports for a URL. Used by browsers for CORS preflight checks.', example: 'OPTIONS /api/users HTTP/1.1' }
+        };
+
+        let currentRange = '2xx';
+
+        function showSection(section) {
+            document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            document.querySelector(`.section-tab[onclick="showSection('${section}')"]`).classList.add('active');
+            document.getElementById(`section-${section}`).classList.add('active');
+            
+            if (section === 'status') renderStatusCodes();
+            hideDetail();
+        }
+
+        function filterStatus(range) {
+            currentRange = range;
+            document.querySelectorAll('.status-range').forEach(r => r.classList.remove('active'));
+            document.querySelector(`.status-range[data-range="${range}"]`).classList.add('active');
+            renderStatusCodes();
+        }
+
+        function renderStatusCodes() {
+            const list = document.getElementById('statusCodesList');
+            const filtered = statusCodes.filter(s => s.range === currentRange);
+            list.innerHTML = filtered.map(s => `
+                <div class="status-code-item">
+                    <div class="status-code-num c${s.range}">${s.code}</div>
+                    <div class="status-code-meaning">${s.meaning}</div>
+                    <div class="status-code-notes">${s.notes}</div>
+                </div>
+            `).join('');
+        }
+
+        function showHeaderDetail(header) {
+            const detail = headerDetails[header];
+            if (!detail) return;
+            
+            document.querySelectorAll('.header-item').forEach(h => h.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.getElementById('detailTitle').textContent = header;
+            document.getElementById('detailContent').textContent = detail.desc;
+            document.getElementById('detailExample').textContent = detail.example;
+            document.getElementById('detailPanel').classList.add('visible');
+        }
+
+        function showMethodDetail(method) {
+            const detail = methodDetails[method];
+            if (!detail) return;
+            
+            document.querySelectorAll('.method-card').forEach(m => m.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.getElementById('detailTitle').textContent = method;
+            document.getElementById('detailContent').textContent = detail.desc;
+            document.getElementById('detailExample').textContent = detail.example;
+            document.getElementById('detailPanel').classList.add('visible');
+        }
+
+        function hideDetail() {
+            document.getElementById('detailPanel').classList.remove('visible');
+            document.querySelectorAll('.header-item, .method-card').forEach(el => el.classList.remove('active'));
+        }
+
+        // Initialize
+        renderStatusCodes();
+
+        // Close detail panel on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hideDetail();
+        });
+    </script>
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legend - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --border-medium: rgba(74, 111, 165, 0.3);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 32px; height: 32px; border: 1px solid var(--accent-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        .page-intro { color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto 40px; line-height: 1.7; }
+
+        /* Table Styling */
+        .legend-table-container { background: var(--surface-subtle); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-subtle); }
+        .legend-table { width: 100%; border-collapse: collapse; }
+        .legend-table thead { background: var(--surface-medium); }
+        .legend-table th { padding: 16px 20px; text-align: left; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; border-bottom: 1px solid var(--border-subtle); }
+        .legend-table th:first-child { width: 30%; }
+        .legend-table tbody tr { border-bottom: 1px solid var(--border-subtle); transition: background 0.2s; }
+        .legend-table tbody tr:last-child { border-bottom: none; }
+        .legend-table tbody tr:hover { background: var(--surface-medium); }
+        .legend-table td { padding: 16px 20px; vertical-align: top; }
+        .legend-table td:first-child { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+        .legend-table td:last-child { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .term-acronym { color: var(--accent-light); }
+        .term-name { color: var(--text-muted); font-size: 0.8rem; margin-left: 8px; }
+
+        @media (max-width: 768px) {
+            .legend-table-container { overflow-x: auto; }
+            .legend-table { min-width: 600px; }
+            .legend-table th, .legend-table td { padding: 12px 16px; }
+            .legend-table th:first-child { width: 35%; }
+        }
+
+        .site-footer { padding: 24px; text-align: center; border-top: 1px solid var(--border-subtle); margin-top: 60px; }
+        .site-footer p { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">CF</div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Systems <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">Legend</h1>
+                <p class="page-subtitle">Terms & Acronyms</p>
+                <p class="page-intro">A comprehensive glossary of networking, cybersecurity, and computing terms used throughout this site.</p>
+            </header>
+
+            <div class="legend-table-container">
+                <table class="legend-table">
+                    <thead>
+                        <tr>
+                            <th>Term / Acronym</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="term-acronym">DNS</span> <span class="term-name">(Domain Name System)</span></td>
+                            <td>A hierarchical naming system that translates human-readable domain names into IP addresses.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">IP</span> <span class="term-name">(Internet Protocol)</span></td>
+                            <td>A protocol that provides addressing and routing for data packets across networks.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">TCP</span> <span class="term-name">(Transmission Control Protocol)</span></td>
+                            <td>A reliable, connection-oriented protocol that ensures data is delivered in order and without errors.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">UDP</span> <span class="term-name">(User Datagram Protocol)</span></td>
+                            <td>A connectionless protocol that provides fast but unreliable data transmission without error checking.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">HTTP</span> <span class="term-name">(Hypertext Transfer Protocol)</span></td>
+                            <td>The protocol used for transmitting web pages and data between browsers and servers.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">HTTPS</span> <span class="term-name">(HTTP Secure)</span></td>
+                            <td>HTTP encrypted with TLS/SSL to provide secure communication over the internet.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">VPN</span> <span class="term-name">(Virtual Private Network)</span></td>
+                            <td>A secure tunnel that encrypts internet traffic and masks your IP address for privacy and security.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">ISP</span> <span class="term-name">(Internet Service Provider)</span></td>
+                            <td>A company that provides internet access and routing services to end users.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">TTL</span> <span class="term-name">(Time To Live)</span></td>
+                            <td>The amount of time a DNS record or packet is cached before it must be refreshed.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">OSI Model</span></td>
+                            <td>A 7-layer conceptual framework that standardizes the functions of a telecommunication system.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Root Server</span></td>
+                            <td>One of 13 authoritative DNS servers at the top of the DNS hierarchy that knows where TLD servers are.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">TLD</span> <span class="term-name">(Top-Level Domain)</span></td>
+                            <td>The last part of a domain name, such as .com, .org, or .net, managed by TLD nameservers.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Authoritative Server</span></td>
+                            <td>The DNS server that holds the definitive DNS records for a specific domain.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Resolver</span></td>
+                            <td>A DNS server that performs recursive lookups on behalf of clients to find IP addresses for domain names.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Cache</span></td>
+                            <td>Temporary storage of DNS records or web content to speed up subsequent requests.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">GET</span></td>
+                            <td>An HTTP method used to retrieve data from a server without modifying it.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">POST</span></td>
+                            <td>An HTTP method used to submit data to a server, typically for creating or updating resources.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">PUT</span></td>
+                            <td>An HTTP method used to update or replace an entire resource on the server.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">DELETE</span></td>
+                            <td>An HTTP method used to remove a resource from the server.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Status Code</span></td>
+                            <td>A three-digit number in HTTP responses indicating the result of a request (e.g., 200 OK, 404 Not Found).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Header</span></td>
+                            <td>Metadata sent with HTTP requests and responses that provide additional information about the message.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Cookie</span></td>
+                            <td>Small pieces of data stored by browsers and sent back to servers to maintain state between requests.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">TLS</span> <span class="term-name">(Transport Layer Security)</span></td>
+                            <td>A cryptographic protocol that provides secure communication over networks, successor to SSL.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">SSL</span> <span class="term-name">(Secure Sockets Layer)</span></td>
+                            <td>An older cryptographic protocol for secure communication, now largely replaced by TLS.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Encryption</span></td>
+                            <td>The process of converting plaintext into ciphertext to protect data from unauthorized access.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Authentication</span></td>
+                            <td>The process of verifying the identity of a user, device, or system.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">ls</span></td>
+                            <td>Linux command to list files and directories in the current location.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">cd</span></td>
+                            <td>Linux command to change the current directory.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">grep</span></td>
+                            <td>Linux command to search for patterns in text files or output.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Package Manager</span></td>
+                            <td>Software tool for installing, updating, and removing software packages on a system (e.g., apt, yum).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Log</span></td>
+                            <td>Records of system events, errors, and activities stored in files for troubleshooting and monitoring.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Permissions</span></td>
+                            <td>Access control settings that determine what actions users can perform on files and directories.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Port</span></td>
+                            <td>A numbered endpoint used to identify specific services or applications on a network device.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Firewall</span></td>
+                            <td>A network security device that monitors and controls incoming and outgoing network traffic.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Packet</span></td>
+                            <td>A small unit of data transmitted over a network, containing headers and payload information.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Router</span></td>
+                            <td>A network device that forwards data packets between different networks based on IP addresses.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Switch</span></td>
+                            <td>A network device that connects devices on a local network and forwards data based on MAC addresses.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">MAC Address</span></td>
+                            <td>A unique identifier assigned to network interfaces for communications at the data link layer.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Subnet</span></td>
+                            <td>A logical subdivision of an IP network that allows for better organization and routing.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">DHCP</span> <span class="term-name">(Dynamic Host Configuration Protocol)</span></td>
+                            <td>A protocol that automatically assigns IP addresses and network configuration to devices on a network.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">ARP</span> <span class="term-name">(Address Resolution Protocol)</span></td>
+                            <td>A protocol that maps IP addresses to MAC addresses on a local network.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">ICMP</span> <span class="term-name">(Internet Control Message Protocol)</span></td>
+                            <td>A protocol used for network diagnostics and error reporting, commonly used by ping and traceroute.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">NAT</span> <span class="term-name">(Network Address Translation)</span></td>
+                            <td>A technique that allows multiple devices on a private network to share a single public IP address.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Proxy</span></td>
+                            <td>An intermediary server that acts on behalf of clients, forwarding requests and responses.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">SSH</span> <span class="term-name">(Secure Shell)</span></td>
+                            <td>A cryptographic network protocol for secure remote login and command execution over an unsecured network.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">FTP</span> <span class="term-name">(File Transfer Protocol)</span></td>
+                            <td>A standard network protocol used for transferring files between a client and server on a network.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">API</span> <span class="term-name">(Application Programming Interface)</span></td>
+                            <td>A set of protocols and tools that allows different software applications to communicate with each other.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">JSON</span> <span class="term-name">(JavaScript Object Notation)</span></td>
+                            <td>A lightweight data interchange format that is easy for humans to read and write, and for machines to parse.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-acronym">Load Balancer</span></td>
+                            <td>A device or software that distributes network traffic across multiple servers to improve performance and reliability.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <p>Built for learning · Inspired by makingsoftware.com</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+
