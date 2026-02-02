@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
     <title>Packages & Logs - Cybersecurity Fundamentals</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -37,7 +38,7 @@
         .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
         .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
-        .nav-logo-icon { width: 32px; height: 32px; border: 1px solid var(--accent-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
         .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
         .nav-links { display: flex; align-items: center; gap: 6px; }
         .nav-dropdown { position: relative; }
@@ -124,7 +125,7 @@
     <nav class="site-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <div class="nav-logo-icon">CF</div>
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
                 <span class="nav-logo-text">Cybersecurity Fundamentals</span>
             </a>
             <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
@@ -148,6 +149,10 @@
                             <div class="nav-dropdown-item-title">VPN</div>
                             <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
                         </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
@@ -164,7 +169,7 @@
                     </div>
                 </div>
                 <div class="nav-dropdown">
-                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Systems <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
                         <a href="linux.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Linux Fundamentals</div>
@@ -173,6 +178,19 @@
                         <a href="linux-admin.html" class="nav-dropdown-item current">
                             <div class="nav-dropdown-item-title">Packages & Logs</div>
                             <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">File system, utilities & command line</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
                         </a>
                     </div>
                 </div>
@@ -381,6 +399,138 @@
                 <div class="callout">
                     <div class="callout-title">💡 Reading log output</div>
                     <p>Most log lines follow the same format: <code>timestamp hostname service[pid]: message</code>. Once you recognize this pattern, scanning logs becomes much faster. Look for the timestamp to find when something happened, and the message to understand what.</p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SERVICES & BOOT -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="topic">
+                <div class="topic-header">
+                    <span class="topic-icon">⚙️</span>
+                    <span class="topic-title">Services & Boot</span>
+                </div>
+                <div class="topic-desc">
+                    Services are background programs that keep your system running — web servers, SSH, databases. The <span style="font-family: var(--font-mono); color: var(--accent-light);">systemctl</span> command controls these services and determines which ones start automatically when the system boots. The very first process (PID 0) starts at boot and spawns everything else.
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">systemctl — Service Management</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">start</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Starts a service immediately for this session</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">stop</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Stops a running service</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">restart</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Stops and restarts a service (useful after config changes)</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">status</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Shows if a service is running, its PID, and recent log output</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">enable</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Enables a service to start automatically at boot</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">systemctl <span class="flag">disable</span> <span class="arg">nginx</span></div>
+                        <div class="cmd-explain">Prevents a service from starting at boot</div>
+                    </div>
+                    <div class="example-output">
+                        <span class="prompt">$</span> systemctl status nginx<br>
+                        <span class="info">● nginx.service - A high performance web server</span><br>
+                        <span class="output">&nbsp;&nbsp;&nbsp;Loaded: loaded (/lib/systemd/system/nginx.service; enabled)</span><br>
+                        <span class="output">&nbsp;&nbsp;&nbsp;Active: <span class="highlight">active (running)</span> since Mon 2025-01-28 09:15:32 UTC; 2h ago</span><br>
+                        <span class="output">&nbsp;Main PID: <span class="highlight">1847</span> (nginx)</span><br>
+                        <span class="output">&nbsp;&nbsp;&nbsp;Tasks: 3 (limit: 4915)</span><br>
+                        <span class="output">&nbsp;&nbsp;Memory: 8.2M</span><br>
+                        <span class="output">&nbsp;&nbsp;&nbsp;&nbsp;CPU: 42ms</span><br>
+                        <span class="output">Jan 28 09:15:32 server systemd[1]: Starting A high performance web server...</span><br>
+                        <span class="output">Jan 28 09:15:32 server systemd[1]: Started A high performance web server.</span>
+                    </div>
+                </div>
+
+                <div class="callout">
+                    <div class="callout-title">💡 Enable vs Start</div>
+                    <p><code>start</code> runs a service right now but it won't survive a reboot. <code>enable</code> hooks it into the boot process so it launches automatically every time the system starts. To do both at once: <code>systemctl enable --now nginx</code>.</p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SCHEDULED TASKS (CRON) -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="topic">
+                <div class="topic-header">
+                    <span class="topic-icon">⏰</span>
+                    <span class="topic-title">Scheduled Tasks (Cron)</span>
+                </div>
+                <div class="topic-desc">
+                    Cron is Linux's built-in task scheduler. It runs commands automatically on a schedule — backups at midnight, log cleanup every Sunday, health checks every 5 minutes. Each user has their own crontab file that holds their scheduled jobs.
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">Managing Cron</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">crontab <span class="flag">-e</span></div>
+                        <div class="cmd-explain">Edit your crontab file (opens in a text editor)</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">crontab <span class="flag">-l</span></div>
+                        <div class="cmd-explain">List all your scheduled cron jobs</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">crontab <span class="flag">-r</span></div>
+                        <div class="cmd-explain">Remove all your cron jobs (be careful with this)</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">sudo crontab <span class="flag">-u</span> <span class="arg">alice</span> <span class="flag">-l</span></div>
+                        <div class="cmd-explain">View another user's crontab</div>
+                    </div>
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">Cron Syntax</div>
+                    <div class="topic-desc" style="margin-bottom: 16px;">
+                        Each cron job follows a five-field time format that specifies exactly when the command should run.
+                    </div>
+                    <div class="example-output">
+┌───────────── minute (0–59)<br>
+│ ┌─────────── hour (0–23)<br>
+│ │ ┌───────── day of month (1–31)<br>
+│ │ │ ┌─────── month (1–12)<br>
+│ │ │ │ ┌───── day of week (0–6, Sunday = 0)<br>
+│ │ │ │ │<br>
+<span class="highlight">*</span> <span class="highlight">*</span> <span class="highlight">*</span> <span class="highlight">*</span> <span class="highlight">*</span> command to run
+                    </div>
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">Common Examples</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code"><span class="highlight">0 2 * * *</span> /backup.sh</div>
+                        <div class="cmd-explain">Every day at 2:00 AM</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code"><span class="highlight">*/5 * * * *</span> /health.sh</div>
+                        <div class="cmd-explain">Every 5 minutes</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code"><span class="highlight">0 0 * * 0</span> /cleanup.sh</div>
+                        <div class="cmd-explain">Every Sunday at midnight</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code"><span class="highlight">0 9 1 * *</span> /report.sh</div>
+                        <div class="cmd-explain">First day of every month at 9:00 AM</div>
+                    </div>
+                </div>
+
+                <div class="callout warn">
+                    <div class="callout-title">⚠️ Cron gotchas</div>
+                    <p>Cron jobs run with a minimal environment — commands that work in your terminal might fail in cron because PATH is different. Use full paths to commands (like <code>/usr/bin/python3</code> instead of <code>python3</code>) and redirect output to a log file so you can debug failures.</p>
                 </div>
             </div>
 

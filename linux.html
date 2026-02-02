@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
     <title>Linux Fundamentals - Cybersecurity Fundamentals</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -37,7 +38,7 @@
         .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
         .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
-        .nav-logo-icon { width: 32px; height: 32px; border: 1px solid var(--accent-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
         .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
         .nav-links { display: flex; align-items: center; gap: 6px; }
         .nav-dropdown { position: relative; }
@@ -148,7 +149,7 @@
     <nav class="site-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <div class="nav-logo-icon">CF</div>
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
                 <span class="nav-logo-text">Cybersecurity Fundamentals</span>
             </a>
             <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
@@ -172,6 +173,10 @@
                             <div class="nav-dropdown-item-title">VPN</div>
                             <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
                         </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
@@ -188,7 +193,7 @@
                     </div>
                 </div>
                 <div class="nav-dropdown">
-                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Systems <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
                         <a href="linux.html" class="nav-dropdown-item current">
                             <div class="nav-dropdown-item-title">Linux Fundamentals</div>
@@ -197,6 +202,19 @@
                         <a href="linux-admin.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Packages & Logs</div>
                             <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">File system, utilities & command line</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
                         </a>
                     </div>
                 </div>
@@ -340,6 +358,37 @@
                                 Write = <span style="color: var(--terminal-yellow);">2</span> &nbsp;|&nbsp; 
                                 Execute = <span style="color: var(--terminal-yellow);">1</span><br>
                                 <span style="color: var(--text-dim);">Example: 754 = rwx (owner), r-x (group), r-- (others)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processes -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📊</span> Processes</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('top')">
+                                <div class="command-name">top</div>
+                                <div class="command-purpose">Real-time view of running processes, CPU, and memory usage</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ps')">
+                                <div class="command-name">ps</div>
+                                <div class="command-purpose">Shows processes for the current user session</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('psaux')">
+                                <div class="command-name">ps aux</div>
+                                <div class="command-purpose">Shows all processes for all users across the system</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('kill')">
+                                <div class="command-name">kill</div>
+                                <div class="command-purpose">Sends a signal to a process by PID (e.g. kill 1234)</div>
+                            </div>
+                        </div>
+                        <div class="info-box" style="margin-top: 16px;">
+                            <div class="info-box-title">Kill Signals</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); line-height: 2;">
+                                <span style="color: var(--terminal-yellow);">SIGTERM</span> <span style="color: var(--text-dim);">—</span> Terminates the process gracefully, allows cleanup tasks to finish first<br>
+                                <span style="color: var(--terminal-yellow);">SIGKILL</span> <span style="color: var(--text-dim);">—</span> Forces the process to stop immediately, no cleanup<br>
+                                <span style="color: var(--terminal-yellow);">SIGSTOP</span> <span style="color: var(--text-dim);">—</span> Suspends/pauses the process without killing it
                             </div>
                         </div>
                     </div>
@@ -690,6 +739,65 @@
                     { type: 'output', text: '<span class="terminal-comment"># You must know the exact filename</span>' },
                 ],
                 info: 'Python\'s built-in HTTP server turns your current directory into a web server. Other machines can then download files from you using wget or curl. Runs on port 8000 by default. Great for quick file transfers between machines on the same network.'
+            },
+            top: {
+                lines: [
+                    { type: 'command', text: 'top' },
+                    { type: 'output', text: 'top - 14:32:01 up 3 days, 2:15, 1 user, load average: 0.52, 0.41, 0.38' },
+                    { type: 'output', text: 'Tasks: 142 total,   1 running, 141 sleeping,   0 stopped,   0 zombie' },
+                    { type: 'output', text: '%Cpu(s):  3.2 us,  1.1 sy,  0.0 ni, 95.4 id,  0.2 wa,  0.0 hi,  0.1 si' },
+                    { type: 'output', text: 'MiB Mem :   7953.4 total,   2341.2 free,   3102.8 used,   2509.4 buff' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-flag">  PID USER      %CPU %MEM    COMMAND</span>' },
+                    { type: 'output', text: ' 1842 user       8.3  2.1    firefox' },
+                    { type: 'output', text: ' 2156 user       4.2  1.8    code' },
+                    { type: 'output', text: '  892 root       1.1  0.4    Xorg' },
+                    { type: 'output', text: ' 3201 user       0.7  0.3    bash' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># Press q to quit, k to kill a process</span>' }
+                ],
+                info: 'A real-time, interactive view of system processes. Shows CPU usage, memory consumption, and running tasks. Updates continuously until you press q to quit. Press k to kill a process by entering its PID.'
+            },
+            ps: {
+                lines: [
+                    { type: 'command', text: 'ps' },
+                    { type: 'output', text: '  <span class="terminal-flag">PID</span> <span class="terminal-flag">TTY</span>          <span class="terminal-flag">TIME</span> <span class="terminal-flag">CMD</span>' },
+                    { type: 'output', text: ' 3201 pts/0    00:00:00 bash' },
+                    { type: 'output', text: ' 3245 pts/0    00:00:02 vim' },
+                    { type: 'output', text: ' 3302 pts/0    00:00:00 ps' }
+                ],
+                info: 'Shows processes running in your current terminal session. A quick snapshot of what\'s running under your user account in this shell. For a fuller picture, use ps aux.'
+            },
+            psaux: {
+                lines: [
+                    { type: 'command', text: 'ps <span class="terminal-flag">aux</span>' },
+                    { type: 'output', text: '<span class="terminal-flag">USER       PID %CPU %MEM    COMMAND</span>' },
+                    { type: 'output', text: 'root         1  0.0  0.1    /sbin/init' },
+                    { type: 'output', text: 'root       312  0.0  0.2    /usr/sbin/sshd' },
+                    { type: 'output', text: 'www-data   845  0.1  0.5    nginx: worker process' },
+                    { type: 'output', text: 'mysql     1024  0.3  2.1    /usr/sbin/mysqld' },
+                    { type: 'output', text: 'user      1842  8.3  2.1    /usr/bin/firefox' },
+                    { type: 'output', text: 'user      2156  4.2  1.8    /usr/bin/code' },
+                    { type: 'output', text: 'user      3302  0.0  0.0    ps aux' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># a = all users, u = user-oriented format, x = include background processes</span>' }
+                ],
+                info: 'Shows all processes running on the entire system, for all users. The most common way to see everything that\'s running. a shows all users, u shows user/CPU/memory info, x includes processes not attached to a terminal.'
+            },
+            kill: {
+                lines: [
+                    { type: 'command', text: 'kill <span class="terminal-flag">1234</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Sends SIGTERM (graceful shutdown) to process 1234</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'kill <span class="terminal-flag">-9</span> <span class="terminal-flag">1234</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Sends SIGKILL (force kill) — use when process won\'t stop</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'ps aux <span class="terminal-flag">|</span> grep firefox' },
+                    { type: 'output', text: 'user      1842  8.3  2.1  /usr/bin/firefox' },
+                    { type: 'command', text: 'kill 1842' },
+                    { type: 'output', text: '<span class="terminal-success"># Process terminated</span>' }
+                ],
+                info: 'Sends a signal to a process. By default sends SIGTERM, which asks the process to shut down gracefully. Use kill -9 (SIGKILL) to force-kill a process that won\'t respond. Find the PID first with ps or top.'
             }
         };
 

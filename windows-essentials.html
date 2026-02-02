@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>Windows Essentials - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --terminal-purple: #c084fc;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 820px; margin: 0 auto; padding: 40px 20px; }
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 580px; margin: 0 auto; line-height: 1.7; }
+        .page-intro strong { color: var(--text-secondary); }
+
+        /* Sections */
+        .topic { margin-bottom: 48px; }
+        .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
+        .topic-icon { font-size: 1.3rem; }
+        .topic-title { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); }
+        .topic-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+
+        /* Command blocks */
+        .cmd-block { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+        .cmd-block-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .cmd-row { display: flex; gap: 16px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(74, 111, 165, 0.1); }
+        .cmd-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .cmd-row:first-of-type { padding-top: 0; }
+        .cmd-code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); white-space: nowrap; min-width: 260px; flex-shrink: 0; }
+        .cmd-code .flag { color: var(--terminal-yellow); }
+        .cmd-code .arg { color: var(--terminal-blue); }
+        .cmd-code .pipe { color: var(--text-dim); }
+        .cmd-explain { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Example output */
+        .example-output { background: rgba(10, 22, 40, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; color: var(--text-muted); overflow-x: auto; }
+        .example-output .prompt { color: var(--terminal-green); }
+        .example-output .output { color: var(--text-dim); }
+        .example-output .highlight { color: var(--terminal-yellow); }
+        .example-output .err { color: var(--terminal-red); }
+        .example-output .info { color: var(--terminal-blue); }
+
+        /* Info callouts */
+        .callout { background: var(--surface-subtle); border-left: 2px solid var(--accent-primary); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 16px; }
+        .callout-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .callout p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+        .callout code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px; }
+        .callout.warn { border-left-color: var(--terminal-yellow); }
+        .callout.warn .callout-title { color: var(--terminal-yellow); }
+
+        /* Tool card component */
+        .tool-card { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
+        .tool-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .tool-card-name { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+        .tool-card-launch { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); background: var(--surface-medium); padding: 3px 10px; border-radius: 3px; }
+        .tool-card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+        .tool-card-details { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(74, 111, 165, 0.1); font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }
+
+        @media (max-width: 640px) {
+            .cmd-row { flex-direction: column; gap: 4px; }
+            .cmd-code { min-width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">File system, utilities & command line</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">Windows Essentials</h1>
+                <p class="page-subtitle">System Configuration, Utilities & Command Line</p>
+                <p class="page-intro">Windows has a deep set of built-in administration tools for configuring, monitoring, and troubleshooting the system. Most can be launched from the MSConfig Tools tab or by typing their command name into Run (Win+R).</p>
+            </header>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SYSTEM CONFIGURATION (MSCONFIG) -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="topic">
+                <div class="topic-header">
+                    <span class="topic-icon">⚙️</span>
+                    <span class="topic-title">System Configuration (MSConfig)</span>
+                </div>
+                <div class="topic-desc">
+                    MSConfig is the starting point for Windows troubleshooting. It controls what loads at boot and acts as a launcher for other admin tools. Open it with <span style="font-family: var(--font-mono); color: var(--accent-light);">msconfig</span> from Run.
+                </div>
+
+                <div class="callout">
+                    <div class="callout-title">💡 The Tools tab shortcut</div>
+                    <p>MSConfig's Tools tab is a central hub that lists most Windows admin utilities in one place. Select any tool and the exact launch command appears in the "Selected command" section at the bottom. This is referenced throughout Windows admin work as the quickest way to find and open utilities.</p>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">General</span>
+                    </div>
+                    <div class="tool-card-desc">Controls startup mode: Normal (loads everything), Diagnostic (basic devices and services only), or Selective (you choose what loads). Used to isolate what's causing boot problems.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Boot</span>
+                    </div>
+                    <div class="tool-card-desc">Configure boot options like Safe Boot, timeout settings, and multi-OS boot order.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Services</span>
+                    </div>
+                    <div class="tool-card-desc">Lists all system services with their manufacturer and status. The "Hide all Microsoft services" checkbox isolates third-party services — useful for finding problematic software.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Startup</span>
+                    </div>
+                    <div class="tool-card-desc">Redirects to Task Manager's Startup tab in modern Windows. Shows what programs launch at login and their performance impact.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Tools</span>
+                    </div>
+                    <div class="tool-card-desc">Central launcher for admin utilities. Each entry shows the tool name, description, and launch command.</div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- ADMINISTRATION TOOLS -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="topic">
+                <div class="topic-header">
+                    <span class="topic-icon">🔧</span>
+                    <span class="topic-title">Administration Tools</span>
+                </div>
+                <div class="topic-desc">
+                    These utilities handle day-to-day system administration. Each can be found in MSConfig's Tools tab or launched directly with the command shown.
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Computer Management</span>
+                        <span class="tool-card-launch">compmgmt.msc</span>
+                    </div>
+                    <div class="tool-card-desc">Central console with three sections. System Tools contains Task Scheduler (automates tasks on schedules or triggers), Event Viewer (logs system events for auditing and troubleshooting), Shared Folders (shows network shares — hidden shares end with $), Local Users and Groups, Performance Monitor, and Device Manager. Storage contains Disk Management for drives, partitions, and drive letters. Services and Applications shows background services with their status and startup type (Automatic, Manual, or Disabled) plus WMI Control.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">System Information</span>
+                        <span class="tool-card-launch">msinfo32</span>
+                    </div>
+                    <div class="tool-card-desc">Full system profile across three sections: Hardware Resources (IRQs, memory addresses), Components (display, network, storage devices), and Software Environment (running tasks, environment variables, network connections). Has a search bar at the bottom for quick lookups.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Resource Monitor</span>
+                        <span class="tool-card-launch">resmon</span>
+                    </div>
+                    <div class="tool-card-desc">Real-time performance dashboard that goes deeper than Task Manager. Separate tabs for CPU, Memory, Disk, and Network plus an Overview. Live graphs on the right show activity in real time. Used for tracking down performance issues, deadlocked processes, and file locking conflicts.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">Registry Editor</span>
+                        <span class="tool-card-launch">regedit</span>
+                    </div>
+                    <div class="tool-card-desc">Edits the Windows Registry, a hierarchical database storing all system configuration: user profiles, installed apps, hardware, ports, and folder settings. Important for security because malware often hides entries here. Incorrect edits can break the system.</div>
+                </div>
+
+                <div class="callout warn">
+                    <div class="callout-title">⚠️ Registry warning</div>
+                    <p>The registry is powerful but dangerous. Incorrect changes can make Windows unbootable. Always back up the registry before editing, and never modify entries you don't understand.</p>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <span class="tool-card-name">User Account Control</span>
+                        <span class="tool-card-launch">via MSConfig Tools tab</span>
+                    </div>
+                    <div class="tool-card-desc">Security feature that prompts users when apps try to make system changes. Four notification levels from "Always notify" (highest security) down to "Never notify" (no protection). Default is the second level — notify when apps make changes, but not for user-initiated settings changes.</div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- COMMAND PROMPT ESSENTIALS -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="topic">
+                <div class="topic-header">
+                    <span class="topic-icon">💻</span>
+                    <span class="topic-title">Command Prompt Essentials</span>
+                </div>
+                <div class="topic-desc">
+                    The Windows command line for system interaction and network diagnostics. Open with <span style="font-family: var(--font-mono); color: var(--accent-light);">cmd</span> from Run or search.
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">System Commands</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">hostname</div>
+                        <div class="cmd-explain">Displays the computer's network name</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">whoami</div>
+                        <div class="cmd-explain">Shows the currently logged-in user</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">cls</div>
+                        <div class="cmd-explain">Clears the command prompt screen</div>
+                    </div>
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">Network Commands</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">ipconfig</div>
+                        <div class="cmd-explain">Shows network adapter settings (IP address, subnet, gateway)</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">netstat</div>
+                        <div class="cmd-explain">Displays active network connections and listening ports</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">netstat <span class="flag">-an</span></div>
+                        <div class="cmd-explain">Shows all connections with numeric addresses (no DNS resolution)</div>
+                    </div>
+                </div>
+
+                <div class="cmd-block">
+                    <div class="cmd-block-title">Net Commands</div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net user</div>
+                        <div class="cmd-explain">Lists all user accounts on the system</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net user <span class="arg">alice</span></div>
+                        <div class="cmd-explain">Shows detailed info for a specific account</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net localgroup</div>
+                        <div class="cmd-explain">Lists all local security groups</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net localgroup <span class="arg">administrators</span></div>
+                        <div class="cmd-explain">Shows members of a specific group</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net share</div>
+                        <div class="cmd-explain">Displays all shared resources</div>
+                    </div>
+                    <div class="cmd-row">
+                        <div class="cmd-code">net session</div>
+                        <div class="cmd-explain">Shows active network sessions to this machine</div>
+                    </div>
+                </div>
+
+                <div class="callout">
+                    <div class="callout-title">💡 Getting help</div>
+                    <p>Most commands support <code>/?</code> for help — for example <code>ipconfig /?</code>. The exception is <code>net</code>, which uses <code>net help</code> followed by the sub-command, like <code>net help user</code>.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+
