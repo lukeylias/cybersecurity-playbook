@@ -30,6 +30,8 @@
             --terminal-red: #f87171;
             --terminal-blue: #60a5fa;
             --terminal-purple: #c084fc;
+            --ps-blue: #012456;
+            --ps-prompt: #ffff00;
         }
 
         body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
@@ -65,39 +67,26 @@
         }
 
         .page { padding-top: 60px; min-height: 100vh; }
-        .page-content { max-width: 820px; margin: 0 auto; padding: 40px 20px; }
+        .page-content { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
         .page-header { text-align: center; margin-bottom: 40px; }
         .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
         .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
-        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 580px; margin: 0 auto; line-height: 1.7; }
-        .page-intro strong { color: var(--text-secondary); }
+        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
 
-        /* Sections */
-        .topic { margin-bottom: 48px; }
+        /* Static Sections (MSConfig & Admin Tools) */
+        .static-section { max-width: 820px; margin: 0 auto 48px; }
+        .topic { margin-bottom: 32px; }
         .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
         .topic-icon { font-size: 1.3rem; }
         .topic-title { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); }
         .topic-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
 
-        /* Command blocks */
-        .cmd-block { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
-        .cmd-block-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        .cmd-row { display: flex; gap: 16px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(74, 111, 165, 0.1); }
-        .cmd-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .cmd-row:first-of-type { padding-top: 0; }
-        .cmd-code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); white-space: nowrap; min-width: 260px; flex-shrink: 0; }
-        .cmd-code .flag { color: var(--terminal-yellow); }
-        .cmd-code .arg { color: var(--terminal-blue); }
-        .cmd-code .pipe { color: var(--text-dim); }
-        .cmd-explain { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
-
-        /* Example output */
-        .example-output { background: rgba(10, 22, 40, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; color: var(--text-muted); overflow-x: auto; }
-        .example-output .prompt { color: var(--terminal-green); }
-        .example-output .output { color: var(--text-dim); }
-        .example-output .highlight { color: var(--terminal-yellow); }
-        .example-output .err { color: var(--terminal-red); }
-        .example-output .info { color: var(--terminal-blue); }
+        /* Tool card component */
+        .tool-card { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
+        .tool-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .tool-card-name { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+        .tool-card-launch { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); background: var(--surface-medium); padding: 3px 10px; border-radius: 3px; }
+        .tool-card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
 
         /* Info callouts */
         .callout { background: var(--surface-subtle); border-left: 2px solid var(--accent-primary); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 16px; }
@@ -107,17 +96,61 @@
         .callout.warn { border-left-color: var(--terminal-yellow); }
         .callout.warn .callout-title { color: var(--terminal-yellow); }
 
-        /* Tool card component */
-        .tool-card { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
-        .tool-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .tool-card-name { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
-        .tool-card-launch { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); background: var(--surface-medium); padding: 3px 10px; border-radius: 3px; }
-        .tool-card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
-        .tool-card-details { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(74, 111, 165, 0.1); font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }
+        /* Two-column layout for interactive commands */
+        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
 
-        @media (max-width: 640px) {
-            .cmd-row { flex-direction: column; gap: 4px; }
-            .cmd-code { min-width: 0; }
+        /* Terminal */
+        .terminal-container { position: sticky; top: 80px; }
+        .terminal { background: var(--ps-blue); border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: #1a1a1a; padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+        .terminal-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: #666; margin-right: 52px; }
+        .terminal-body { padding: 20px; min-height: 300px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; }
+        .terminal-line { margin-bottom: 4px; }
+        .terminal-prompt { color: var(--ps-prompt); }
+        .terminal-path { color: #fff; }
+        .terminal-command { color: #fff; }
+        .terminal-output { color: #ccc; }
+        .terminal-comment { color: #666; font-style: italic; }
+        .terminal-flag { color: var(--terminal-yellow); }
+        .terminal-arg { color: var(--terminal-blue); }
+        .terminal-error { color: var(--terminal-red); }
+        .terminal-success { color: var(--terminal-green); }
+        .terminal-header-text { color: var(--terminal-blue); }
+
+        .terminal-info { margin-top: 16px; padding: 16px; background: var(--surface-subtle); border-radius: 8px; }
+        .terminal-info-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .terminal-info-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Command Reference */
+        .commands-section { margin-bottom: 32px; }
+        .section-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 8px; }
+        .section-title span { font-size: 1rem; }
+
+        .command-grid { display: flex; flex-direction: column; gap: 8px; }
+        .command-item { background: var(--surface-subtle); border: 1px solid transparent; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
+        .command-item:hover { background: var(--surface-medium); border-color: var(--border-subtle); }
+        .command-item.active { background: var(--surface-active); border-color: var(--accent-primary); }
+        .command-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--terminal-blue); font-weight: 500; }
+        .command-purpose { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Shortcuts & Info boxes */
+        .info-box { background: var(--surface-subtle); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .info-box-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+        /* Section divider */
+        .section-divider { border: none; border-top: 1px solid var(--border-subtle); margin: 48px 0; }
+        .interactive-header { text-align: center; margin-bottom: 32px; }
+        .interactive-title { color: var(--text-primary); font-size: 1.1rem; font-weight: 500; margin-bottom: 8px; }
+        .interactive-desc { color: var(--text-muted); font-size: 0.85rem; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .terminal-container { position: static; margin-bottom: 32px; order: -1; }
+            .command-item { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -133,9 +166,17 @@
                 <div class="nav-dropdown">
                     <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
                         <a href="osi-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">OSI Model</div>
                             <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
                         </a>
                         <a href="dns.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">DNS Lookup</div>
@@ -207,191 +248,334 @@
             </header>
 
             <!-- ═══════════════════════════════════════ -->
-            <!-- SYSTEM CONFIGURATION (MSCONFIG) -->
+            <!-- STATIC SECTIONS: MSCONFIG & ADMIN TOOLS -->
             <!-- ═══════════════════════════════════════ -->
-            <div class="topic">
-                <div class="topic-header">
-                    <span class="topic-icon">⚙️</span>
-                    <span class="topic-title">System Configuration (MSConfig)</span>
-                </div>
-                <div class="topic-desc">
-                    MSConfig is the starting point for Windows troubleshooting. It controls what loads at boot and acts as a launcher for other admin tools. Open it with <span style="font-family: var(--font-mono); color: var(--accent-light);">msconfig</span> from Run.
-                </div>
+            <div class="static-section">
 
-                <div class="callout">
-                    <div class="callout-title">💡 The Tools tab shortcut</div>
-                    <p>MSConfig's Tools tab is a central hub that lists most Windows admin utilities in one place. Select any tool and the exact launch command appears in the "Selected command" section at the bottom. This is referenced throughout Windows admin work as the quickest way to find and open utilities.</p>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">General</span>
+                <!-- SYSTEM CONFIGURATION (MSCONFIG) -->
+                <div class="topic">
+                    <div class="topic-header">
+                        <span class="topic-icon">⚙️</span>
+                        <span class="topic-title">System Configuration (MSConfig)</span>
                     </div>
-                    <div class="tool-card-desc">Controls startup mode: Normal (loads everything), Diagnostic (basic devices and services only), or Selective (you choose what loads). Used to isolate what's causing boot problems.</div>
+                    <div class="topic-desc">
+                        MSConfig is the starting point for Windows troubleshooting. It controls what loads at boot and acts as a launcher for other admin tools. Open it with <span style="font-family: var(--font-mono); color: var(--accent-light);">msconfig</span> from Run.
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">💡 The Tools tab shortcut</div>
+                        <p>MSConfig's Tools tab is a central hub that lists most Windows admin utilities in one place. Select any tool and the exact launch command appears in the "Selected command" section at the bottom. This is referenced throughout Windows admin work as the quickest way to find and open utilities.</p>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">General</span>
+                        </div>
+                        <div class="tool-card-desc">Controls startup mode: Normal (loads everything), Diagnostic (basic devices and services only), or Selective (you choose what loads). Used to isolate what's causing boot problems.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Boot</span>
+                        </div>
+                        <div class="tool-card-desc">Configure boot options like Safe Boot, timeout settings, and multi-OS boot order.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Services</span>
+                        </div>
+                        <div class="tool-card-desc">Lists all system services with their manufacturer and status. The "Hide all Microsoft services" checkbox isolates third-party services — useful for finding problematic software.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Startup</span>
+                        </div>
+                        <div class="tool-card-desc">Redirects to Task Manager's Startup tab in modern Windows. Shows what programs launch at login and their performance impact.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Tools</span>
+                        </div>
+                        <div class="tool-card-desc">Central launcher for admin utilities. Each entry shows the tool name, description, and launch command.</div>
+                    </div>
                 </div>
 
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Boot</span>
+                <!-- ADMINISTRATION TOOLS -->
+                <div class="topic">
+                    <div class="topic-header">
+                        <span class="topic-icon">🔧</span>
+                        <span class="topic-title">Administration Tools</span>
                     </div>
-                    <div class="tool-card-desc">Configure boot options like Safe Boot, timeout settings, and multi-OS boot order.</div>
+                    <div class="topic-desc">
+                        These utilities handle day-to-day system administration. Each can be found in MSConfig's Tools tab or launched directly with the command shown.
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Computer Management</span>
+                            <span class="tool-card-launch">compmgmt.msc</span>
+                        </div>
+                        <div class="tool-card-desc">Central console with three sections. System Tools contains Task Scheduler (automates tasks on schedules or triggers), Event Viewer (logs system events for auditing and troubleshooting), Shared Folders (shows network shares — hidden shares end with $), Local Users and Groups, Performance Monitor, and Device Manager. Storage contains Disk Management for drives, partitions, and drive letters. Services and Applications shows background services with their status and startup type (Automatic, Manual, or Disabled) plus WMI Control.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">System Information</span>
+                            <span class="tool-card-launch">msinfo32</span>
+                        </div>
+                        <div class="tool-card-desc">Full system profile across three sections: Hardware Resources (IRQs, memory addresses), Components (display, network, storage devices), and Software Environment (running tasks, environment variables, network connections). Has a search bar at the bottom for quick lookups.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Resource Monitor</span>
+                            <span class="tool-card-launch">resmon</span>
+                        </div>
+                        <div class="tool-card-desc">Real-time performance dashboard that goes deeper than Task Manager. Separate tabs for CPU, Memory, Disk, and Network plus an Overview. Live graphs on the right show activity in real time. Used for tracking down performance issues, deadlocked processes, and file locking conflicts.</div>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">Registry Editor</span>
+                            <span class="tool-card-launch">regedit</span>
+                        </div>
+                        <div class="tool-card-desc">Edits the Windows Registry, a hierarchical database storing all system configuration: user profiles, installed apps, hardware, ports, and folder settings. Important for security because malware often hides entries here. Incorrect edits can break the system.</div>
+                    </div>
+
+                    <div class="callout warn">
+                        <div class="callout-title">⚠️ Registry warning</div>
+                        <p>The registry is powerful but dangerous. Incorrect changes can make Windows unbootable. Always back up the registry before editing, and never modify entries you don't understand.</p>
+                    </div>
+
+                    <div class="tool-card">
+                        <div class="tool-card-header">
+                            <span class="tool-card-name">User Account Control</span>
+                            <span class="tool-card-launch">via MSConfig Tools tab</span>
+                        </div>
+                        <div class="tool-card-desc">Security feature that prompts users when apps try to make system changes. Four notification levels from "Always notify" (highest security) down to "Never notify" (no protection). Default is the second level — notify when apps make changes, but not for user-initiated settings changes.</div>
+                    </div>
                 </div>
 
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Services</span>
-                    </div>
-                    <div class="tool-card-desc">Lists all system services with their manufacturer and status. The "Hide all Microsoft services" checkbox isolates third-party services — useful for finding problematic software.</div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Startup</span>
-                    </div>
-                    <div class="tool-card-desc">Redirects to Task Manager's Startup tab in modern Windows. Shows what programs launch at login and their performance impact.</div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Tools</span>
-                    </div>
-                    <div class="tool-card-desc">Central launcher for admin utilities. Each entry shows the tool name, description, and launch command.</div>
-                </div>
             </div>
 
             <!-- ═══════════════════════════════════════ -->
-            <!-- ADMINISTRATION TOOLS -->
+            <!-- INTERACTIVE COMMAND SECTION -->
             <!-- ═══════════════════════════════════════ -->
-            <div class="topic">
-                <div class="topic-header">
-                    <span class="topic-icon">🔧</span>
-                    <span class="topic-title">Administration Tools</span>
-                </div>
-                <div class="topic-desc">
-                    These utilities handle day-to-day system administration. Each can be found in MSConfig's Tools tab or launched directly with the command shown.
-                </div>
+            <hr class="section-divider">
 
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Computer Management</span>
-                        <span class="tool-card-launch">compmgmt.msc</span>
-                    </div>
-                    <div class="tool-card-desc">Central console with three sections. System Tools contains Task Scheduler (automates tasks on schedules or triggers), Event Viewer (logs system events for auditing and troubleshooting), Shared Folders (shows network shares — hidden shares end with $), Local Users and Groups, Performance Monitor, and Device Manager. Storage contains Disk Management for drives, partitions, and drive letters. Services and Applications shows background services with their status and startup type (Automatic, Manual, or Disabled) plus WMI Control.</div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">System Information</span>
-                        <span class="tool-card-launch">msinfo32</span>
-                    </div>
-                    <div class="tool-card-desc">Full system profile across three sections: Hardware Resources (IRQs, memory addresses), Components (display, network, storage devices), and Software Environment (running tasks, environment variables, network connections). Has a search bar at the bottom for quick lookups.</div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Resource Monitor</span>
-                        <span class="tool-card-launch">resmon</span>
-                    </div>
-                    <div class="tool-card-desc">Real-time performance dashboard that goes deeper than Task Manager. Separate tabs for CPU, Memory, Disk, and Network plus an Overview. Live graphs on the right show activity in real time. Used for tracking down performance issues, deadlocked processes, and file locking conflicts.</div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">Registry Editor</span>
-                        <span class="tool-card-launch">regedit</span>
-                    </div>
-                    <div class="tool-card-desc">Edits the Windows Registry, a hierarchical database storing all system configuration: user profiles, installed apps, hardware, ports, and folder settings. Important for security because malware often hides entries here. Incorrect edits can break the system.</div>
-                </div>
-
-                <div class="callout warn">
-                    <div class="callout-title">⚠️ Registry warning</div>
-                    <p>The registry is powerful but dangerous. Incorrect changes can make Windows unbootable. Always back up the registry before editing, and never modify entries you don't understand.</p>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <span class="tool-card-name">User Account Control</span>
-                        <span class="tool-card-launch">via MSConfig Tools tab</span>
-                    </div>
-                    <div class="tool-card-desc">Security feature that prompts users when apps try to make system changes. Four notification levels from "Always notify" (highest security) down to "Never notify" (no protection). Default is the second level — notify when apps make changes, but not for user-initiated settings changes.</div>
-                </div>
+            <div class="interactive-header">
+                <h2 class="interactive-title">Command Line Reference</h2>
+                <p class="interactive-desc">Click any command to see it in action in the PowerShell terminal.</p>
             </div>
 
-            <!-- ═══════════════════════════════════════ -->
-            <!-- COMMAND PROMPT ESSENTIALS -->
-            <!-- ═══════════════════════════════════════ -->
-            <div class="topic">
-                <div class="topic-header">
-                    <span class="topic-icon">💻</span>
-                    <span class="topic-title">Command Prompt Essentials</span>
-                </div>
-                <div class="topic-desc">
-                    The Windows command line for system interaction and network diagnostics. Open with <span style="font-family: var(--font-mono); color: var(--accent-light);">cmd</span> from Run or search.
+            <div class="main-layout">
+                <div class="commands-reference">
+
+                    <!-- System Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>💻</span> System Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('hostname')">
+                                <div class="command-name">hostname</div>
+                                <div class="command-purpose">Displays the computer's network name</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('whoami')">
+                                <div class="command-name">whoami</div>
+                                <div class="command-purpose">Shows the currently logged-in user</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('cls')">
+                                <div class="command-name">cls</div>
+                                <div class="command-purpose">Clears the command prompt screen</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Enumeration -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📋</span> System Enumeration</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('systeminfo')">
+                                <div class="command-name">systeminfo</div>
+                                <div class="command-purpose">Full system overview — OS, patches, hardware, network</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ver')">
+                                <div class="command-name">ver</div>
+                                <div class="command-purpose">Display Windows version</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('set')">
+                                <div class="command-name">set</div>
+                                <div class="command-purpose">Show all environment variables and system paths</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>🌐</span> Network Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('ipconfig')">
+                                <div class="command-name">ipconfig</div>
+                                <div class="command-purpose">Shows network adapter settings (IP, subnet, gateway)</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ipconfig_all')">
+                                <div class="command-name">ipconfig /all</div>
+                                <div class="command-purpose">Extended info — MAC address, DNS, DHCP status</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ping')">
+                                <div class="command-name">ping</div>
+                                <div class="command-purpose">Test connectivity to a target host</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tracert')">
+                                <div class="command-name">tracert</div>
+                                <div class="command-purpose">Trace the route packets take to reach target</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('nslookup')">
+                                <div class="command-name">nslookup</div>
+                                <div class="command-purpose">Query DNS to resolve domain to IP address</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('netstat')">
+                                <div class="command-name">netstat</div>
+                                <div class="command-purpose">Displays active network connections and ports</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('netstat_an')">
+                                <div class="command-name">netstat -an</div>
+                                <div class="command-purpose">All connections with numeric addresses</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('netstat_ano')">
+                                <div class="command-name">netstat -ano</div>
+                                <div class="command-purpose">All connections with process IDs (PIDs)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process & Service Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>⚡</span> Process & Service Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('tasklist')">
+                                <div class="command-name">tasklist</div>
+                                <div class="command-purpose">List all running processes</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tasklist_svc')">
+                                <div class="command-name">tasklist /svc</div>
+                                <div class="command-purpose">List processes with associated services</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tasklist_filter')">
+                                <div class="command-name">tasklist /svc /fi</div>
+                                <div class="command-purpose">Find the service running on a specific PID</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('taskkill')">
+                                <div class="command-name">taskkill</div>
+                                <div class="command-purpose">Terminate a process by its PID</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File & Directory Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📂</span> File & Directory Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('dir')">
+                                <div class="command-name">dir</div>
+                                <div class="command-purpose">List contents of current directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('cd')">
+                                <div class="command-name">cd</div>
+                                <div class="command-purpose">Show or change current directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tree')">
+                                <div class="command-name">tree</div>
+                                <div class="command-purpose">Display directory and subdirectory structure</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('mkdir')">
+                                <div class="command-name">mkdir</div>
+                                <div class="command-purpose">Create a new directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('rmdir')">
+                                <div class="command-name">rmdir</div>
+                                <div class="command-purpose">Remove a directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('type')">
+                                <div class="command-name">type</div>
+                                <div class="command-purpose">Display contents of a text file</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('more')">
+                                <div class="command-name">more</div>
+                                <div class="command-purpose">Display file contents with pagination</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>👥</span> Net Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('net_user')">
+                                <div class="command-name">net user</div>
+                                <div class="command-purpose">Lists all user accounts on the system</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_user_detail')">
+                                <div class="command-name">net user [name]</div>
+                                <div class="command-purpose">Shows detailed info for a specific account</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_localgroup')">
+                                <div class="command-name">net localgroup</div>
+                                <div class="command-purpose">Lists all local security groups</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_localgroup_detail')">
+                                <div class="command-name">net localgroup [grp]</div>
+                                <div class="command-purpose">Shows members of a specific group</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_share')">
+                                <div class="command-name">net share</div>
+                                <div class="command-purpose">Displays all shared resources</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_session')">
+                                <div class="command-name">net session</div>
+                                <div class="command-purpose">Shows active network sessions to this machine</div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 16px;">
+                            <div class="info-box-title">💡 Getting help</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+                                Most commands support <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">/?</code> for help — for example <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">ipconfig /?</code>. The exception is <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">net</code>, which uses <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">net help</code> followed by the sub-command.
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="cmd-block">
-                    <div class="cmd-block-title">System Commands</div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">hostname</div>
-                        <div class="cmd-explain">Displays the computer's network name</div>
+                <div class="terminal-container">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dot red"></div>
+                            <div class="terminal-dot yellow"></div>
+                            <div class="terminal-dot green"></div>
+                            <div class="terminal-title">Windows PowerShell</div>
+                        </div>
+                        <div class="terminal-body" id="terminalBody">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">PS C:\Users\user&gt;</span> <span class="terminal-comment"># Click a command to see it in action</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Welcome to Windows PowerShell!</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Select any command from the left to</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">see example usage and output.</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">whoami</div>
-                        <div class="cmd-explain">Shows the currently logged-in user</div>
+                    <div class="terminal-info" id="terminalInfo">
+                        <div class="terminal-info-title">Tip</div>
+                        <div class="terminal-info-text">The command line is essential for Windows administration and security work. These commands work in both Command Prompt and PowerShell.</div>
                     </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">cls</div>
-                        <div class="cmd-explain">Clears the command prompt screen</div>
-                    </div>
-                </div>
-
-                <div class="cmd-block">
-                    <div class="cmd-block-title">Network Commands</div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">ipconfig</div>
-                        <div class="cmd-explain">Shows network adapter settings (IP address, subnet, gateway)</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">netstat</div>
-                        <div class="cmd-explain">Displays active network connections and listening ports</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">netstat <span class="flag">-an</span></div>
-                        <div class="cmd-explain">Shows all connections with numeric addresses (no DNS resolution)</div>
-                    </div>
-                </div>
-
-                <div class="cmd-block">
-                    <div class="cmd-block-title">Net Commands</div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net user</div>
-                        <div class="cmd-explain">Lists all user accounts on the system</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net user <span class="arg">alice</span></div>
-                        <div class="cmd-explain">Shows detailed info for a specific account</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net localgroup</div>
-                        <div class="cmd-explain">Lists all local security groups</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net localgroup <span class="arg">administrators</span></div>
-                        <div class="cmd-explain">Shows members of a specific group</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net share</div>
-                        <div class="cmd-explain">Displays all shared resources</div>
-                    </div>
-                    <div class="cmd-row">
-                        <div class="cmd-code">net session</div>
-                        <div class="cmd-explain">Shows active network sessions to this machine</div>
-                    </div>
-                </div>
-
-                <div class="callout">
-                    <div class="callout-title">💡 Getting help</div>
-                    <p>Most commands support <code>/?</code> for help — for example <code>ipconfig /?</code>. The exception is <code>net</code>, which uses <code>net help</code> followed by the sub-command, like <code>net help user</code>.</p>
                 </div>
             </div>
 
@@ -399,6 +583,426 @@
     </div>
 
     <script>
+        const commands = {
+            hostname: {
+                lines: [
+                    { type: 'command', text: 'hostname' },
+                    { type: 'output', text: 'DESKTOP-A1B2C3D' }
+                ],
+                info: 'Displays the computer\'s network name. This is the name other devices on the network see when connecting to this machine.'
+            },
+            whoami: {
+                lines: [
+                    { type: 'command', text: 'whoami' },
+                    { type: 'output', text: 'desktop-a1b2c3d\\user' }
+                ],
+                info: 'Shows the currently logged-in user in DOMAIN\\username format. On a local machine, the computer name acts as the domain.'
+            },
+            cls: {
+                lines: [
+                    { type: 'command', text: 'cls' },
+                    { type: 'output', text: '<span class="terminal-comment"># Screen is cleared</span>' },
+                    { type: 'blank' },
+                    { type: 'prompt' }
+                ],
+                info: 'Clears all text from the terminal window, giving you a fresh screen. Useful when output gets cluttered.'
+            },
+            systeminfo: {
+                lines: [
+                    { type: 'command', text: 'systeminfo' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Host Name:</span>                 DESKTOP-A1B2C3D' },
+                    { type: 'output', text: '<span class="terminal-header-text">OS Name:</span>                   Microsoft Windows 11 Pro' },
+                    { type: 'output', text: '<span class="terminal-header-text">OS Version:</span>                10.0.22631 Build 22631' },
+                    { type: 'output', text: '<span class="terminal-header-text">System Type:</span>               x64-based PC' },
+                    { type: 'output', text: '<span class="terminal-header-text">Total Physical Memory:</span>     16,384 MB' },
+                    { type: 'output', text: '<span class="terminal-header-text">Domain:</span>                    WORKGROUP' },
+                    { type: 'output', text: '<span class="terminal-comment"># ... plus hotfixes, network adapters, boot time</span>' }
+                ],
+                info: 'Comprehensive system overview including OS version, installed patches (hotfixes), domain membership, hardware specs, and network configuration. Essential for enumeration.'
+            },
+            ver: {
+                lines: [
+                    { type: 'command', text: 'ver' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Microsoft Windows [Version 10.0.22631.2428]' }
+                ],
+                info: 'Quick way to check the exact Windows build number. Useful for identifying patch levels and compatibility.'
+            },
+            set: {
+                lines: [
+                    { type: 'command', text: 'set' },
+                    { type: 'output', text: '<span class="terminal-header-text">COMPUTERNAME</span>=DESKTOP-A1B2C3D' },
+                    { type: 'output', text: '<span class="terminal-header-text">HOMEPATH</span>=\\Users\\user' },
+                    { type: 'output', text: '<span class="terminal-header-text">PATH</span>=C:\\Windows\\system32;C:\\Windows;...' },
+                    { type: 'output', text: '<span class="terminal-header-text">TEMP</span>=C:\\Users\\user\\AppData\\Local\\Temp' },
+                    { type: 'output', text: '<span class="terminal-header-text">USERNAME</span>=user' },
+                    { type: 'output', text: '<span class="terminal-comment"># ... and many more environment variables</span>' }
+                ],
+                info: 'Lists all environment variables including system paths, user directories, and temp locations. Useful for understanding the system configuration and finding potential privilege escalation paths.'
+            },
+            ipconfig: {
+                lines: [
+                    { type: 'command', text: 'ipconfig' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Ethernet adapter Ethernet:</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   Connection-specific DNS Suffix  . :' },
+                    { type: 'output', text: '   IPv4 Address. . . . . . . . . . . : <span class="terminal-success">192.168.1.105</span>' },
+                    { type: 'output', text: '   Subnet Mask . . . . . . . . . . . : 255.255.255.0' },
+                    { type: 'output', text: '   Default Gateway . . . . . . . . . : 192.168.1.1' }
+                ],
+                info: 'Shows basic network adapter configuration including IP address, subnet mask, and default gateway. First command to run when troubleshooting network issues.'
+            },
+            ipconfig_all: {
+                lines: [
+                    { type: 'command', text: 'ipconfig <span class="terminal-flag">/all</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Ethernet adapter Ethernet:</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   Physical Address. . . . . . . . . : <span class="terminal-arg">00-1A-2B-3C-4D-5E</span>' },
+                    { type: 'output', text: '   DHCP Enabled. . . . . . . . . . . : Yes' },
+                    { type: 'output', text: '   IPv4 Address. . . . . . . . . . . : 192.168.1.105' },
+                    { type: 'output', text: '   DNS Servers . . . . . . . . . . . : 8.8.8.8' },
+                    { type: 'output', text: '                                       8.8.4.4' }
+                ],
+                info: 'Extended network information including MAC address (Physical Address), DHCP status, and DNS servers. The MAC address uniquely identifies the network adapter.'
+            },
+            ping: {
+                lines: [
+                    { type: 'command', text: 'ping <span class="terminal-arg">8.8.8.8</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Pinging 8.8.8.8 with 32 bytes of data:' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">14ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">13ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">15ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">14ms</span> TTL=117' }
+                ],
+                info: 'Tests connectivity to a target by sending ICMP echo requests. Shows round-trip time (latency) and packet loss. 8.8.8.8 is Google\'s public DNS — a reliable target for testing internet connectivity.'
+            },
+            tracert: {
+                lines: [
+                    { type: 'command', text: 'tracert <span class="terminal-arg">google.com</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Tracing route to google.com [142.250.185.78]' },
+                    { type: 'output', text: '' },
+                    { type: 'output', text: '  1    <1ms    <1ms    <1ms  192.168.1.1' },
+                    { type: 'output', text: '  2    12ms    11ms    12ms  10.0.0.1' },
+                    { type: 'output', text: '  3    15ms    14ms    15ms  72.14.215.85' },
+                    { type: 'output', text: '  4    16ms    15ms    16ms  142.250.185.78' },
+                    { type: 'output', text: '' },
+                    { type: 'output', text: 'Trace complete.' }
+                ],
+                info: 'Traces the path packets take to reach a destination, showing each router (hop) along the way. Useful for identifying where network problems occur.'
+            },
+            nslookup: {
+                lines: [
+                    { type: 'command', text: 'nslookup <span class="terminal-arg">google.com</span>' },
+                    { type: 'output', text: 'Server:  dns.google' },
+                    { type: 'output', text: 'Address:  8.8.8.8' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Non-authoritative answer:' },
+                    { type: 'output', text: 'Name:    google.com' },
+                    { type: 'output', text: 'Addresses:  <span class="terminal-success">142.250.185.78</span>' },
+                    { type: 'output', text: '          2607:f8b0:4004:800::200e' }
+                ],
+                info: 'Queries DNS servers to resolve domain names to IP addresses. Shows both the DNS server used and the resolved addresses (IPv4 and IPv6).'
+            },
+            netstat: {
+                lines: [
+                    { type: 'command', text: 'netstat' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Active Connections</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '  Proto  Local Address          Foreign Address        State' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49234    52.96.166.45:443      ESTABLISHED' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49301    140.82.112.26:443     ESTABLISHED' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49456    172.217.14.99:443     TIME_WAIT' }
+                ],
+                info: 'Shows active network connections. ESTABLISHED means an active connection; TIME_WAIT means recently closed. Useful for seeing what your machine is communicating with.'
+            },
+            netstat_an: {
+                lines: [
+                    { type: 'command', text: 'netstat <span class="terminal-flag">-an</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '  Proto  Local Address          Foreign Address        State' },
+                    { type: 'output', text: '  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING' },
+                    { type: 'output', text: '  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING' },
+                    { type: 'output', text: '  TCP    192.168.1.105:139      0.0.0.0:0              LISTENING' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49234    52.96.166.45:443       ESTABLISHED' },
+                    { type: 'output', text: '  UDP    0.0.0.0:5353           *:*' }
+                ],
+                info: 'Shows all connections and listening ports with numeric addresses (no DNS resolution). -a shows all connections, -n uses numeric format. Faster than plain netstat.'
+            },
+            netstat_ano: {
+                lines: [
+                    { type: 'command', text: 'netstat <span class="terminal-flag">-ano</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '  Proto  Local Address          Foreign Address        State           <span class="terminal-header-text">PID</span>' },
+                    { type: 'output', text: '  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       <span class="terminal-arg">1128</span>' },
+                    { type: 'output', text: '  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       <span class="terminal-arg">4</span>' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49234    52.96.166.45:443       ESTABLISHED     <span class="terminal-arg">9876</span>' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49301    140.82.112.26:443      ESTABLISHED     <span class="terminal-arg">12340</span>' }
+                ],
+                info: 'Adds the -o flag to show Process IDs (PIDs) for each connection. Use this with tasklist to identify which program owns each connection — essential for finding suspicious activity.'
+            },
+            tasklist: {
+                lines: [
+                    { type: 'command', text: 'tasklist' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Session Name        Mem Usage</span>' },
+                    { type: 'output', text: '========================= ======== ================ ============' },
+                    { type: 'output', text: 'System Idle Process              0 Services                   8 K' },
+                    { type: 'output', text: 'System                           4 Services               2,456 K' },
+                    { type: 'output', text: 'svchost.exe                   1128 Services              18,432 K' },
+                    { type: 'output', text: 'explorer.exe                  4512 Console               85,240 K' },
+                    { type: 'output', text: 'chrome.exe                    9876 Console              312,456 K' }
+                ],
+                info: 'Lists all running processes with their Process ID (PID), session type, and memory usage. Similar to Task Manager but in command-line form.'
+            },
+            tasklist_svc: {
+                lines: [
+                    { type: 'command', text: 'tasklist <span class="terminal-flag">/svc</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Services</span>' },
+                    { type: 'output', text: '========================= ======== ============================================' },
+                    { type: 'output', text: 'svchost.exe                    780 DcomLaunch, PlugPlay, Power' },
+                    { type: 'output', text: 'svchost.exe                   1128 RpcEptMapper, RpcSs' },
+                    { type: 'output', text: 'svchost.exe                   1456 Dhcp, EventLog, lmhosts' },
+                    { type: 'output', text: 'spoolsv.exe                   2340 Spooler' }
+                ],
+                info: 'Shows processes with their associated Windows services. Multiple services often share a single svchost.exe process. Useful for understanding what services are running.'
+            },
+            tasklist_filter: {
+                lines: [
+                    { type: 'command', text: 'tasklist <span class="terminal-flag">/svc /fi</span> <span class="terminal-arg">"PID eq 1128"</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Services</span>' },
+                    { type: 'output', text: '========================= ======== ============================================' },
+                    { type: 'output', text: 'svchost.exe                   1128 RpcEptMapper, RpcSs' }
+                ],
+                info: 'Filters tasklist output to find a specific PID. Combine with netstat -ano to identify which service owns a suspicious network connection.'
+            },
+            taskkill: {
+                lines: [
+                    { type: 'command', text: 'taskkill <span class="terminal-flag">/PID</span> <span class="terminal-arg">9876</span>' },
+                    { type: 'output', text: '<span class="terminal-success">SUCCESS: Sent termination signal to the process with PID 9876.</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'taskkill <span class="terminal-flag">/PID</span> <span class="terminal-arg">9876</span> <span class="terminal-flag">/F</span>' },
+                    { type: 'output', text: '<span class="terminal-success">SUCCESS: The process with PID 9876 has been terminated.</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># /F forces termination (like kill -9 on Linux)</span>' }
+                ],
+                info: 'Terminates a process by its PID. Without /F, sends a graceful termination signal. With /F, forcefully kills the process immediately.'
+            },
+            dir: {
+                lines: [
+                    { type: 'command', text: 'dir' },
+                    { type: 'blank' },
+                    { type: 'output', text: ' Volume in drive C is Windows' },
+                    { type: 'output', text: ' Directory of C:\\Users\\user' },
+                    { type: 'blank' },
+                    { type: 'output', text: '01/15/2024  10:30 AM    <span class="terminal-arg">&lt;DIR&gt;</span>          Desktop' },
+                    { type: 'output', text: '01/15/2024  09:15 AM    <span class="terminal-arg">&lt;DIR&gt;</span>          Documents' },
+                    { type: 'output', text: '01/14/2024  03:45 PM    <span class="terminal-arg">&lt;DIR&gt;</span>          Downloads' },
+                    { type: 'output', text: '01/10/2024  08:00 AM             1,024 notes.txt' },
+                    { type: 'output', text: '               1 File(s)          1,024 bytes' }
+                ],
+                info: 'Lists directory contents including files, subdirectories, sizes, and timestamps. The Windows equivalent of ls on Linux.'
+            },
+            cd: {
+                lines: [
+                    { type: 'command', text: 'cd' },
+                    { type: 'output', text: 'C:\\Users\\user' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd Documents' },
+                    { type: 'prompt', path: 'C:\\Users\\user\\Documents' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd ..' },
+                    { type: 'prompt', path: 'C:\\Users\\user' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd \\' },
+                    { type: 'prompt', path: 'C:\\' }
+                ],
+                info: 'Shows current directory when used alone. With a path argument, changes to that directory. Use .. for parent directory and \\ for root.'
+            },
+            tree: {
+                lines: [
+                    { type: 'command', text: 'tree' },
+                    { type: 'output', text: 'C:\\Users\\user' },
+                    { type: 'output', text: '├───Desktop' },
+                    { type: 'output', text: '├───Documents' },
+                    { type: 'output', text: '│   ├───Projects' },
+                    { type: 'output', text: '│   └───Reports' },
+                    { type: 'output', text: '├───Downloads' },
+                    { type: 'output', text: '└───Pictures' },
+                    { type: 'output', text: '    └───Screenshots' }
+                ],
+                info: 'Displays a graphical tree structure of directories and subdirectories. Great for understanding folder hierarchy at a glance.'
+            },
+            mkdir: {
+                lines: [
+                    { type: 'command', text: 'mkdir <span class="terminal-arg">NewFolder</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'dir' },
+                    { type: 'output', text: '01/15/2024  02:30 PM    <span class="terminal-arg">&lt;DIR&gt;</span>          NewFolder' }
+                ],
+                info: 'Creates a new directory. You can also create nested directories in one command: mkdir Parent\\Child\\Grandchild'
+            },
+            rmdir: {
+                lines: [
+                    { type: 'command', text: 'rmdir <span class="terminal-arg">EmptyFolder</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'rmdir <span class="terminal-flag">/s</span> <span class="terminal-arg">FolderWithFiles</span>' },
+                    { type: 'output', text: 'FolderWithFiles, Are you sure (Y/N)? <span class="terminal-arg">Y</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># /s removes directory and all contents</span>' }
+                ],
+                info: 'Removes a directory. By default only works on empty directories. Use /s to remove a directory and all its contents (with confirmation).'
+            },
+            type: {
+                lines: [
+                    { type: 'command', text: 'type <span class="terminal-arg">config.txt</span>' },
+                    { type: 'output', text: 'server_name=localhost' },
+                    { type: 'output', text: 'port=8080' },
+                    { type: 'output', text: 'debug=true' },
+                    { type: 'output', text: 'max_connections=100' }
+                ],
+                info: 'Displays the contents of a text file. The Windows equivalent of cat on Linux. Outputs the entire file at once.'
+            },
+            more: {
+                lines: [
+                    { type: 'command', text: 'more <span class="terminal-arg">longfile.txt</span>' },
+                    { type: 'output', text: 'Line 1 of the file...' },
+                    { type: 'output', text: 'Line 2 of the file...' },
+                    { type: 'output', text: 'Line 3 of the file...' },
+                    { type: 'output', text: '...' },
+                    { type: 'output', text: '<span class="terminal-comment">-- More --</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Press Space for next page, Enter for next line, Q to quit</span>' }
+                ],
+                info: 'Displays file contents one screen at a time with pagination. Useful for reading long files without the content scrolling past too quickly.'
+            },
+            net_user: {
+                lines: [
+                    { type: 'command', text: 'net user' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'User accounts for \\\\DESKTOP-A1B2C3D' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-arg">Administrator</span>            DefaultAccount           <span class="terminal-arg">Guest</span>' },
+                    { type: 'output', text: '<span class="terminal-arg">user</span>                     WDAGUtilityAccount' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Lists all local user accounts on the system. Shows built-in accounts (Administrator, Guest) plus any created users. First step in user enumeration.'
+            },
+            net_user_detail: {
+                lines: [
+                    { type: 'command', text: 'net user <span class="terminal-arg">Administrator</span>' },
+                    { type: 'output', text: 'User name                    <span class="terminal-arg">Administrator</span>' },
+                    { type: 'output', text: 'Full Name' },
+                    { type: 'output', text: 'Account active               <span class="terminal-error">No</span>' },
+                    { type: 'output', text: 'Account expires              Never' },
+                    { type: 'output', text: 'Password last set            1/10/2024 8:00:00 AM' },
+                    { type: 'output', text: 'Password expires             Never' },
+                    { type: 'output', text: 'Local Group Memberships      <span class="terminal-success">*Administrators</span>' },
+                    { type: 'output', text: 'Global Group memberships     *None' }
+                ],
+                info: 'Shows detailed information about a specific user account including group memberships, password settings, and whether the account is active.'
+            },
+            net_localgroup: {
+                lines: [
+                    { type: 'command', text: 'net localgroup' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Aliases for \\\\DESKTOP-A1B2C3D' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-success">*Administrators</span>' },
+                    { type: 'output', text: '*Device Owners' },
+                    { type: 'output', text: '*Guests' },
+                    { type: 'output', text: '*Remote Desktop Users' },
+                    { type: 'output', text: '*Users' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Lists all local security groups on the system. Groups control what users can do — Administrators have full control, Users have limited access.'
+            },
+            net_localgroup_detail: {
+                lines: [
+                    { type: 'command', text: 'net localgroup <span class="terminal-arg">Administrators</span>' },
+                    { type: 'output', text: 'Alias name     Administrators' },
+                    { type: 'output', text: 'Comment        Administrators have complete and unrestricted access' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Members' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-success">Administrator</span>' },
+                    { type: 'output', text: '<span class="terminal-success">user</span>' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Shows all members of a specific security group. Check the Administrators group to see who has full system access — critical for security auditing.'
+            },
+            net_share: {
+                lines: [
+                    { type: 'command', text: 'net share' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Share name   Resource                        Remark</span>' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: 'C$           C:\\                             Default share' },
+                    { type: 'output', text: 'IPC$                                         Remote IPC' },
+                    { type: 'output', text: 'ADMIN$       C:\\Windows                      Remote Admin' },
+                    { type: 'output', text: 'SharedDocs   C:\\Users\\Public\\Documents' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Displays all shared resources on the system. Shares ending with $ are hidden administrative shares. These can be security risks if not properly secured.'
+            },
+            net_session: {
+                lines: [
+                    { type: 'command', text: 'net session' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Computer               User name            Client Type       Opens Idle time</span>' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '\\\\192.168.1.50         admin                Windows           3     00:02:15' },
+                    { type: 'output', text: 'The command completed successfully.' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># Shows who is connected to your machine remotely</span>' }
+                ],
+                info: 'Shows active network sessions — other computers currently connected to this machine. Useful for identifying who is accessing shared resources or detecting unauthorized access.'
+            }
+        };
+
+        function showCommand(cmd) {
+            const data = commands[cmd];
+            if (!data) return;
+
+            // Update active state
+            document.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Build terminal output
+            const terminalBody = document.getElementById('terminalBody');
+            let html = '';
+
+            data.lines.forEach(line => {
+                if (line.type === 'command') {
+                    html += `<div class="terminal-line"><span class="terminal-prompt">PS C:\\Users\\user&gt;</span> <span class="terminal-command">${line.text}</span></div>`;
+                } else if (line.type === 'output') {
+                    html += `<div class="terminal-line"><span class="terminal-output">${line.text}</span></div>`;
+                } else if (line.type === 'prompt') {
+                    const path = line.path || 'C:\\Users\\user';
+                    html += `<div class="terminal-line"><span class="terminal-prompt">PS ${path}&gt;</span></div>`;
+                } else if (line.type === 'blank') {
+                    html += `<div class="terminal-line">&nbsp;</div>`;
+                }
+            });
+
+            terminalBody.innerHTML = html;
+
+            // Update info
+            document.getElementById('terminalInfo').innerHTML = `
+                <div class="terminal-info-title">About this command</div>
+                <div class="terminal-info-text">${data.info}</div>
+            `;
+        }
+
         function toggleDropdown(btn) {
             const dropdown = btn.parentElement;
             const wasOpen = dropdown.classList.contains('open');
@@ -413,4 +1017,3 @@
     </script>
 </body>
 </html>
-

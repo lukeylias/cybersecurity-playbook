@@ -7,13 +7,7 @@
     <title>OSI Model - Cybersecurity Fundamentals</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #0a1628;
@@ -32,15 +26,20 @@
             --surface-active: rgba(74, 111, 165, 0.25);
             --font-mono: 'DM Mono', monospace;
             --font-sans: 'DM Sans', system-ui, sans-serif;
+            --red-team: #d4785a;
+            --red-team-glow: rgba(212, 120, 90, 0.3);
+            
+            /* Layer colors - gradient from deep blue (L1) to teal (L7) */
+            --layer-7: #5fa8a0;
+            --layer-6: #539a96;
+            --layer-5: #478c8c;
+            --layer-4: #3d7e82;
+            --layer-3: #3a7078;
+            --layer-2: #3a626e;
+            --layer-1: #3d5a80;
         }
 
-        body {
-            font-family: var(--font-sans);
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
 
         /* Navigation */
         .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
@@ -73,366 +72,828 @@
             .nav-dropdown.open .nav-dropdown-menu { display: block; }
         }
 
-
-        
-
         /* Page Layout */
-        .page {
-            padding-top: 60px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+        .page-header { text-align: center; margin-bottom: 32px; }
+        .page-title { color: var(--text-primary); font-size: 1.5rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Mode Toggle */
+        .mode-toggle-container { display: flex; justify-content: center; margin-bottom: 40px; }
+        .mode-toggle { display: flex; background: var(--surface-subtle); border-radius: 8px; padding: 4px; gap: 4px; border: 1px solid var(--border-subtle); }
+        .mode-btn { font-family: var(--font-mono); font-size: 0.75rem; padding: 10px 20px; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+        .mode-btn:hover { color: var(--text-secondary); }
+        .mode-btn.active { background: var(--accent-primary); color: var(--text-primary); box-shadow: 0 2px 8px var(--accent-glow); }
+        .mode-btn:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; }
+
+        /* Visualization Container */
+        .viz-container { position: relative; min-height: 500px; }
+        .viz-mode { display: none; animation: fadeIn 0.3s ease; }
+        .viz-mode.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==================== MODE 1: THE LAYERS ==================== */
+        .layers-view { display: flex; gap: 40px; align-items: flex-start; }
+        
+        /* Layer Stack - Unified pipe cross-section */
+        .layer-stack { 
+            flex: 0 0 360px; 
+            position: relative;
+            background: linear-gradient(180deg, rgba(95, 168, 160, 0.1) 0%, rgba(61, 90, 128, 0.1) 100%);
+            border-radius: 16px;
+            padding: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .layer-stack::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--layer-7), var(--layer-1));
+            border-radius: 2px;
         }
 
-        .page-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .page-title {
-            color: var(--text-primary);
-            font-size: 1.3rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .page-subtitle {
-            color: var(--accent-primary);
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* Main Content Layout */
-        .main-content {
-            display: flex;
-            gap: 60px;
-            align-items: flex-start;
-        }
-
-        .visualization {
-            display: flex;
-            gap: 60px;
-            align-items: center;
-        }
-
-        /* Layer Stack */
-        .stack {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .stack-label {
-            font-family: var(--font-mono);
-            text-align: center;
-            color: var(--accent-primary);
-            font-size: 0.7rem;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .layer {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 14px 20px;
-            min-width: 200px;
+        .layer-card {
+            position: relative;
+            padding: 16px 20px;
             background: var(--surface-subtle);
-            border: 1px solid transparent;
-            transition: all 0.3s;
             cursor: pointer;
+            transition: all 0.25s ease;
+            border-left: 3px solid transparent;
         }
-
-        .layer:hover {
-            background: var(--surface-medium);
-        }
-
-        .layer:first-of-type {
-            border-radius: 8px 8px 0 0;
-        }
-
-        .layer:last-of-type {
-            border-radius: 0 0 8px 8px;
-        }
-
-        .layer.active {
+        
+        .layer-card:first-child { border-radius: 12px 12px 0 0; }
+        .layer-card:last-child { border-radius: 0 0 12px 12px; }
+        
+        .layer-card:not(:last-child) { border-bottom: 1px solid var(--border-subtle); }
+        
+        .layer-card:hover { background: var(--surface-medium); }
+        
+        .layer-card.active {
             background: var(--surface-active);
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 40px var(--accent-glow);
-            z-index: 10;
+            border-left-color: var(--accent-primary);
         }
-
-        .layer.visited {
-            background: rgba(74, 111, 165, 0.12);
-        }
-
+        
+        .layer-card[data-layer="7"] { --layer-color: var(--layer-7); }
+        .layer-card[data-layer="6"] { --layer-color: var(--layer-6); }
+        .layer-card[data-layer="5"] { --layer-color: var(--layer-5); }
+        .layer-card[data-layer="4"] { --layer-color: var(--layer-4); }
+        .layer-card[data-layer="3"] { --layer-color: var(--layer-3); }
+        .layer-card[data-layer="2"] { --layer-color: var(--layer-2); }
+        .layer-card[data-layer="1"] { --layer-color: var(--layer-1); }
+        
+        .layer-card.active { border-left-color: var(--layer-color); }
+        
+        .layer-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+        
         .layer-num {
             font-family: var(--font-mono);
             font-size: 0.85rem;
             font-weight: 500;
-            color: var(--accent-primary);
-            width: 20px;
-        }
-
-        .layer-name {
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-
-        /* Connection Path */
-        .path {
-            position: relative;
-            height: 390px;
-            width: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .path-line {
-            position: absolute;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(74, 111, 165, 0.6),
-                rgba(74, 111, 165, 0.2),
-                rgba(74, 111, 165, 0.6)
-            );
-        }
-
-        .packet {
-            width: 52px;
-            height: 52px;
-            border-radius: 4px;
+            color: var(--layer-color);
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid var(--layer-color);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .layer-name { font-weight: 500; font-size: 0.95rem; color: var(--text-primary); }
+        
+        .layer-purpose {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .layer-protocols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .protocol-tag {
             font-family: var(--font-mono);
-            font-weight: 500;
-            font-size: 0.55rem;
-            letter-spacing: 0.5px;
-            position: absolute;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--accent-primary);
-            background: var(--bg-primary);
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            background: rgba(74, 111, 165, 0.2);
+            border-radius: 3px;
             color: var(--text-secondary);
         }
-
-        .packet.active {
-            background: var(--surface-active);
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        /* Info Panel */
-        .info-panel {
-            width: 320px;
-            min-height: 400px;
-        }
-
-        .info-header {
+        
+        .red-team-indicator {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .info-icon {
+            gap: 6px;
             font-family: var(--font-mono);
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: var(--accent-primary);
-            width: 40px;
-            height: 40px;
+            font-size: 0.65rem;
+            color: var(--red-team);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .layer-card:hover .red-team-indicator { opacity: 1; }
+        
+        .red-team-icon {
+            width: 14px;
+            height: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--accent-primary);
-            border-radius: 4px;
         }
-
-        .info-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .info-phase {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--accent-primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .info-action {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent-light);
-            margin-bottom: 16px;
-            padding: 10px 14px;
+        
+        /* Layer Detail Panel */
+        .layer-detail {
+            flex: 1;
+            min-height: 480px;
             background: var(--surface-subtle);
-            border-radius: 4px;
-            border-left: 2px solid var(--accent-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            padding: 28px;
+            transition: all 0.3s ease;
         }
-
-        .info-description {
-            font-size: 0.9rem;
-            line-height: 1.7;
-            color: var(--text-muted);
-            margin-bottom: 20px;
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
         }
-
-        .info-concepts {
-            margin-top: 20px;
-        }
-
-        .info-concepts-title {
+        
+        .detail-num {
             font-family: var(--font-mono);
-            font-size: 0.65rem;
+            font-size: 2rem;
+            font-weight: 500;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--layer-color);
+            border-radius: 8px;
+            color: var(--layer-color);
+        }
+        
+        .detail-title-group { flex: 1; }
+        .detail-title { font-size: 1.4rem; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+        .detail-subtitle { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .detail-purpose {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border-left: 3px solid var(--layer-color);
+        }
+        
+        .detail-section { margin-bottom: 24px; }
+        .detail-section-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             color: var(--accent-primary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 12px;
         }
-
-        .concept-tag {
-            display: inline-block;
+        
+        .detail-protocols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .detail-protocol-tag {
             font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-secondary);
+            font-size: 0.75rem;
             padding: 6px 12px;
             background: var(--surface-medium);
             border-radius: 4px;
-            margin: 0 6px 8px 0;
+            color: var(--text-primary);
         }
-
-        .info-extra {
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-subtle);
+        
+        .red-team-box {
+            background: rgba(212, 120, 90, 0.1);
+            border: 1px solid rgba(212, 120, 90, 0.3);
+            border-radius: 8px;
+            padding: 16px;
         }
-
-        .info-extra-label {
+        
+        .red-team-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .red-team-box-title {
             font-family: var(--font-mono);
-            font-size: 0.65rem;
+            font-size: 0.7rem;
+            color: var(--red-team);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .red-team-box p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .key-concept {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        
+        .key-concept-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .key-concept p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .detail-intro {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .detail-intro p { margin-bottom: 16px; font-size: 0.95rem; line-height: 1.7; }
+        .detail-intro .hint { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-primary); }
+
+        /* Layer Indicators */
+        .layer-indicators {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .layer-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-medium);
+            transition: all 0.2s;
+        }
+        
+        .layer-indicator.active {
+            background: var(--accent-primary);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* ==================== MODE 2: PACKET JOURNEY ==================== */
+        .journey-view { text-align: center; }
+        
+        .journey-stage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            margin-bottom: 40px;
+            min-height: 320px;
+        }
+        
+        /* Encapsulation Visualization */
+        .encapsulation-viz {
+            position: relative;
+            width: 340px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .packet-layer {
+            position: absolute;
+            border: 2px solid;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .packet-layer.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .packet-layer.highlight {
+            box-shadow: 0 0 20px var(--layer-glow);
+        }
+        
+        .packet-layer-label {
+            position: absolute;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        
+        /* Packet layer specific styles */
+        .packet-data {
+            width: 80px;
+            height: 50px;
+            background: var(--surface-active);
+            border-color: var(--accent-light);
+            z-index: 7;
+        }
+        .packet-data .packet-layer-label { top: 50%; left: 50%; transform: translate(-50%, -50%); background: transparent; color: var(--text-primary); font-size: 0.8rem; font-weight: 500; }
+        
+        .packet-l6 {
+            width: 110px;
+            height: 70px;
+            border-color: var(--layer-6);
+            background: rgba(83, 154, 150, 0.1);
+            z-index: 6;
+            --layer-glow: rgba(83, 154, 150, 0.4);
+        }
+        .packet-l6 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-6); color: var(--bg-primary); }
+        
+        .packet-l5 {
+            width: 140px;
+            height: 90px;
+            border-color: var(--layer-5);
+            background: rgba(71, 140, 140, 0.1);
+            z-index: 5;
+            --layer-glow: rgba(71, 140, 140, 0.4);
+        }
+        .packet-l5 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-5); color: var(--bg-primary); }
+        
+        .packet-l4 {
+            width: 180px;
+            height: 120px;
+            border-color: var(--layer-4);
+            background: rgba(61, 126, 130, 0.1);
+            z-index: 4;
+            --layer-glow: rgba(61, 126, 130, 0.4);
+        }
+        .packet-l4 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-4); color: var(--text-primary); }
+        
+        .packet-l3 {
+            width: 220px;
+            height: 150px;
+            border-color: var(--layer-3);
+            background: rgba(58, 112, 120, 0.1);
+            z-index: 3;
+            --layer-glow: rgba(58, 112, 120, 0.4);
+        }
+        .packet-l3 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-3); color: var(--text-primary); }
+        
+        .packet-l2 {
+            width: 260px;
+            height: 180px;
+            border-color: var(--layer-2);
+            background: rgba(58, 98, 110, 0.1);
+            z-index: 2;
+            --layer-glow: rgba(58, 98, 110, 0.4);
+        }
+        .packet-l2 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-2); color: var(--text-primary); }
+        
+        .packet-l1 {
+            width: 300px;
+            height: 210px;
+            border-color: var(--layer-1);
+            background: rgba(61, 90, 128, 0.1);
+            z-index: 1;
+            --layer-glow: rgba(61, 90, 128, 0.4);
+        }
+        .packet-l1 .packet-layer-label { top: -10px; left: 50%; transform: translateX(-50%); background: var(--layer-1); color: var(--text-primary); }
+        
+        /* Journey Info */
+        .journey-info {
+            width: 320px;
+            text-align: left;
+            background: var(--surface-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .journey-step-num {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             color: var(--accent-primary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
         }
-
-        .info-extra-value {
-            font-family: var(--font-mono);
-            font-size: 1rem;
+        
+        .journey-step-title {
+            font-size: 1.1rem;
+            font-weight: 500;
             color: var(--text-primary);
+            margin-bottom: 12px;
         }
-
-        .info-intro {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .info-intro p {
+        
+        .journey-step-desc {
             font-size: 0.9rem;
-            line-height: 1.7;
             color: var(--text-muted);
+            line-height: 1.6;
             margin-bottom: 16px;
         }
-
-        .info-intro .hint {
+        
+        .journey-timing {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: var(--accent-primary);
+            color: var(--layer-7);
+            padding: 10px 14px;
+            background: rgba(95, 168, 160, 0.1);
+            border-radius: 6px;
         }
-
-        /* Navigation Controls */
-        .nav-controls {
+        
+        /* Journey Controls */
+        .journey-controls {
             display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            align-items: center;
             justify-content: center;
+            gap: 12px;
+            align-items: center;
         }
-
-        button {
+        
+        .journey-btn {
             font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 10px 20px;
             background: transparent;
             color: var(--text-secondary);
             border: 1px solid var(--accent-primary);
-            padding: 10px 24px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
             transition: all 0.2s;
         }
-
-        button:hover {
-            background: var(--surface-medium);
-            border-color: var(--accent-light);
-        }
-
-        button:disabled {
-            color: var(--text-dim);
-            border-color: #2a3a4a;
-            cursor: not-allowed;
-        }
-
-        button:disabled:hover {
-            background: transparent;
-        }
-
-        button.primary {
-            background: var(--surface-medium);
-        }
-
-        .progress-dots {
+        
+        .journey-btn:hover { background: var(--surface-medium); border-color: var(--accent-light); }
+        .journey-btn:disabled { color: var(--text-dim); border-color: #2a3a4a; cursor: not-allowed; }
+        .journey-btn.primary { background: var(--surface-medium); }
+        
+        .journey-progress {
             display: flex;
-            gap: 4px;
+            gap: 6px;
+            padding: 0 16px;
         }
-
-        .progress-dot {
-            width: 6px;
-            height: 6px;
+        
+        .journey-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--border-medium);
+            transition: all 0.2s;
+        }
+        
+        .journey-dot.active { background: var(--accent-primary); }
+        .journey-dot.visited { background: rgba(74, 111, 165, 0.6); }
+
+        /* Network Path Animation */
+        .network-path {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+        }
+        
+        .network-path.visible { display: flex; }
+        
+        .network-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
             transition: all 0.3s;
         }
-
-        .progress-dot.active {
+        
+        .network-node.active {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        
+        .network-node-label {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .network-line {
+            width: 40px;
+            height: 2px;
+            background: var(--border-subtle);
+            position: relative;
+        }
+        
+        .network-line.active { background: var(--accent-primary); }
+        
+        .traveling-packet {
+            position: absolute;
+            width: 16px;
+            height: 16px;
             background: var(--accent-primary);
+            border-radius: 4px;
+            top: -7px;
+            left: 0;
+            opacity: 0;
+            transition: left 0.5s ease-in-out;
+        }
+        
+        .traveling-packet.visible {
+            opacity: 1;
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        .progress-dot.visited {
-            background: rgba(74, 111, 165, 0.6);
+        /* ==================== ADDITIONAL SECTIONS ==================== */
+        .content-sections { margin-top: 60px; }
+        
+        /* Misconception Callout */
+        .misconception-box {
+            background: linear-gradient(135deg, rgba(74, 111, 165, 0.15) 0%, rgba(95, 168, 160, 0.1) 100%);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .misconception-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--layer-7), var(--accent-primary));
+        }
+        
+        .misconception-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .misconception-icon {
+            font-size: 1.5rem;
+        }
+        
+        .misconception-title {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .misconception-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        .misconception-box p strong {
+            color: var(--text-primary);
+        }
+        
+        /* Quick Reference Table */
+        .reference-section { margin-bottom: 48px; }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+        
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .reference-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-medium);
+            background: var(--surface-subtle);
+        }
+        
+        .reference-table th:first-child { border-radius: 8px 0 0 0; }
+        .reference-table th:last-child { border-radius: 0 8px 0 0; }
+        
+        .reference-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+        
+        .reference-table tr:last-child td { border-bottom: none; }
+        .reference-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        .reference-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+        
+        .reference-table tr:hover td { background: var(--surface-subtle); }
+        
+        .reference-table .layer-cell {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .reference-table .protocol-cell {
+            font-family: var(--font-mono);
+            color: var(--accent-light);
+        }
+        
+        /* Encapsulation Tables */
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: -12px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .reference-table .explain-cell {
+            font-style: italic;
+            color: var(--text-muted);
+        }
+        
+        .reference-table .added-cell {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--layer-7);
+        }
+        
+        .flow-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 32px 0;
+            color: var(--text-dim);
+        }
+        
+        .flow-line {
+            flex: 1;
+            max-width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+        }
+        
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .flow-arrow-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+        }
+        
+        .flow-arrow-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Memory Aids */
+        .memory-aids {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .memory-card {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .memory-card-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        
+        .mnemonic {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .mnemonic-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+        }
+        
+        .mnemonic-letter {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--accent-light);
+            width: 24px;
+        }
+        
+        .mnemonic-word {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .mnemonic-layer {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: auto;
         }
 
+        /* Responsive */
         @media (max-width: 900px) {
-            .main-content {
-                flex-direction: column;
-                align-items: center;
-            }
+            .layers-view { flex-direction: column; align-items: stretch; }
+            .layer-stack { flex: none; width: 100%; }
+            .layer-detail { min-height: auto; }
+            .layer-stack::before { display: none; }
             
-            .info-panel {
-                width: 100%;
-                max-width: 500px;
-            }
+            .journey-stage { flex-direction: column; gap: 30px; }
+            .journey-info { width: 100%; max-width: 400px; }
+            .encapsulation-viz { transform: scale(0.85); }
+        }
+        
+        @media (max-width: 600px) {
+            .reference-table { font-size: 0.8rem; }
+            .reference-table th, .reference-table td { padding: 10px 12px; }
+            .memory-aids { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -443,14 +904,22 @@
                 <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
                 <span class="nav-logo-text">Cybersecurity Fundamentals</span>
             </a>
-            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">&#9776;</button>
             <div class="nav-links">
                 <div class="nav-dropdown">
                     <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
                         <a href="osi-model.html" class="nav-dropdown-item current">
                             <div class="nav-dropdown-item-title">OSI Model</div>
                             <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
                         </a>
                         <a href="dns.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">DNS Lookup</div>
@@ -518,49 +987,469 @@
             <header class="page-header">
                 <h1 class="page-title">OSI Model</h1>
                 <p class="page-subtitle">Open Systems Interconnection</p>
-                
-                <div class="nav-controls">
-                    <button id="prevBtn" onclick="prevStep()" disabled>← PREV</button>
-                    <div class="progress-dots" id="progressDots"></div>
-                    <button id="nextBtn" onclick="nextStep()" class="primary">NEXT →</button>
-                </div>
             </header>
 
-            <div class="main-content">
-                <div class="visualization">
-                    <div class="stack" id="sender">
-                        <div class="stack-label">Sender</div>
-                        <div class="layer" data-layer="7" data-side="sender" onclick="goToStep(0)"><span class="layer-num">7</span><span class="layer-name">Application</span></div>
-                        <div class="layer" data-layer="6" data-side="sender" onclick="goToStep(1)"><span class="layer-num">6</span><span class="layer-name">Presentation</span></div>
-                        <div class="layer" data-layer="5" data-side="sender" onclick="goToStep(2)"><span class="layer-num">5</span><span class="layer-name">Session</span></div>
-                        <div class="layer" data-layer="4" data-side="sender" onclick="goToStep(3)"><span class="layer-num">4</span><span class="layer-name">Transport</span></div>
-                        <div class="layer" data-layer="3" data-side="sender" onclick="goToStep(4)"><span class="layer-num">3</span><span class="layer-name">Network</span></div>
-                        <div class="layer" data-layer="2" data-side="sender" onclick="goToStep(5)"><span class="layer-num">2</span><span class="layer-name">Data Link</span></div>
-                        <div class="layer" data-layer="1" data-side="sender" onclick="goToStep(6)"><span class="layer-num">1</span><span class="layer-name">Physical</span></div>
-                    </div>
+            <!-- Mode Toggle -->
+            <div class="mode-toggle-container">
+                <div class="mode-toggle" role="tablist" aria-label="Visualization mode">
+                    <button class="mode-btn active" role="tab" aria-selected="true" aria-controls="layers-mode" id="layers-tab" onclick="setMode('layers')">The Layers</button>
+                    <button class="mode-btn" role="tab" aria-selected="false" aria-controls="journey-mode" id="journey-tab" onclick="setMode('journey')">Packet Journey</button>
+                </div>
+            </div>
 
-                    <div class="path">
-                        <div class="path-line"></div>
-                        <div class="packet" id="packet">DATA</div>
-                    </div>
-
-                    <div class="stack" id="receiver">
-                        <div class="stack-label">Receiver</div>
-                        <div class="layer" data-layer="7" data-side="receiver" onclick="goToStep(14)"><span class="layer-num">7</span><span class="layer-name">Application</span></div>
-                        <div class="layer" data-layer="6" data-side="receiver" onclick="goToStep(13)"><span class="layer-num">6</span><span class="layer-name">Presentation</span></div>
-                        <div class="layer" data-layer="5" data-side="receiver" onclick="goToStep(12)"><span class="layer-num">5</span><span class="layer-name">Session</span></div>
-                        <div class="layer" data-layer="4" data-side="receiver" onclick="goToStep(11)"><span class="layer-num">4</span><span class="layer-name">Transport</span></div>
-                        <div class="layer" data-layer="3" data-side="receiver" onclick="goToStep(10)"><span class="layer-num">3</span><span class="layer-name">Network</span></div>
-                        <div class="layer" data-layer="2" data-side="receiver" onclick="goToStep(9)"><span class="layer-num">2</span><span class="layer-name">Data Link</span></div>
-                        <div class="layer" data-layer="1" data-side="receiver" onclick="goToStep(8)"><span class="layer-num">1</span><span class="layer-name">Physical</span></div>
+            <!-- Visualization Container -->
+            <div class="viz-container">
+                <!-- MODE 1: THE LAYERS -->
+                <div class="viz-mode active" id="layers-mode" role="tabpanel" aria-labelledby="layers-tab">
+                    <div class="layers-view">
+                        <div class="layer-stack" role="listbox" aria-label="OSI Layers" aria-activedescendant="">
+                            <div class="layer-card" data-layer="7" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">7</span>
+                                    <span class="layer-name">Application</span>
+                                </div>
+                                <p class="layer-purpose">Where users and software interact with the network</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">HTTP</span>
+                                    <span class="protocol-tag">DNS</span>
+                                    <span class="protocol-tag">FTP</span>
+                                    <span class="protocol-tag">SSH</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>Web app attacks, SQLi, XSS</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="6" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">6</span>
+                                    <span class="layer-name">Presentation</span>
+                                </div>
+                                <p class="layer-purpose">Translates data formats, handles encryption/decryption</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">SSL/TLS</span>
+                                    <span class="protocol-tag">JPEG</span>
+                                    <span class="protocol-tag">ASCII</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>SSL stripping, encryption exploits</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="5" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">5</span>
+                                    <span class="layer-name">Session</span>
+                                </div>
+                                <p class="layer-purpose">Manages connections &mdash; establishing, maintaining, terminating</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">NetBIOS</span>
+                                    <span class="protocol-tag">RPC</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>Session hijacking, token theft</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="4" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">4</span>
+                                    <span class="layer-name">Transport</span>
+                                </div>
+                                <p class="layer-purpose">Ensures reliable (TCP) or fast (UDP) delivery, manages ports</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">TCP</span>
+                                    <span class="protocol-tag">UDP</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>Port scanning, TCP manipulation</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="3" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">3</span>
+                                    <span class="layer-name">Network</span>
+                                </div>
+                                <p class="layer-purpose">Routing packets across networks using IP addresses</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">IP</span>
+                                    <span class="protocol-tag">ICMP</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>IP spoofing, route manipulation</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="2" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">2</span>
+                                    <span class="layer-name">Data Link</span>
+                                </div>
+                                <p class="layer-purpose">Local delivery within a network using MAC addresses</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">Ethernet</span>
+                                    <span class="protocol-tag">ARP</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>ARP spoofing, MAC flooding</span>
+                                </div>
+                            </div>
+                            <div class="layer-card" data-layer="1" role="option" tabindex="0" aria-selected="false">
+                                <div class="layer-header">
+                                    <span class="layer-num">1</span>
+                                    <span class="layer-name">Physical</span>
+                                </div>
+                                <p class="layer-purpose">Raw bits on the wire &mdash; electrical signals, cables, hardware</p>
+                                <div class="layer-protocols">
+                                    <span class="protocol-tag">Cables</span>
+                                    <span class="protocol-tag">Fiber</span>
+                                    <span class="protocol-tag">Wi-Fi</span>
+                                </div>
+                                <div class="red-team-indicator">
+                                    <span class="red-team-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></span>
+                                    <span>Physical access, evil twin APs</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-detail" id="layerDetail">
+                            <div class="detail-intro">
+                                <p>The OSI model describes <strong>seven areas of responsibility</strong> that work together simultaneously when data travels across a network.</p>
+                                <p>Each layer handles a specific job &mdash; like departments in a company all working on the same order at once.</p>
+                                <p class="hint">Click a layer to explore its role &rarr;</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-panel" id="infoPanel">
-                    <div class="info-intro">
-                        <p>The OSI model breaks network communication into 7 layers. Each layer has a specific job and talks only to the layers directly above and below it.</p>
-                        <p>When you send data, it travels down through all 7 layers on your device, across the network, then back up through all 7 layers on the receiving device.</p>
-                        <p class="hint">Click a layer or press Next to begin →</p>
+                <!-- MODE 2: PACKET JOURNEY -->
+                <div class="viz-mode" id="journey-mode" role="tabpanel" aria-labelledby="journey-tab">
+                    <div class="journey-view">
+                        <div class="journey-stage">
+                            <div class="encapsulation-viz" id="encapsulationViz">
+                                <div class="packet-layer packet-l1"><span class="packet-layer-label">Physical</span></div>
+                                <div class="packet-layer packet-l2"><span class="packet-layer-label">Ethernet</span></div>
+                                <div class="packet-layer packet-l3"><span class="packet-layer-label">IP Header</span></div>
+                                <div class="packet-layer packet-l4"><span class="packet-layer-label">TCP Header</span></div>
+                                <div class="packet-layer packet-l5"><span class="packet-layer-label">Session</span></div>
+                                <div class="packet-layer packet-l6"><span class="packet-layer-label">TLS</span></div>
+                                <div class="packet-layer packet-data visible"><span class="packet-layer-label">DATA</span></div>
+                            </div>
+                            
+                            <div class="journey-info" id="journeyInfo">
+                                <div class="journey-step-num">Introduction</div>
+                                <h3 class="journey-step-title">Data Encapsulation</h3>
+                                <p class="journey-step-desc">Watch how your data gets wrapped with headers from each layer &mdash; all happening almost instantly. Each layer adds its own metadata to ensure the data reaches its destination correctly.</p>
+                                <div class="journey-timing">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                                    <span>Press play to begin the journey</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="network-path" id="networkPath">
+                            <div class="network-node" id="srcNode">
+                                <span>&#128187;</span>
+                                <span class="network-node-label">Source</span>
+                            </div>
+                            <div class="network-line" id="line1">
+                                <div class="traveling-packet" id="travelPacket"></div>
+                            </div>
+                            <div class="network-node" id="router1">
+                                <span>&#128232;</span>
+                                <span class="network-node-label">Router</span>
+                            </div>
+                            <div class="network-line" id="line2"></div>
+                            <div class="network-node" id="router2">
+                                <span>&#128232;</span>
+                                <span class="network-node-label">Router</span>
+                            </div>
+                            <div class="network-line" id="line3"></div>
+                            <div class="network-node" id="destNode">
+                                <span>&#128421;</span>
+                                <span class="network-node-label">Destination</span>
+                            </div>
+                        </div>
+                        
+                        <div class="journey-controls">
+                            <button class="journey-btn" id="journeyPrevBtn" onclick="journeyPrev()" disabled>&larr; PREV</button>
+                            <div class="journey-progress" id="journeyProgress"></div>
+                            <button class="journey-btn primary" id="journeyNextBtn" onclick="journeyNext()">PLAY &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Content Sections -->
+            <div class="content-sections">
+                <!-- Misconception Callout -->
+                <div class="misconception-box">
+                    <div class="misconception-header">
+                        <span class="misconception-icon">&#128161;</span>
+                        <span class="misconception-title">Common Misconception</span>
+                    </div>
+                    <p>The OSI model is a <strong>conceptual framework</strong>, not a literal sequence. When you send data, all layers process it <strong>almost simultaneously</strong> &mdash; each adding their headers and doing their job in parallel. Think of it as departments in a company processing an order together, not a relay race where each runner waits for the previous one to finish.</p>
+                </div>
+
+                <!-- Quick Reference Table -->
+                <div class="reference-section">
+                    <h2 class="section-title">Quick Reference</h2>
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Name</th>
+                                <th>Key Protocol</th>
+                                <th>What to Remember</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="layer-cell">7</td>
+                                <td>Application</td>
+                                <td class="protocol-cell">HTTP, DNS</td>
+                                <td>Where you interact with services</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">6</td>
+                                <td>Presentation</td>
+                                <td class="protocol-cell">TLS/SSL</td>
+                                <td>Encryption and formatting</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">5</td>
+                                <td>Session</td>
+                                <td class="protocol-cell">NetBIOS</td>
+                                <td>Connection management</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">4</td>
+                                <td>Transport</td>
+                                <td class="protocol-cell">TCP, UDP</td>
+                                <td>Ports and delivery method</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">3</td>
+                                <td>Network</td>
+                                <td class="protocol-cell">IP</td>
+                                <td>Routing between networks</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">2</td>
+                                <td>Data Link</td>
+                                <td class="protocol-cell">Ethernet, ARP</td>
+                                <td>Local delivery, MAC addresses</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">1</td>
+                                <td>Physical</td>
+                                <td class="protocol-cell">&mdash;</td>
+                                <td>Cables and signals</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Encapsulation Table -->
+                <div class="reference-section">
+                    <h2 class="section-title">What Happens When You Send Data</h2>
+                    <p class="section-subtitle">Each layer wraps your data with headers &mdash; like putting a letter in an envelope, then a box, then a shipping container.</p>
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>What Gets Added</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="layer-cell">7 - Application</td>
+                                <td class="added-cell">HTTP request</td>
+                                <td class="explain-cell">"I want this webpage"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">6 - Presentation</td>
+                                <td class="added-cell">TLS encryption</td>
+                                <td class="explain-cell">"Encrypt this so no one can read it"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">5 - Session</td>
+                                <td class="added-cell">Session info</td>
+                                <td class="explain-cell">"This is part of conversation #12345"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">4 - Transport</td>
+                                <td class="added-cell">TCP header + port</td>
+                                <td class="explain-cell">"Use port 443, ensure delivery"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">3 - Network</td>
+                                <td class="added-cell">IP header</td>
+                                <td class="explain-cell">"From 192.168.1.5 to 142.250.80.46"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">2 - Data Link</td>
+                                <td class="added-cell">Ethernet frame + MAC</td>
+                                <td class="explain-cell">"Next hop is router at MAC aa:bb:cc:dd:ee:ff"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">1 - Physical</td>
+                                <td class="added-cell">Bits</td>
+                                <td class="explain-cell">Electrical signals on the wire</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Flow Connector -->
+                <div class="flow-connector">
+                    <div class="flow-line"></div>
+                    <div class="flow-arrow">
+                        <div class="flow-arrow-icon">&darr;</div>
+                        <span class="flow-arrow-label">Network Transit</span>
+                    </div>
+                    <div class="flow-line"></div>
+                </div>
+
+                <!-- Decapsulation Table -->
+                <div class="reference-section">
+                    <h2 class="section-title">What Happens When Data Arrives</h2>
+                    <p class="section-subtitle">The destination unwraps each layer to get to your original request.</p>
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>What Gets Removed</th>
+                                <th>What's Revealed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="layer-cell">1 - Physical</td>
+                                <td class="added-cell">Electrical signals</td>
+                                <td class="explain-cell">Raw bits of data</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">2 - Data Link</td>
+                                <td class="added-cell">Ethernet frame</td>
+                                <td class="explain-cell">"This packet is for me" (MAC matched)</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">3 - Network</td>
+                                <td class="added-cell">IP header</td>
+                                <td class="explain-cell">"Destination confirmed" (IP matched)</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">4 - Transport</td>
+                                <td class="added-cell">TCP header</td>
+                                <td class="explain-cell">"Port 443 &mdash; send to web server, reassemble segments"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">5 - Session</td>
+                                <td class="added-cell">Session info</td>
+                                <td class="explain-cell">"This belongs to conversation #12345"</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">6 - Presentation</td>
+                                <td class="added-cell">TLS encryption</td>
+                                <td class="explain-cell">Decrypted data revealed</td>
+                            </tr>
+                            <tr>
+                                <td class="layer-cell">7 - Application</td>
+                                <td class="added-cell">HTTP request</td>
+                                <td class="explain-cell">"They want the homepage" &mdash; server processes request</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Memory Aids -->
+                <div class="reference-section">
+                    <h2 class="section-title">Memory Aids</h2>
+                    <div class="memory-aids">
+                        <div class="memory-card">
+                            <div class="memory-card-title">Top-Down (Layer 7 &rarr; 1)</div>
+                            <div class="mnemonic">
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">A</span>
+                                    <span class="mnemonic-word">All</span>
+                                    <span class="mnemonic-layer">Application</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">P</span>
+                                    <span class="mnemonic-word">People</span>
+                                    <span class="mnemonic-layer">Presentation</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">S</span>
+                                    <span class="mnemonic-word">Seem</span>
+                                    <span class="mnemonic-layer">Session</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">T</span>
+                                    <span class="mnemonic-word">To</span>
+                                    <span class="mnemonic-layer">Transport</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">N</span>
+                                    <span class="mnemonic-word">Need</span>
+                                    <span class="mnemonic-layer">Network</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">D</span>
+                                    <span class="mnemonic-word">Data</span>
+                                    <span class="mnemonic-layer">Data Link</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">P</span>
+                                    <span class="mnemonic-word">Processing</span>
+                                    <span class="mnemonic-layer">Physical</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="memory-card">
+                            <div class="memory-card-title">Bottom-Up (Layer 1 &rarr; 7)</div>
+                            <div class="mnemonic">
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">P</span>
+                                    <span class="mnemonic-word">Please</span>
+                                    <span class="mnemonic-layer">Physical</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">D</span>
+                                    <span class="mnemonic-word">Do</span>
+                                    <span class="mnemonic-layer">Data Link</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">N</span>
+                                    <span class="mnemonic-word">Not</span>
+                                    <span class="mnemonic-layer">Network</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">T</span>
+                                    <span class="mnemonic-word">Throw</span>
+                                    <span class="mnemonic-layer">Transport</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">S</span>
+                                    <span class="mnemonic-word">Sausage</span>
+                                    <span class="mnemonic-layer">Session</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">P</span>
+                                    <span class="mnemonic-word">Pizza</span>
+                                    <span class="mnemonic-layer">Presentation</span>
+                                </div>
+                                <div class="mnemonic-item">
+                                    <span class="mnemonic-letter">A</span>
+                                    <span class="mnemonic-word">Away</span>
+                                    <span class="mnemonic-layer">Application</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -568,258 +1457,396 @@
     </div>
 
     <script>
-        const packet = document.getElementById('packet');
-        const infoPanel = document.getElementById('infoPanel');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const progressDots = document.getElementById('progressDots');
-        
-        let currentStep = -1;
-        const totalSteps = 15;
+        // ==================== LAYER DATA ====================
+        const layerData = {
+            7: {
+                name: 'Application',
+                subtitle: 'Layer 7 - User Interface',
+                purpose: 'Where users and software interact with the network. This is the layer you see and touch — your web browser, email client, file transfer programs. When you type a URL or click send on an email, you\'re working at Layer 7.',
+                protocols: ['HTTP', 'HTTPS', 'FTP', 'SSH', 'DNS', 'SMTP', 'POP3', 'IMAP'],
+                redTeam: 'Web application attacks happen here — SQL injection, cross-site scripting (XSS), authentication bypasses, API exploitation. This is where you interact with targets most directly during a penetration test.',
+                keyConcept: 'DNS resolution happens here — turning human-readable URLs like "google.com" into IP addresses that computers can route to.'
+            },
+            6: {
+                name: 'Presentation',
+                subtitle: 'Layer 6 - Translation',
+                purpose: 'Translates data formats between the application and the network. Handles encryption, decryption, compression, and character encoding. Think of it as the translator that ensures both sides speak the same language.',
+                protocols: ['SSL/TLS', 'JPEG', 'PNG', 'GIF', 'ASCII', 'EBCDIC', 'MIME'],
+                redTeam: 'Encryption weaknesses are exploited here — SSL stripping attacks (forcing HTTPS to HTTP), exploiting weak cipher suites, certificate manipulation, and data format vulnerabilities.',
+                keyConcept: 'HTTPS encryption is handled here. When you see the padlock in your browser, Layer 6 is encrypting your data before it leaves your machine.'
+            },
+            5: {
+                name: 'Session',
+                subtitle: 'Layer 5 - Connection Manager',
+                purpose: 'Manages connections between applications — establishing, maintaining, and terminating sessions. It keeps track of dialogues between computers and handles synchronization and checkpointing for long transfers.',
+                protocols: ['NetBIOS', 'RPC', 'PPTP', 'SAP', 'SDP'],
+                redTeam: 'Session hijacking and token theft happen here. If you steal a session cookie or token, you become that user — the server can\'t tell the difference. Session fixation and replay attacks target this layer.',
+                keyConcept: 'This layer answers "Are we still connected?" It maintains the state of your conversation with a remote server.'
+            },
+            4: {
+                name: 'Transport',
+                subtitle: 'Layer 4 - Delivery',
+                purpose: 'Ensures data gets delivered correctly. TCP provides reliable, ordered delivery with error checking and retransmission. UDP provides fast, connectionless delivery for time-sensitive data. This layer also manages port numbers.',
+                protocols: ['TCP', 'UDP', 'SCTP', 'DCCP'],
+                redTeam: 'Port scanning (Nmap) operates here — discovering what services are running on a target. TCP handshake manipulation, SYN floods, and port exhaustion attacks all target Layer 4.',
+                keyConcept: 'Ports live here — TCP/443 for HTTPS, TCP/22 for SSH, UDP/53 for DNS queries. Port numbers identify which application should receive the data.'
+            },
+            3: {
+                name: 'Network',
+                subtitle: 'Layer 3 - Routing',
+                purpose: 'Handles logical addressing and routing. IP addresses live here. This layer figures out the best path to send packets across multiple networks to reach their destination. Routers operate at this layer.',
+                protocols: ['IPv4', 'IPv6', 'ICMP', 'OSPF', 'BGP', 'RIP'],
+                redTeam: 'IP spoofing, route manipulation, and man-in-the-middle attacks target this layer. Ping sweeps and traceroute for host discovery operate here. BGP hijacking can redirect internet traffic.',
+                keyConcept: 'IP addresses and routing decisions happen here. When a packet needs to cross networks (like from your home to a server across the world), Layer 3 figures out the path.'
+            },
+            2: {
+                name: 'Data Link',
+                subtitle: 'Layer 2 - Local Delivery',
+                purpose: 'Handles delivery within a local network segment using MAC (hardware) addresses. Packages data into frames, handles error detection, and manages access to the physical medium. Switches operate here.',
+                protocols: ['Ethernet', 'ARP', 'PPP', 'Wi-Fi (802.11)', 'VLAN'],
+                redTeam: 'ARP spoofing/poisoning lets attackers intercept traffic on a local network. MAC flooding can overwhelm switches. VLAN hopping can break network segmentation. These are powerful local network attacks.',
+                keyConcept: 'MAC addresses are Layer 2 — they\'re the hardware addresses burned into your network card. Switches use MAC addresses to forward frames within a LAN.'
+            },
+            1: {
+                name: 'Physical',
+                subtitle: 'Layer 1 - Hardware',
+                purpose: 'The physical transmission of raw bits over a medium. Electrical signals over copper, light pulses over fiber, radio waves over Wi-Fi. This is the only layer dealing with actual, tangible hardware.',
+                protocols: ['Ethernet cables (Cat5/6)', 'Fiber optic', 'Wi-Fi radio', 'Bluetooth', 'USB'],
+                redTeam: 'Physical access attacks — if you can touch it, you often own it. Hardware implants, evil twin Wi-Fi access points, USB drop attacks, cable tapping, and electromagnetic eavesdropping all happen at Layer 1.',
+                keyConcept: 'If you have physical access to a device, you often have complete access. Security starts with physical security. Evil twin attacks create fake Wi-Fi networks that look legitimate.'
+            }
+        };
 
-        // Create progress dots
-        for (let i = 0; i < totalSteps; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'progress-dot';
-            progressDots.appendChild(dot);
+        // ==================== MODE SWITCHING ====================
+        let currentMode = 'layers';
+        
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.getElementById(mode + '-tab').classList.add('active');
+            document.getElementById(mode + '-tab').setAttribute('aria-selected', 'true');
+            
+            // Update visualization panels
+            document.querySelectorAll('.viz-mode').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(mode + '-mode').classList.add('active');
+            
+            // Reset journey if switching to it
+            if (mode === 'journey') {
+                resetJourney();
+            }
         }
 
-        const steps = [
-            {
-                side: 'sender', layer: 7, data: 'DATA',
-                action: 'Creating the request',
-                description: 'This is where your application lives — your web browser, email client, or any software that needs to send data. When you click a link or send a message, the application layer creates the request and prepares the data to be sent.',
-                concepts: ['HTTP', 'FTP', 'SMTP', 'DNS', 'APIs'],
-                dataUnit: 'Data'
-            },
-            {
-                side: 'sender', layer: 6, data: 'DATA',
-                action: 'Formatting and encrypting',
-                description: 'The presentation layer is like a translator. It takes your data and converts it into a standard format that any system can understand. It also handles encryption (like HTTPS) to keep your data secure, and compression to make it smaller.',
-                concepts: ['SSL/TLS', 'Encryption', 'JPEG', 'ASCII', 'Compression'],
-                dataUnit: 'Data'
-            },
-            {
-                side: 'sender', layer: 5, data: 'DATA',
-                action: 'Opening a session',
-                description: 'The session layer manages the conversation between two devices. It opens the connection, keeps it alive during the transfer, and closes it when done. Think of it as the layer that says "let\'s start talking" and "okay, we\'re done."',
-                concepts: ['Sessions', 'Authentication', 'Checkpoints', 'RPC'],
-                dataUnit: 'Data'
-            },
-            {
-                side: 'sender', layer: 4, data: 'SEGMENT',
-                action: 'Breaking into segments',
-                description: 'The transport layer takes your data and breaks it into smaller chunks called segments. It adds port numbers so the right application receives the data. TCP ensures reliable delivery (retrying if something fails), while UDP is faster but doesn\'t guarantee delivery.',
-                concepts: ['TCP', 'UDP', 'Ports', 'Segmentation', 'Flow control'],
-                dataUnit: 'Segment'
-            },
-            {
-                side: 'sender', layer: 3, data: 'PACKET',
-                action: 'Adding IP addresses',
-                description: 'The network layer adds logical addresses (IP addresses) to your data, creating packets. It figures out the best route for your data to travel across multiple networks to reach its destination. This is where routers operate.',
-                concepts: ['IP addresses', 'Routing', 'IPv4/IPv6', 'ICMP', 'Routers'],
-                dataUnit: 'Packet'
-            },
-            {
-                side: 'sender', layer: 2, data: 'FRAME',
-                action: 'Adding MAC addresses',
-                description: 'The data link layer adds physical hardware addresses (MAC addresses) and packages everything into frames. It handles communication between devices on the same local network and includes error checking to detect corruption.',
-                concepts: ['MAC addresses', 'Ethernet', 'Wi-Fi', 'Switches', 'Error detection'],
-                dataUnit: 'Frame'
-            },
-            {
-                side: 'sender', layer: 1, data: 'BITS',
-                action: 'Converting to physical signals',
-                description: 'The physical layer converts your digital frames into actual physical signals — electrical pulses over copper wire, light over fiber optic cable, or radio waves for Wi-Fi. This is the only layer that deals with real, tangible hardware.',
-                concepts: ['Cables', 'Fiber optics', 'Radio waves', 'Hubs', 'Voltage'],
-                dataUnit: 'Bits'
-            },
-            {
-                side: 'transmission', layer: 0, data: 'BITS',
-                action: 'Traveling across the network',
-                description: 'Your data is now a stream of physical signals traveling through cables, across switches and routers, bouncing between cell towers or satellites. It might cross continents in milliseconds, hopping through dozens of devices to reach its destination.',
-                concepts: ['Cables', 'Routers', 'Internet backbone', 'Latency'],
-                dataUnit: 'Bits'
-            },
-            {
-                side: 'receiver', layer: 1, data: 'BITS',
-                action: 'Receiving physical signals',
-                description: 'The receiving device\'s network card detects the physical signals and converts them back into digital bits. It synchronizes with the incoming signal to accurately read each 1 and 0.',
-                concepts: ['Signal detection', 'Clock recovery', 'NIC', 'Decoding'],
-                dataUnit: 'Bits'
-            },
-            {
-                side: 'receiver', layer: 2, data: 'FRAME',
-                action: 'Reading MAC addresses',
-                description: 'The data link layer reassembles bits into frames and checks the MAC address. If it matches this device, the frame is accepted. Error checking ensures the data wasn\'t corrupted during transmission.',
-                concepts: ['MAC validation', 'CRC check', 'Frame assembly', 'Error correction'],
-                dataUnit: 'Frame'
-            },
-            {
-                side: 'receiver', layer: 3, data: 'PACKET',
-                action: 'Reading IP addresses',
-                description: 'The network layer strips the frame header to reveal the packet. It checks the IP address to confirm this data has reached its final destination (not just passing through).',
-                concepts: ['IP validation', 'Packet reassembly', 'TTL check', 'Routing complete'],
-                dataUnit: 'Packet'
-            },
-            {
-                side: 'receiver', layer: 4, data: 'SEGMENT',
-                action: 'Reassembling segments',
-                description: 'The transport layer collects all the segments and puts them back in the correct order. If using TCP, it sends acknowledgments back to the sender and requests retransmission of any missing pieces.',
-                concepts: ['Reassembly', 'ACK packets', 'Port matching', 'Sequencing'],
-                dataUnit: 'Segment'
-            },
-            {
-                side: 'receiver', layer: 5, data: 'DATA',
-                action: 'Managing the session',
-                description: 'The session layer maintains the connection state, handling any session-level synchronization. It knows which conversation this data belongs to and keeps track of where you are in the exchange.',
-                concepts: ['Session tracking', 'Sync points', 'Dialog control'],
-                dataUnit: 'Data'
-            },
-            {
-                side: 'receiver', layer: 6, data: 'DATA',
-                action: 'Decrypting and parsing',
-                description: 'The presentation layer reverses what the sender\'s presentation layer did. It decrypts the data, decompresses it if needed, and converts it from the standard format back into something the application can use.',
-                concepts: ['Decryption', 'Decompression', 'Format conversion', 'Character encoding'],
-                dataUnit: 'Data'
-            },
-            {
-                side: 'receiver', layer: 7, data: 'DATA',
-                action: 'Delivering to the application',
-                description: 'Finally, the original data reaches the receiving application. Your web browser displays the webpage, your email client shows the message, or your video call shows the other person\'s face. The journey is complete.',
-                concepts: ['Application delivery', 'User interface', 'Response handling'],
-                dataUnit: 'Data'
-            }
-        ];
-
-        function updateUI() {
-            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
-                dot.classList.remove('active', 'visited');
-                if (i === currentStep) dot.classList.add('active');
-                else if (i < currentStep) dot.classList.add('visited');
+        // ==================== MODE 1: LAYERS VIEW ====================
+        let activeLayer = null;
+        
+        function selectLayer(layerNum) {
+            activeLayer = layerNum;
+            
+            // Update card states
+            document.querySelectorAll('.layer-card').forEach(card => {
+                const isActive = card.dataset.layer == layerNum;
+                card.classList.toggle('active', isActive);
+                card.setAttribute('aria-selected', isActive);
             });
-
-            prevBtn.disabled = currentStep <= 0;
-            nextBtn.textContent = currentStep >= totalSteps - 1 ? 'RESTART' : 'NEXT →';
-
-            document.querySelectorAll('.layer').forEach(layer => {
-                layer.classList.remove('active', 'visited');
-            });
-
-            if (currentStep >= 0) {
-                const step = steps[currentStep];
-                
-                if (step.side !== 'transmission') {
-                    const stack = document.getElementById(step.side);
-                    const layer = stack.querySelector(`[data-layer="${step.layer}"]`);
-                    if (layer) layer.classList.add('active');
-                }
-
-                packet.textContent = step.data;
-                packet.classList.add('active');
-                
-                if (step.side === 'sender') {
-                    packet.style.left = '14px';
-                    packet.style.top = `${(7 - step.layer) * 52 + 8}px`;
-                } else if (step.side === 'transmission') {
-                    packet.style.left = '14px';
-                    packet.style.top = '170px';
-                } else {
-                    packet.style.left = '14px';
-                    packet.style.top = `${(7 - step.layer) * 52 + 8}px`;
-                }
-
-                infoPanel.innerHTML = `
-                    <div class="info-header">
-                        <div class="info-icon">${step.layer || '⚡'}</div>
-                        <div>
-                            <div class="info-title">${step.side === 'transmission' ? 'Transmission' : getLayerName(step.layer)}</div>
-                            <div class="info-phase">${step.side === 'transmission' ? 'Network' : step.side}</div>
+            
+            // Update detail panel
+            const data = layerData[layerNum];
+            const detailPanel = document.getElementById('layerDetail');
+            
+            detailPanel.innerHTML = `
+                <div class="detail-header" style="--layer-color: var(--layer-${layerNum})">
+                    <div class="detail-num" style="border-color: var(--layer-${layerNum}); color: var(--layer-${layerNum})">${layerNum}</div>
+                    <div class="detail-title-group">
+                        <h2 class="detail-title">${data.name}</h2>
+                        <span class="detail-subtitle">${data.subtitle}</span>
+                    </div>
+                </div>
+                <div class="detail-purpose" style="border-left-color: var(--layer-${layerNum})">${data.purpose}</div>
+                <div class="detail-section">
+                    <h3 class="detail-section-title">Protocols & Technologies</h3>
+                    <div class="detail-protocols">
+                        ${data.protocols.map(p => `<span class="detail-protocol-tag">${p}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="red-team-box">
+                        <div class="red-team-box-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red-team)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+                            <span class="red-team-box-title">Red Team Relevance</span>
                         </div>
+                        <p>${data.redTeam}</p>
                     </div>
-                    <div class="info-action">${step.action}</div>
-                    <p class="info-description">${step.description}</p>
-                    <div class="info-concepts">
-                        <div class="info-concepts-title">Key Concepts</div>
-                        ${step.concepts.map(c => `<span class="concept-tag">${c}</span>`).join('')}
+                </div>
+                <div class="detail-section">
+                    <h3 class="detail-section-title">Key Concept</h3>
+                    <div class="key-concept">
+                        <span class="key-concept-icon">&#128273;</span>
+                        <p>${data.keyConcept}</p>
                     </div>
-                    <div class="info-extra">
-                        <div class="info-extra-label">Data Unit</div>
-                        <div class="info-extra-value">${step.dataUnit}</div>
-                    </div>
-                `;
-
-                for (let i = 0; i < currentStep; i++) {
-                    const prevStep = steps[i];
-                    if (prevStep.side !== 'transmission') {
-                        const stack = document.getElementById(prevStep.side);
-                        const layer = stack.querySelector(`[data-layer="${prevStep.layer}"]`);
-                        if (layer && !layer.classList.contains('active')) {
-                            layer.classList.add('visited');
-                        }
+                </div>
+            `;
+        }
+        
+        // Initialize layer cards
+        document.querySelectorAll('.layer-card').forEach(card => {
+            card.addEventListener('click', () => selectLayer(parseInt(card.dataset.layer)));
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectLayer(parseInt(card.dataset.layer));
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const next = card.nextElementSibling;
+                    if (next && next.classList.contains('layer-card')) {
+                        next.focus();
+                        selectLayer(parseInt(next.dataset.layer));
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prev = card.previousElementSibling;
+                    if (prev && prev.classList.contains('layer-card')) {
+                        prev.focus();
+                        selectLayer(parseInt(prev.dataset.layer));
                     }
                 }
-            } else {
-                packet.classList.remove('active');
-                packet.style.top = '8px';
-                packet.style.left = '14px';
-                packet.textContent = 'DATA';
-                
-                infoPanel.innerHTML = `
-                    <div class="info-intro">
-                        <p>The OSI model breaks network communication into 7 layers. Each layer has a specific job and talks only to the layers directly above and below it.</p>
-                        <p>When you send data, it travels down through all 7 layers on your device, across the network, then back up through all 7 layers on the receiving device.</p>
-                        <p class="hint">Click a layer or press Next to begin →</p>
-                    </div>
-                `;
-            }
-        }
-
-        function getLayerName(num) {
-            const names = { 7: 'Application', 6: 'Presentation', 5: 'Session', 4: 'Transport', 3: 'Network', 2: 'Data Link', 1: 'Physical' };
-            return names[num] || '';
-        }
-
-        function goToStep(step) {
-            currentStep = Math.max(-1, Math.min(totalSteps - 1, step));
-            updateUI();
-        }
-
-        function nextStep() {
-            if (currentStep >= totalSteps - 1) {
-                currentStep = -1;
-            } else {
-                currentStep++;
-            }
-            updateUI();
-        }
-
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                updateUI();
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') nextStep();
-            else if (e.key === 'ArrowLeft') prevStep();
+            });
         });
 
-        updateUI();
-    </script>
-    <script>
+        // ==================== MODE 2: PACKET JOURNEY ====================
+        let journeyStep = -1;
+        const totalJourneySteps = 10;
+        
+        const journeySteps = [
+            {
+                title: 'Your Data',
+                desc: 'You want to visit a website. Your browser creates an HTTP request — this is your raw application data that needs to travel across the internet.',
+                layers: ['data'],
+                timing: 'Starting point',
+                showNetwork: false
+            },
+            {
+                title: 'Encryption (TLS)',
+                desc: 'Layer 6 encrypts your data using TLS. This wraps your HTTP request in a secure envelope that only the destination server can open.',
+                layers: ['data', 'l6'],
+                timing: '< 1ms',
+                showNetwork: false
+            },
+            {
+                title: 'Session Tracking',
+                desc: 'Layer 5 adds session information — keeping track of this conversation so requests and responses stay organized.',
+                layers: ['data', 'l6', 'l5'],
+                timing: '< 1ms',
+                showNetwork: false
+            },
+            {
+                title: 'TCP Segment',
+                desc: 'Layer 4 adds a TCP header with source/destination ports (e.g., your random port → server\'s port 443). This ensures reliable delivery.',
+                layers: ['data', 'l6', 'l5', 'l4'],
+                timing: '< 1ms',
+                showNetwork: false
+            },
+            {
+                title: 'IP Packet',
+                desc: 'Layer 3 adds an IP header with source and destination IP addresses. Now the packet knows where it came from and where it\'s going.',
+                layers: ['data', 'l6', 'l5', 'l4', 'l3'],
+                timing: '< 1ms',
+                showNetwork: false
+            },
+            {
+                title: 'Ethernet Frame',
+                desc: 'Layer 2 wraps everything in an Ethernet frame with MAC addresses for local network delivery to your router.',
+                layers: ['data', 'l6', 'l5', 'l4', 'l3', 'l2'],
+                timing: '< 1ms',
+                showNetwork: false
+            },
+            {
+                title: 'Physical Bits',
+                desc: 'Layer 1 converts the frame to electrical signals (or light, or radio waves) and sends it out over the wire.',
+                layers: ['data', 'l6', 'l5', 'l4', 'l3', 'l2', 'l1'],
+                timing: '< 1ms — Total encapsulation: ~5ms',
+                showNetwork: false
+            },
+            {
+                title: 'Network Transit',
+                desc: 'Your packet travels across the internet, hopping through routers. Each router reads Layer 3 (IP) to decide where to send it next.',
+                layers: ['data', 'l6', 'l5', 'l4', 'l3', 'l2', 'l1'],
+                timing: '20-100ms depending on distance',
+                showNetwork: true,
+                networkStep: 'travel'
+            },
+            {
+                title: 'Arrival & Decapsulation',
+                desc: 'The packet arrives at the destination. Now each layer strips off its header in reverse order, reading and acting on the information.',
+                layers: ['data', 'l6', 'l5', 'l4', 'l3'],
+                timing: 'Decapsulation: < 5ms',
+                showNetwork: true,
+                networkStep: 'arrive'
+            },
+            {
+                title: 'Data Delivered',
+                desc: 'Finally, your original HTTP request reaches the web server application — decrypted, verified, and ready to process. The response will make the same journey back.',
+                layers: ['data'],
+                timing: 'Total round-trip: 50-200ms',
+                showNetwork: false
+            }
+        ];
+        
+        // Create journey progress dots
+        const journeyProgress = document.getElementById('journeyProgress');
+        for (let i = 0; i < totalJourneySteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'journey-dot';
+            journeyProgress.appendChild(dot);
+        }
+        
+        function updateJourneyUI() {
+            const prevBtn = document.getElementById('journeyPrevBtn');
+            const nextBtn = document.getElementById('journeyNextBtn');
+            
+            // Update progress dots
+            document.querySelectorAll('.journey-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'visited');
+                if (i === journeyStep) dot.classList.add('active');
+                else if (i < journeyStep) dot.classList.add('visited');
+            });
+            
+            // Update buttons
+            prevBtn.disabled = journeyStep <= 0;
+            nextBtn.textContent = journeyStep >= totalJourneySteps - 1 ? 'RESTART' : journeyStep < 0 ? 'PLAY →' : 'NEXT →';
+            
+            // Update visualization
+            if (journeyStep >= 0 && journeyStep < journeySteps.length) {
+                const step = journeySteps[journeyStep];
+                
+                // Update packet layers
+                document.querySelectorAll('.packet-layer').forEach(layer => {
+                    const layerClass = layer.classList[1].replace('packet-', '');
+                    const isVisible = step.layers.includes(layerClass);
+                    layer.classList.toggle('visible', isVisible);
+                    
+                    // Highlight the newly added layer
+                    const isNew = step.layers.indexOf(layerClass) === step.layers.length - 1;
+                    layer.classList.toggle('highlight', isNew && journeyStep > 0 && journeyStep < 7);
+                });
+                
+                // Update info panel
+                document.getElementById('journeyInfo').innerHTML = `
+                    <div class="journey-step-num">Step ${journeyStep + 1} of ${totalJourneySteps}</div>
+                    <h3 class="journey-step-title">${step.title}</h3>
+                    <p class="journey-step-desc">${step.desc}</p>
+                    <div class="journey-timing">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                        <span>${step.timing}</span>
+                    </div>
+                `;
+                
+                // Handle network visualization
+                const networkPath = document.getElementById('networkPath');
+                networkPath.classList.toggle('visible', step.showNetwork);
+                
+                if (step.showNetwork) {
+                    updateNetworkAnimation(step.networkStep);
+                }
+            } else {
+                // Reset to intro state
+                document.querySelectorAll('.packet-layer').forEach(layer => {
+                    layer.classList.remove('visible', 'highlight');
+                });
+                document.querySelector('.packet-data').classList.add('visible');
+                
+                document.getElementById('journeyInfo').innerHTML = `
+                    <div class="journey-step-num">Introduction</div>
+                    <h3 class="journey-step-title">Data Encapsulation</h3>
+                    <p class="journey-step-desc">Watch how your data gets wrapped with headers from each layer — all happening almost instantly. Each layer adds its own metadata to ensure the data reaches its destination correctly.</p>
+                    <div class="journey-timing">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                        <span>Press play to begin the journey</span>
+                    </div>
+                `;
+                
+                document.getElementById('networkPath').classList.remove('visible');
+            }
+        }
+        
+        function updateNetworkAnimation(step) {
+            const nodes = ['srcNode', 'router1', 'router2', 'destNode'];
+            const lines = ['line1', 'line2', 'line3'];
+            const packet = document.getElementById('travelPacket');
+            
+            // Reset all
+            nodes.forEach(id => document.getElementById(id).classList.remove('active'));
+            lines.forEach(id => document.getElementById(id).classList.remove('active'));
+            packet.classList.remove('visible');
+            
+            if (step === 'travel') {
+                document.getElementById('srcNode').classList.add('active');
+                document.getElementById('router1').classList.add('active');
+                document.getElementById('line1').classList.add('active');
+                packet.classList.add('visible');
+                packet.style.left = '24px';
+            } else if (step === 'arrive') {
+                nodes.forEach(id => document.getElementById(id).classList.add('active'));
+                lines.forEach(id => document.getElementById(id).classList.add('active'));
+                document.getElementById('destNode').classList.add('active');
+            }
+        }
+        
+        function journeyNext() {
+            if (journeyStep >= totalJourneySteps - 1) {
+                journeyStep = -1;
+            } else {
+                journeyStep++;
+            }
+            updateJourneyUI();
+        }
+        
+        function journeyPrev() {
+            if (journeyStep > 0) {
+                journeyStep--;
+                updateJourneyUI();
+            }
+        }
+        
+        function resetJourney() {
+            journeyStep = -1;
+            updateJourneyUI();
+        }
+
+        // ==================== KEYBOARD NAVIGATION ====================
+        document.addEventListener('keydown', (e) => {
+            if (currentMode === 'journey') {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    journeyNext();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    journeyPrev();
+                }
+            }
+        });
+
+        // ==================== NAV DROPDOWN ====================
         function toggleDropdown(btn) {
             const dropdown = btn.parentElement;
             const wasOpen = dropdown.classList.contains('open');
             document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
             if (!wasOpen) dropdown.classList.add('open');
         }
+        
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.nav-dropdown')) {
                 document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
             }
         });
+
+        // Initialize
+        updateJourneyUI();
     </script>
 </body>
 </html>
+
