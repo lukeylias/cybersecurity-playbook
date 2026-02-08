@@ -150,6 +150,372 @@
         @media (max-width: 500px) {
             .building-visualization { height: 380px; }
         }
+
+        /* Protocol Sections */
+        .protocol-sections { max-width: 900px; width: 100%; margin-top: 60px; }
+
+        .protocol-section {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .protocol-header {
+            margin-bottom: 24px;
+        }
+
+        .protocol-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .protocol-oneliner {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-light);
+            padding: 10px 14px;
+            background: var(--surface-subtle);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .problem-box {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .problem-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+
+        .problem-box p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 24px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        /* Process Tables */
+        .process-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        .process-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-medium);
+            background: var(--surface-subtle);
+        }
+
+        .process-table th:first-child { border-radius: 8px 0 0 0; }
+        .process-table th:last-child { border-radius: 0 8px 0 0; }
+
+        .process-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .process-table tr:last-child td { border-bottom: none; }
+
+        .process-table tr:hover td { background: var(--surface-subtle); }
+
+        .process-table .step-num {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--accent-light);
+            width: 50px;
+        }
+
+        .process-table .step-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Key Points */
+        .key-points {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .key-points li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding: 8px 0 8px 24px;
+            position: relative;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .key-points li:last-child { border-bottom: none; }
+
+        .key-points li::before {
+            content: '›';
+            position: absolute;
+            left: 6px;
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        /* Command Box */
+        .command-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .command-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .command-code {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-light);
+        }
+
+        .command-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Security Callout */
+        --red-team: #d4785a;
+        
+        .security-callout {
+            background: rgba(212, 120, 90, 0.1);
+            border: 1px solid rgba(212, 120, 90, 0.3);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .security-callout.info {
+            background: var(--surface-subtle);
+            border-color: var(--border-medium);
+        }
+
+        .security-callout-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .security-callout-icon {
+            font-size: 1rem;
+        }
+
+        .security-callout-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #d4785a;
+        }
+
+        .security-callout.info .security-callout-title {
+            color: var(--accent-primary);
+        }
+
+        .security-callout p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .security-callout strong {
+            color: var(--text-primary);
+        }
+
+        /* Visual Diagram */
+        .visual-diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .visual-diagram-content {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .visual-box {
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: var(--surface-medium);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .visual-box.highlight {
+            border-color: var(--accent-primary);
+            color: var(--accent-light);
+        }
+
+        .visual-arrow {
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+        }
+
+        /* Cross Reference Link */
+        .cross-ref {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            text-decoration: none;
+            padding: 10px 16px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .cross-ref:hover {
+            background: var(--surface-medium);
+            border-color: var(--accent-primary);
+        }
+
+        /* Glossary Section */
+        .glossary-section {
+            max-width: 900px;
+            width: 100%;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .glossary-toggle {
+            width: 100%;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .glossary-toggle summary {
+            padding: 16px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .glossary-toggle summary::-webkit-details-marker { display: none; }
+
+        .glossary-toggle summary::after {
+            content: '+';
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+            transition: transform 0.2s;
+        }
+
+        .glossary-toggle[open] summary::after {
+            content: '−';
+        }
+
+        .glossary-toggle[open] {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .glossary-content {
+            padding: 0 20px 20px;
+        }
+
+        .glossary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .glossary-table th {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-medium);
+        }
+
+        .glossary-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        .glossary-table tr:last-child td { border-bottom: none; }
+
+        .glossary-table .term-cell {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--text-secondary);
+            width: 140px;
+        }
+
+        @media (max-width: 700px) {
+            .process-table { font-size: 0.8rem; }
+            .process-table th, .process-table td { padding: 10px 12px; }
+            .visual-diagram-content { font-size: 0.75rem; gap: 8px; }
+            .visual-box { padding: 6px 10px; }
+            .glossary-table .term-cell { width: auto; }
+        }
     </style>
 </head>
 <body>
@@ -168,6 +534,10 @@
                             <div class="nav-dropdown-item-title">Network Fundamentals</div>
                             <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
                         </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
                         <a href="osi-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">OSI Model</div>
                             <div class="nav-dropdown-item-desc">7-layer communication framework</div>
@@ -175,6 +545,10 @@
                         <a href="tcp-ip-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">TCP/IP Model</div>
                             <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
                         </a>
                         <a href="dns.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">DNS Lookup</div>
@@ -211,7 +585,7 @@
                     <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
                         <a href="linux.html" class="nav-dropdown-item">
-                            <div class="nav-dropdown-item-title">Linux Fundamentals</div>
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
                             <div class="nav-dropdown-item-desc">Command line essentials</div>
                         </a>
                         <a href="linux-admin.html" class="nav-dropdown-item">
@@ -225,11 +599,28 @@
                     <div class="nav-dropdown-menu">
                         <a href="windows-essentials.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Windows Essentials</div>
-                            <div class="nav-dropdown-item-desc">File system, utilities & command line</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
                         </a>
                         <a href="windows-security.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Windows Security</div>
                             <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
                         </a>
                     </div>
                 </div>
@@ -428,45 +819,288 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="reference-table">
-                        <h3>Common Ports</h3>
-                        <table>
+                    <a href="ports.html" class="reference-table" style="display: block; text-decoration: none; transition: all 0.2s;">
+                        <h3 style="display: flex; align-items: center; justify-content: space-between;">
+                            Common Ports
+                            <span style="font-size: 0.7rem; color: var(--accent-light); font-weight: 400;">View full reference &rarr;</span>
+                        </h3>
+                        <div style="padding: 20px 18px; text-align: center;">
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Port numbers, protocols, and services reference.</p>
+                            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-primary); padding: 8px 16px; border: 1px solid var(--accent-primary); border-radius: 4px; display: inline-block;">Ports Reference &rarr;</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Protocol Sections -->
+            <div class="protocol-sections">
+
+                <!-- DHCP Section -->
+                <section class="protocol-section" id="dhcp">
+                    <div class="protocol-header">
+                        <h2 class="protocol-title">DHCP &mdash; Dynamic Host Configuration Protocol</h2>
+                        <p class="protocol-oneliner">Automatically assigns IP addresses to devices when they join a network.</p>
+                    </div>
+
+                    <div class="problem-box">
+                        <div class="problem-label">The Problem</div>
+                        <p>When your device joins a network, it doesn't have an IP address yet. DHCP automates the assignment.</p>
+                    </div>
+
+                    <h3 class="section-subtitle">The DORA Process</h3>
+                    <table class="process-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Name</th>
+                                <th>What Happens</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="step-num">1</td>
+                                <td class="step-name">Discover</td>
+                                <td>Device broadcasts: "Any DHCP servers out there?"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">2</td>
+                                <td class="step-name">Offer</td>
+                                <td>Server responds: "I can give you 192.168.1.50"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">3</td>
+                                <td class="step-name">Request</td>
+                                <td>Device: "Yes, I'll take that one"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">4</td>
+                                <td class="step-name">Acknowledge</td>
+                                <td>Server: "Done. It's yours for 24 hours"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="section-subtitle">Key Points</h3>
+                    <ul class="key-points">
+                        <li>Uses UDP ports 67 (server) and 68 (client)</li>
+                        <li>Leases expire &mdash; devices must renew periodically</li>
+                        <li>Also provides: subnet mask, default gateway, DNS servers</li>
+                    </ul>
+                </section>
+
+                <!-- ARP Section -->
+                <section class="protocol-section" id="arp">
+                    <div class="protocol-header">
+                        <h2 class="protocol-title">ARP &mdash; Address Resolution Protocol</h2>
+                        <p class="protocol-oneliner">Translates IP addresses to MAC addresses for local delivery.</p>
+                    </div>
+
+                    <div class="problem-box">
+                        <div class="problem-label">The Problem</div>
+                        <p>You know a device's IP, but your network card needs the MAC address to actually send data on the local network.</p>
+                    </div>
+
+                    <h3 class="section-subtitle">How ARP Works</h3>
+                    <table class="process-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>What Happens</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="step-num">1</td>
+                                <td>Your device broadcasts: "Who has 192.168.1.50? Tell me your MAC"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">2</td>
+                                <td>Device with that IP responds: "That's me &mdash; my MAC is aa:bb:cc:dd:ee:ff"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">3</td>
+                                <td>Your device caches this in its ARP table</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="section-subtitle">Key Points</h3>
+                    <ul class="key-points">
+                        <li>Layer 2 protocol (works with MACs)</li>
+                        <li>Bridges Layer 3 (IP) to Layer 2 (MAC)</li>
+                        <li>Only for local network &mdash; to reach remote IPs, ARP finds your router's MAC</li>
+                        <li>ARP cache expires after minutes to stay fresh</li>
+                    </ul>
+
+                    <div class="command-box">
+                        <div class="command-label">View ARP Cache</div>
+                        <code class="command-code">arp -a</code>
+                        <p class="command-note">Works on Linux, Mac, and Windows</p>
+                    </div>
+
+                    <div class="security-callout">
+                        <div class="security-callout-header">
+                            <span class="security-callout-icon">&#9888;</span>
+                            <span class="security-callout-title">Red Team Note</span>
+                        </div>
+                        <p><strong>ARP has no authentication.</strong> Attackers can respond to ARP requests with fake information &mdash; this is ARP spoofing, used for man-in-the-middle attacks on local networks.</p>
+                    </div>
+
+                    <a href="arp.html" class="cross-ref">
+                        See full ARP Protocol breakdown &rarr;
+                    </a>
+                </section>
+
+                <!-- NAT Section -->
+                <section class="protocol-section" id="nat">
+                    <div class="protocol-header">
+                        <h2 class="protocol-title">NAT &mdash; Network Address Translation</h2>
+                        <p class="protocol-oneliner">Allows multiple devices to share one public IP address.</p>
+                    </div>
+
+                    <div class="problem-box">
+                        <div class="problem-label">The Problem</div>
+                        <p>There aren't enough public IPs for every device. Your home might have 10 devices but only one public IP from your ISP.</p>
+                    </div>
+
+                    <h3 class="section-subtitle">How NAT Works</h3>
+                    <table class="process-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>What Happens</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="step-num">1</td>
+                                <td>Device (192.168.1.50) sends request to internet</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">2</td>
+                                <td>Router rewrites source IP to public IP (203.45.67.89)</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">3</td>
+                                <td>Router tracks: "Port 52847 belongs to 192.168.1.50"</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">4</td>
+                                <td>Response comes back to public IP</td>
+                            </tr>
+                            <tr>
+                                <td class="step-num">5</td>
+                                <td>Router looks up its table, forwards to correct internal device</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="visual-diagram">
+                        <div class="visual-diagram-content">
+                            <span class="visual-box">Phone<br><small>192.168.1.50:52847</small></span>
+                            <span class="visual-arrow">&rarr;</span>
+                            <span class="visual-box highlight">Router (NAT)</span>
+                            <span class="visual-arrow">&rarr;</span>
+                            <span class="visual-box">203.45.67.89:52847</span>
+                            <span class="visual-arrow">&rarr;</span>
+                            <span class="visual-box">Internet</span>
+                        </div>
+                    </div>
+
+                    <h3 class="section-subtitle">Key Points</h3>
+                    <ul class="key-points">
+                        <li>All devices on your network appear as one IP externally</li>
+                        <li>Hides internal network structure from the outside</li>
+                        <li>Router tracks connections using <a href="ports.html" style="color: var(--accent-light);">source ports</a></li>
+                        <li>~65,000 simultaneous connections possible (limited by port numbers)</li>
+                    </ul>
+
+                    <div class="security-callout info">
+                        <div class="security-callout-header">
+                            <span class="security-callout-icon">&#128274;</span>
+                            <span class="security-callout-title">Security Note</span>
+                        </div>
+                        <p><strong>NAT provides basic protection</strong> &mdash; external attackers can't directly reach internal IPs. But it's not a firewall. Outbound connections and port forwarding bypass this.</p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Glossary -->
+            <section class="glossary-section">
+                <details class="glossary-toggle">
+                    <summary>Glossary &mdash; Key terms used on this page</summary>
+                    <div class="glossary-content">
+                        <table class="glossary-table">
                             <thead>
                                 <tr>
-                                    <th>Port</th>
-                                    <th>Service</th>
+                                    <th>Term</th>
+                                    <th>What It Is</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>22</td>
-                                    <td>SSH (Secure Shell)</td>
+                                    <td class="term-cell">DHCP</td>
+                                    <td>Dynamic Host Configuration Protocol &mdash; automatically assigns IP addresses to devices joining a network</td>
                                 </tr>
                                 <tr>
-                                    <td>53</td>
-                                    <td>DNS (Domain Name System)</td>
+                                    <td class="term-cell">ARP</td>
+                                    <td>Address Resolution Protocol &mdash; translates IP addresses to MAC addresses for local network delivery</td>
                                 </tr>
                                 <tr>
-                                    <td>80</td>
-                                    <td>HTTP (Web traffic)</td>
+                                    <td class="term-cell">NAT</td>
+                                    <td>Network Address Translation &mdash; allows multiple devices to share one public IP address</td>
                                 </tr>
                                 <tr>
-                                    <td>443</td>
-                                    <td>HTTPS (Secure web traffic)</td>
+                                    <td class="term-cell">MAC address</td>
+                                    <td>Media Access Control address &mdash; unique hardware identifier for a network interface</td>
                                 </tr>
                                 <tr>
-                                    <td>3389</td>
-                                    <td>RDP (Remote Desktop)</td>
+                                    <td class="term-cell">IP address</td>
+                                    <td>Internet Protocol address &mdash; unique identifier for a device on a network</td>
                                 </tr>
                                 <tr>
-                                    <td>445</td>
-                                    <td>SMB (File sharing)</td>
+                                    <td class="term-cell">Subnet mask</td>
+                                    <td>Defines which part of an IP is the network vs. the device</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Default gateway</td>
+                                    <td>The router that handles traffic going outside your local network</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Broadcast</td>
+                                    <td>Sending data to all devices on a network at once</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Lease</td>
+                                    <td>The temporary assignment of an IP address &mdash; expires and must be renewed</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">ARP cache</td>
+                                    <td>Local table storing recently learned IP-to-MAC mappings</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">ARP spoofing</td>
+                                    <td>Attack where an attacker sends fake ARP responses to redirect traffic through their machine</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Public IP</td>
+                                    <td>An IP address routable on the internet &mdash; visible to the outside world</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Private IP</td>
+                                    <td>An IP address only used inside a local network &mdash; not routable on the internet</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Port forwarding</td>
+                                    <td>Configuring a router to send incoming traffic on a specific port to a specific internal device</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </details>
             </section>
+
         </div>
     </div>
 

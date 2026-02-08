@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>Windows Command Line (CMD) - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --terminal-purple: #c084fc;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
+
+        /* Terminal - CMD Style */
+        .terminal-container { position: sticky; top: 80px; }
+        .terminal { background: #0c0c0c; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: #1a1a1a; padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+        .terminal-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: #666; margin-right: 52px; }
+        .terminal-body { padding: 20px; min-height: 300px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; }
+        .terminal-line { margin-bottom: 4px; }
+        .terminal-prompt { color: #ccc; }
+        .terminal-command { color: #fff; }
+        .terminal-output { color: #ccc; }
+        .terminal-comment { color: #666; font-style: italic; }
+        .terminal-flag { color: var(--terminal-yellow); }
+        .terminal-arg { color: var(--terminal-blue); }
+        .terminal-error { color: var(--terminal-red); }
+        .terminal-success { color: var(--terminal-green); }
+        .terminal-header-text { color: var(--terminal-blue); }
+
+        .terminal-info { margin-top: 16px; padding: 16px; background: var(--surface-subtle); border-radius: 8px; }
+        .terminal-info-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .terminal-info-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Command Reference */
+        .commands-section { margin-bottom: 32px; }
+        .section-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 8px; }
+        .section-title span { font-size: 1rem; }
+
+        .command-grid { display: flex; flex-direction: column; gap: 8px; }
+        .command-item { background: var(--surface-subtle); border: 1px solid transparent; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: grid; grid-template-columns: 160px 1fr; gap: 12px; align-items: center; }
+        .command-item:hover { background: var(--surface-medium); border-color: var(--border-subtle); }
+        .command-item.active { background: var(--surface-active); border-color: var(--accent-primary); }
+        .command-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--terminal-blue); font-weight: 500; }
+        .command-purpose { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Info boxes */
+        .info-box { background: var(--surface-subtle); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .info-box-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+        /* Glossary */
+        .glossary-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border-subtle); }
+        .glossary-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .glossary-title span { font-size: 1rem; }
+        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+        .glossary-item { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; }
+        .glossary-term { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin-bottom: 4px; }
+        .glossary-def { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .terminal-container { position: static; margin-bottom: 32px; order: -1; }
+            .command-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">Windows Command Line (CMD)</h1>
+                <p class="page-subtitle">Command Reference</p>
+                <p class="page-intro">The Command Prompt (CMD) is the default Windows command-line interpreter. Click any command below to see it in action in the terminal.</p>
+            </header>
+
+            <div class="main-layout">
+                <div class="commands-reference">
+
+                    <!-- System Information -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>💻</span> System Information</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('hostname')">
+                                <div class="command-name">hostname</div>
+                                <div class="command-purpose">Display computer name</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('whoami')">
+                                <div class="command-name">whoami</div>
+                                <div class="command-purpose">Show current logged-in user</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('systeminfo')">
+                                <div class="command-name">systeminfo</div>
+                                <div class="command-purpose">Display detailed system information</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ver')">
+                                <div class="command-name">ver</div>
+                                <div class="command-purpose">Show Windows version</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('set')">
+                                <div class="command-name">set</div>
+                                <div class="command-purpose">Display environment variables</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>🌐</span> Network Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('ipconfig')">
+                                <div class="command-name">ipconfig</div>
+                                <div class="command-purpose">Show network adapter settings</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ipconfig_all')">
+                                <div class="command-name">ipconfig /all</div>
+                                <div class="command-purpose">Show detailed network config including MAC, DNS, DHCP</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('ping')">
+                                <div class="command-name">ping &lt;target&gt;</div>
+                                <div class="command-purpose">Test connectivity to a target host</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tracert')">
+                                <div class="command-name">tracert &lt;target&gt;</div>
+                                <div class="command-purpose">Trace the route packets take to reach target</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('nslookup')">
+                                <div class="command-name">nslookup &lt;domain&gt;</div>
+                                <div class="command-purpose">Query DNS to resolve domain to IP</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('netstat_ano')">
+                                <div class="command-name">netstat -ano</div>
+                                <div class="command-purpose">Show connections and listening ports with PIDs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process & Service Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>⚡</span> Process & Service Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('tasklist')">
+                                <div class="command-name">tasklist</div>
+                                <div class="command-purpose">List all running processes</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tasklist_svc')">
+                                <div class="command-name">tasklist /svc</div>
+                                <div class="command-purpose">List processes with associated services</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tasklist_filter')">
+                                <div class="command-name">tasklist /svc /fi "PID eq &lt;n&gt;"</div>
+                                <div class="command-purpose">Find service by specific PID</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('taskkill')">
+                                <div class="command-name">taskkill /PID &lt;number&gt;</div>
+                                <div class="command-purpose">Terminate a process by PID</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_start')">
+                                <div class="command-name">net start</div>
+                                <div class="command-purpose">List running services</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_stop')">
+                                <div class="command-name">net stop &lt;service&gt;</div>
+                                <div class="command-purpose">Stop a service</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File & Directory Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📂</span> File & Directory Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('dir')">
+                                <div class="command-name">dir</div>
+                                <div class="command-purpose">List directory contents</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('cd')">
+                                <div class="command-name">cd</div>
+                                <div class="command-purpose">Show current directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('cd_path')">
+                                <div class="command-name">cd &lt;path&gt;</div>
+                                <div class="command-purpose">Change directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('tree')">
+                                <div class="command-name">tree</div>
+                                <div class="command-purpose">Display directory structure</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('mkdir')">
+                                <div class="command-name">mkdir &lt;name&gt;</div>
+                                <div class="command-purpose">Create a new directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('rmdir')">
+                                <div class="command-name">rmdir &lt;name&gt;</div>
+                                <div class="command-purpose">Remove a directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('type')">
+                                <div class="command-name">type &lt;file&gt;</div>
+                                <div class="command-purpose">Display contents of a text file</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('copy')">
+                                <div class="command-name">copy &lt;source&gt; &lt;dest&gt;</div>
+                                <div class="command-purpose">Copy a file</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('del')">
+                                <div class="command-name">del &lt;file&gt;</div>
+                                <div class="command-purpose">Delete a file</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>👥</span> User Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('net_user')">
+                                <div class="command-name">net user</div>
+                                <div class="command-purpose">List all user accounts</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_user_detail')">
+                                <div class="command-name">net user &lt;username&gt;</div>
+                                <div class="command-purpose">Show details for specific user</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_localgroup')">
+                                <div class="command-name">net localgroup</div>
+                                <div class="command-purpose">List all local groups</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('net_localgroup_admins')">
+                                <div class="command-name">net localgroup administrators</div>
+                                <div class="command-purpose">Show members of administrators group</div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 16px;">
+                            <div class="info-box-title">💡 Getting help</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+                                Most commands support <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">/?</code> for help — for example <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">ipconfig /?</code>. The exception is <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">net</code>, which uses <code style="font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px;">net help</code> followed by the sub-command.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="terminal-container">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dot red"></div>
+                            <div class="terminal-dot yellow"></div>
+                            <div class="terminal-dot green"></div>
+                            <div class="terminal-title">Command Prompt</div>
+                        </div>
+                        <div class="terminal-body" id="terminalBody">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">C:\Users\User&gt;</span> <span class="terminal-comment">REM Click a command to see it in action</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Microsoft Windows [Version 10.0.22631]</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">(c) Microsoft Corporation. All rights reserved.</span>
+                            </div>
+                            <div class="terminal-line">&nbsp;</div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Select any command from the left to</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">see example usage and output.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="terminal-info" id="terminalInfo">
+                        <div class="terminal-info-title">Tip</div>
+                        <div class="terminal-info-text">CMD is the default Windows command-line interpreter. These commands are essential for system administration and security work.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glossary Section -->
+            <div class="glossary-section">
+                <div class="glossary-title"><span>📖</span> Glossary</div>
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <div class="glossary-term">CMD</div>
+                        <div class="glossary-def">Command Prompt — the default Windows command-line interpreter</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">PID</div>
+                        <div class="glossary-def">Process ID — unique number identifying a running process</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">DNS</div>
+                        <div class="glossary-def">Domain Name System — translates domain names to IP addresses</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">DHCP</div>
+                        <div class="glossary-def">Dynamic Host Configuration Protocol — automatically assigns IP addresses</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">MAC address</div>
+                        <div class="glossary-def">Hardware address of a network interface</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Netstat</div>
+                        <div class="glossary-def">Network statistics — shows connections and listening ports</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const commands = {
+            hostname: {
+                lines: [
+                    { type: 'command', text: 'hostname' },
+                    { type: 'output', text: 'DESKTOP-A1B2C3D' }
+                ],
+                info: 'Displays the computer\'s network name. This is the name other devices on the network see when connecting to this machine.'
+            },
+            whoami: {
+                lines: [
+                    { type: 'command', text: 'whoami' },
+                    { type: 'output', text: 'desktop-a1b2c3d\\user' }
+                ],
+                info: 'Shows the currently logged-in user in DOMAIN\\username format. On a local machine, the computer name acts as the domain.'
+            },
+            systeminfo: {
+                lines: [
+                    { type: 'command', text: 'systeminfo' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Host Name:</span>                 DESKTOP-A1B2C3D' },
+                    { type: 'output', text: '<span class="terminal-header-text">OS Name:</span>                   Microsoft Windows 11 Pro' },
+                    { type: 'output', text: '<span class="terminal-header-text">OS Version:</span>                10.0.22631 Build 22631' },
+                    { type: 'output', text: '<span class="terminal-header-text">System Type:</span>               x64-based PC' },
+                    { type: 'output', text: '<span class="terminal-header-text">Total Physical Memory:</span>     16,384 MB' },
+                    { type: 'output', text: '<span class="terminal-header-text">Domain:</span>                    WORKGROUP' },
+                    { type: 'output', text: '<span class="terminal-comment">REM ... plus hotfixes, network adapters, boot time</span>' }
+                ],
+                info: 'Comprehensive system overview including OS version, installed patches (hotfixes), domain membership, hardware specs, and network configuration. Essential for enumeration.'
+            },
+            ver: {
+                lines: [
+                    { type: 'command', text: 'ver' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Microsoft Windows [Version 10.0.22631.2428]' }
+                ],
+                info: 'Quick way to check the exact Windows build number. Useful for identifying patch levels and compatibility.'
+            },
+            set: {
+                lines: [
+                    { type: 'command', text: 'set' },
+                    { type: 'output', text: '<span class="terminal-header-text">COMPUTERNAME</span>=DESKTOP-A1B2C3D' },
+                    { type: 'output', text: '<span class="terminal-header-text">HOMEPATH</span>=\\Users\\User' },
+                    { type: 'output', text: '<span class="terminal-header-text">PATH</span>=C:\\Windows\\system32;C:\\Windows;...' },
+                    { type: 'output', text: '<span class="terminal-header-text">TEMP</span>=C:\\Users\\User\\AppData\\Local\\Temp' },
+                    { type: 'output', text: '<span class="terminal-header-text">USERNAME</span>=User' },
+                    { type: 'output', text: '<span class="terminal-comment">REM ... and many more environment variables</span>' }
+                ],
+                info: 'Lists all environment variables including system paths, user directories, and temp locations. Useful for understanding the system configuration and finding potential privilege escalation paths.'
+            },
+            ipconfig: {
+                lines: [
+                    { type: 'command', text: 'ipconfig' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Ethernet adapter Ethernet:</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   Connection-specific DNS Suffix  . :' },
+                    { type: 'output', text: '   IPv4 Address. . . . . . . . . . . : <span class="terminal-success">192.168.1.105</span>' },
+                    { type: 'output', text: '   Subnet Mask . . . . . . . . . . . : 255.255.255.0' },
+                    { type: 'output', text: '   Default Gateway . . . . . . . . . : 192.168.1.1' }
+                ],
+                info: 'Shows basic network adapter configuration including IP address, subnet mask, and default gateway. First command to run when troubleshooting network issues.'
+            },
+            ipconfig_all: {
+                lines: [
+                    { type: 'command', text: 'ipconfig <span class="terminal-flag">/all</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Ethernet adapter Ethernet:</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   Physical Address. . . . . . . . . : <span class="terminal-arg">00-1A-2B-3C-4D-5E</span>' },
+                    { type: 'output', text: '   DHCP Enabled. . . . . . . . . . . : Yes' },
+                    { type: 'output', text: '   IPv4 Address. . . . . . . . . . . : 192.168.1.105' },
+                    { type: 'output', text: '   DNS Servers . . . . . . . . . . . : 8.8.8.8' },
+                    { type: 'output', text: '                                       8.8.4.4' }
+                ],
+                info: 'Extended network information including MAC address (Physical Address), DHCP status, and DNS servers. The MAC address uniquely identifies the network adapter.'
+            },
+            ping: {
+                lines: [
+                    { type: 'command', text: 'ping <span class="terminal-arg">8.8.8.8</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Pinging 8.8.8.8 with 32 bytes of data:' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">14ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">13ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">15ms</span> TTL=117' },
+                    { type: 'output', text: 'Reply from 8.8.8.8: bytes=32 time=<span class="terminal-success">14ms</span> TTL=117' }
+                ],
+                info: 'Tests connectivity to a target by sending ICMP echo requests. Shows round-trip time (latency) and packet loss. 8.8.8.8 is Google\'s public DNS — a reliable target for testing internet connectivity.'
+            },
+            tracert: {
+                lines: [
+                    { type: 'command', text: 'tracert <span class="terminal-arg">google.com</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Tracing route to google.com [142.250.185.78]' },
+                    { type: 'output', text: '' },
+                    { type: 'output', text: '  1    <1ms    <1ms    <1ms  192.168.1.1' },
+                    { type: 'output', text: '  2    12ms    11ms    12ms  10.0.0.1' },
+                    { type: 'output', text: '  3    15ms    14ms    15ms  72.14.215.85' },
+                    { type: 'output', text: '  4    16ms    15ms    16ms  142.250.185.78' },
+                    { type: 'output', text: '' },
+                    { type: 'output', text: 'Trace complete.' }
+                ],
+                info: 'Traces the path packets take to reach a destination, showing each router (hop) along the way. Useful for identifying where network problems occur.'
+            },
+            nslookup: {
+                lines: [
+                    { type: 'command', text: 'nslookup <span class="terminal-arg">google.com</span>' },
+                    { type: 'output', text: 'Server:  dns.google' },
+                    { type: 'output', text: 'Address:  8.8.8.8' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Non-authoritative answer:' },
+                    { type: 'output', text: 'Name:    google.com' },
+                    { type: 'output', text: 'Addresses:  <span class="terminal-success">142.250.185.78</span>' },
+                    { type: 'output', text: '          2607:f8b0:4004:800::200e' }
+                ],
+                info: 'Queries DNS servers to resolve domain names to IP addresses. Shows both the DNS server used and the resolved addresses (IPv4 and IPv6).'
+            },
+            netstat_ano: {
+                lines: [
+                    { type: 'command', text: 'netstat <span class="terminal-flag">-ano</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '  Proto  Local Address          Foreign Address        State           <span class="terminal-header-text">PID</span>' },
+                    { type: 'output', text: '  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       <span class="terminal-arg">1128</span>' },
+                    { type: 'output', text: '  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       <span class="terminal-arg">4</span>' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49234    52.96.166.45:443       ESTABLISHED     <span class="terminal-arg">9876</span>' },
+                    { type: 'output', text: '  TCP    192.168.1.105:49301    140.82.112.26:443      ESTABLISHED     <span class="terminal-arg">12340</span>' }
+                ],
+                info: 'Shows all connections and listening ports with Process IDs (PIDs). Use this with tasklist to identify which program owns each connection — essential for finding suspicious activity.'
+            },
+            tasklist: {
+                lines: [
+                    { type: 'command', text: 'tasklist' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Session Name        Mem Usage</span>' },
+                    { type: 'output', text: '========================= ======== ================ ============' },
+                    { type: 'output', text: 'System Idle Process              0 Services                   8 K' },
+                    { type: 'output', text: 'System                           4 Services               2,456 K' },
+                    { type: 'output', text: 'svchost.exe                   1128 Services              18,432 K' },
+                    { type: 'output', text: 'explorer.exe                  4512 Console               85,240 K' },
+                    { type: 'output', text: 'chrome.exe                    9876 Console              312,456 K' }
+                ],
+                info: 'Lists all running processes with their Process ID (PID), session type, and memory usage. Similar to Task Manager but in command-line form.'
+            },
+            tasklist_svc: {
+                lines: [
+                    { type: 'command', text: 'tasklist <span class="terminal-flag">/svc</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Services</span>' },
+                    { type: 'output', text: '========================= ======== ============================================' },
+                    { type: 'output', text: 'svchost.exe                    780 DcomLaunch, PlugPlay, Power' },
+                    { type: 'output', text: 'svchost.exe                   1128 RpcEptMapper, RpcSs' },
+                    { type: 'output', text: 'svchost.exe                   1456 Dhcp, EventLog, lmhosts' },
+                    { type: 'output', text: 'spoolsv.exe                   2340 Spooler' }
+                ],
+                info: 'Shows processes with their associated Windows services. Multiple services often share a single svchost.exe process. Useful for understanding what services are running.'
+            },
+            tasklist_filter: {
+                lines: [
+                    { type: 'command', text: 'tasklist <span class="terminal-flag">/svc /fi</span> <span class="terminal-arg">"PID eq 1128"</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Image Name                     PID Services</span>' },
+                    { type: 'output', text: '========================= ======== ============================================' },
+                    { type: 'output', text: 'svchost.exe                   1128 RpcEptMapper, RpcSs' }
+                ],
+                info: 'Filters tasklist output to find a specific PID. Combine with netstat -ano to identify which service owns a suspicious network connection.'
+            },
+            taskkill: {
+                lines: [
+                    { type: 'command', text: 'taskkill <span class="terminal-flag">/PID</span> <span class="terminal-arg">9876</span>' },
+                    { type: 'output', text: '<span class="terminal-success">SUCCESS: Sent termination signal to the process with PID 9876.</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'taskkill <span class="terminal-flag">/PID</span> <span class="terminal-arg">9876</span> <span class="terminal-flag">/F</span>' },
+                    { type: 'output', text: '<span class="terminal-success">SUCCESS: The process with PID 9876 has been terminated.</span>' },
+                    { type: 'output', text: '<span class="terminal-comment">REM /F forces termination (like kill -9 on Linux)</span>' }
+                ],
+                info: 'Terminates a process by its PID. Without /F, sends a graceful termination signal. With /F, forcefully kills the process immediately.'
+            },
+            net_start: {
+                lines: [
+                    { type: 'command', text: 'net start' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'These Windows services are started:' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   Background Tasks Infrastructure Service' },
+                    { type: 'output', text: '   DHCP Client' },
+                    { type: 'output', text: '   DNS Client' },
+                    { type: 'output', text: '   Print Spooler' },
+                    { type: 'output', text: '   Windows Defender Firewall' },
+                    { type: 'output', text: '   Windows Update' },
+                    { type: 'output', text: '<span class="terminal-comment">REM ... and many more</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Lists all currently running Windows services. Useful for checking which services are active on the system.'
+            },
+            net_stop: {
+                lines: [
+                    { type: 'command', text: 'net stop <span class="terminal-arg">Spooler</span>' },
+                    { type: 'output', text: 'The Print Spooler service is stopping.' },
+                    { type: 'output', text: '<span class="terminal-success">The Print Spooler service was stopped successfully.</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment">REM Requires administrator privileges</span>' }
+                ],
+                info: 'Stops a running Windows service. Requires administrator privileges. Use net start to start a stopped service.'
+            },
+            dir: {
+                lines: [
+                    { type: 'command', text: 'dir' },
+                    { type: 'blank' },
+                    { type: 'output', text: ' Volume in drive C is Windows' },
+                    { type: 'output', text: ' Directory of C:\\Users\\User' },
+                    { type: 'blank' },
+                    { type: 'output', text: '01/15/2024  10:30 AM    <span class="terminal-arg">&lt;DIR&gt;</span>          Desktop' },
+                    { type: 'output', text: '01/15/2024  09:15 AM    <span class="terminal-arg">&lt;DIR&gt;</span>          Documents' },
+                    { type: 'output', text: '01/14/2024  03:45 PM    <span class="terminal-arg">&lt;DIR&gt;</span>          Downloads' },
+                    { type: 'output', text: '01/10/2024  08:00 AM             1,024 notes.txt' },
+                    { type: 'output', text: '               1 File(s)          1,024 bytes' }
+                ],
+                info: 'Lists directory contents including files, subdirectories, sizes, and timestamps. The Windows equivalent of ls on Linux.'
+            },
+            cd: {
+                lines: [
+                    { type: 'command', text: 'cd' },
+                    { type: 'output', text: 'C:\\Users\\User' }
+                ],
+                info: 'When used alone, displays the current working directory path.'
+            },
+            cd_path: {
+                lines: [
+                    { type: 'command', text: 'cd <span class="terminal-arg">Documents</span>' },
+                    { type: 'prompt', path: 'C:\\Users\\User\\Documents' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd <span class="terminal-arg">..</span>' },
+                    { type: 'prompt', path: 'C:\\Users\\User' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd <span class="terminal-arg">\\</span>' },
+                    { type: 'prompt', path: 'C:\\' }
+                ],
+                info: 'Changes the current directory. Use .. for parent directory and \\ for root of the current drive.'
+            },
+            tree: {
+                lines: [
+                    { type: 'command', text: 'tree' },
+                    { type: 'output', text: 'C:\\Users\\User' },
+                    { type: 'output', text: '├───Desktop' },
+                    { type: 'output', text: '├───Documents' },
+                    { type: 'output', text: '│   ├───Projects' },
+                    { type: 'output', text: '│   └───Reports' },
+                    { type: 'output', text: '├───Downloads' },
+                    { type: 'output', text: '└───Pictures' },
+                    { type: 'output', text: '    └───Screenshots' }
+                ],
+                info: 'Displays a graphical tree structure of directories and subdirectories. Great for understanding folder hierarchy at a glance.'
+            },
+            mkdir: {
+                lines: [
+                    { type: 'command', text: 'mkdir <span class="terminal-arg">NewFolder</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'dir' },
+                    { type: 'output', text: '01/15/2024  02:30 PM    <span class="terminal-arg">&lt;DIR&gt;</span>          NewFolder' }
+                ],
+                info: 'Creates a new directory. You can also create nested directories in one command: mkdir Parent\\Child\\Grandchild'
+            },
+            rmdir: {
+                lines: [
+                    { type: 'command', text: 'rmdir <span class="terminal-arg">EmptyFolder</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'rmdir <span class="terminal-flag">/s</span> <span class="terminal-arg">FolderWithFiles</span>' },
+                    { type: 'output', text: 'FolderWithFiles, Are you sure (Y/N)? <span class="terminal-arg">Y</span>' },
+                    { type: 'output', text: '<span class="terminal-comment">REM /s removes directory and all contents</span>' }
+                ],
+                info: 'Removes a directory. By default only works on empty directories. Use /s to remove a directory and all its contents (with confirmation).'
+            },
+            type: {
+                lines: [
+                    { type: 'command', text: 'type <span class="terminal-arg">config.txt</span>' },
+                    { type: 'output', text: 'server_name=localhost' },
+                    { type: 'output', text: 'port=8080' },
+                    { type: 'output', text: 'debug=true' },
+                    { type: 'output', text: 'max_connections=100' }
+                ],
+                info: 'Displays the contents of a text file. The Windows equivalent of cat on Linux. Outputs the entire file at once.'
+            },
+            copy: {
+                lines: [
+                    { type: 'command', text: 'copy <span class="terminal-arg">report.txt</span> <span class="terminal-arg">backup.txt</span>' },
+                    { type: 'output', text: '        1 file(s) copied.' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'copy <span class="terminal-arg">*.txt</span> <span class="terminal-arg">D:\\Backup\\</span>' },
+                    { type: 'output', text: '        5 file(s) copied.' }
+                ],
+                info: 'Copies files from source to destination. Can use wildcards like *.txt to copy multiple files at once.'
+            },
+            del: {
+                lines: [
+                    { type: 'command', text: 'del <span class="terminal-arg">unwanted.txt</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'del <span class="terminal-arg">*.tmp</span>' },
+                    { type: 'output', text: '<span class="terminal-comment">REM Deletes all .tmp files in current directory</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-error">Warning: del is permanent — there\'s no recycle bin!</span>' }
+                ],
+                info: 'Deletes files permanently. Can use wildcards. Be careful — deleted files don\'t go to the Recycle Bin when using this command.'
+            },
+            net_user: {
+                lines: [
+                    { type: 'command', text: 'net user' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'User accounts for \\\\DESKTOP-A1B2C3D' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-arg">Administrator</span>            DefaultAccount           <span class="terminal-arg">Guest</span>' },
+                    { type: 'output', text: '<span class="terminal-arg">User</span>                     WDAGUtilityAccount' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Lists all local user accounts on the system. Shows built-in accounts (Administrator, Guest) plus any created users. First step in user enumeration.'
+            },
+            net_user_detail: {
+                lines: [
+                    { type: 'command', text: 'net user <span class="terminal-arg">Administrator</span>' },
+                    { type: 'output', text: 'User name                    <span class="terminal-arg">Administrator</span>' },
+                    { type: 'output', text: 'Full Name' },
+                    { type: 'output', text: 'Account active               <span class="terminal-error">No</span>' },
+                    { type: 'output', text: 'Account expires              Never' },
+                    { type: 'output', text: 'Password last set            1/10/2024 8:00:00 AM' },
+                    { type: 'output', text: 'Password expires             Never' },
+                    { type: 'output', text: 'Local Group Memberships      <span class="terminal-success">*Administrators</span>' },
+                    { type: 'output', text: 'Global Group memberships     *None' }
+                ],
+                info: 'Shows detailed information about a specific user account including group memberships, password settings, and whether the account is active.'
+            },
+            net_localgroup: {
+                lines: [
+                    { type: 'command', text: 'net localgroup' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Aliases for \\\\DESKTOP-A1B2C3D' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-success">*Administrators</span>' },
+                    { type: 'output', text: '*Device Owners' },
+                    { type: 'output', text: '*Guests' },
+                    { type: 'output', text: '*Remote Desktop Users' },
+                    { type: 'output', text: '*Users' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Lists all local security groups on the system. Groups control what users can do — Administrators have full control, Users have limited access.'
+            },
+            net_localgroup_admins: {
+                lines: [
+                    { type: 'command', text: 'net localgroup <span class="terminal-arg">administrators</span>' },
+                    { type: 'output', text: 'Alias name     administrators' },
+                    { type: 'output', text: 'Comment        Administrators have complete and unrestricted access' },
+                    { type: 'blank' },
+                    { type: 'output', text: 'Members' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-------------------------------------------------------------------------------' },
+                    { type: 'output', text: '<span class="terminal-success">Administrator</span>' },
+                    { type: 'output', text: '<span class="terminal-success">User</span>' },
+                    { type: 'output', text: 'The command completed successfully.' }
+                ],
+                info: 'Shows all members of the Administrators group. These users have full system access — critical for security auditing.'
+            }
+        };
+
+        function showCommand(cmd) {
+            const data = commands[cmd];
+            if (!data) return;
+
+            // Update active state
+            document.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Build terminal output
+            const terminalBody = document.getElementById('terminalBody');
+            let html = '';
+
+            data.lines.forEach(line => {
+                if (line.type === 'command') {
+                    html += `<div class="terminal-line"><span class="terminal-prompt">C:\\Users\\User&gt;</span><span class="terminal-command">${line.text}</span></div>`;
+                } else if (line.type === 'output') {
+                    html += `<div class="terminal-line"><span class="terminal-output">${line.text}</span></div>`;
+                } else if (line.type === 'prompt') {
+                    const path = line.path || 'C:\\Users\\User';
+                    html += `<div class="terminal-line"><span class="terminal-prompt">${path}&gt;</span></div>`;
+                } else if (line.type === 'blank') {
+                    html += `<div class="terminal-line">&nbsp;</div>`;
+                }
+            });
+
+            terminalBody.innerHTML = html;
+
+            // Update info
+            document.getElementById('terminalInfo').innerHTML = `
+                <div class="terminal-info-title">About this command</div>
+                <div class="terminal-info-text">${data.info}</div>
+            `;
+        }
+
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+

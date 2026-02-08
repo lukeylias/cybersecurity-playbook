@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>Windows PowerShell - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --terminal-purple: #c084fc;
+            --ps-blue: #012456;
+            --ps-header: #0054a6;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-title { color: var(--text-primary); font-size: 1.3rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
+
+        /* Terminal - PowerShell Style */
+        .terminal-container { position: sticky; top: 80px; }
+        .terminal { background: var(--ps-blue); border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        .terminal-header { background: var(--ps-header); padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+        .terminal-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: #fff; margin-right: 52px; }
+        .terminal-body { padding: 20px; min-height: 300px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; }
+        .terminal-line { margin-bottom: 4px; }
+        .terminal-prompt { color: #ffff00; }
+        .terminal-command { color: #fff; }
+        .terminal-output { color: #fff; }
+        .terminal-comment { color: #6a9955; font-style: italic; }
+        .terminal-flag { color: var(--terminal-yellow); }
+        .terminal-arg { color: #9cdcfe; }
+        .terminal-error { color: var(--terminal-red); }
+        .terminal-success { color: var(--terminal-green); }
+        .terminal-header-text { color: #4ec9b0; }
+        .terminal-property { color: #ce9178; }
+        .terminal-variable { color: #dcdcaa; }
+
+        .terminal-info { margin-top: 16px; padding: 16px; background: var(--surface-subtle); border-radius: 8px; }
+        .terminal-info-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .terminal-info-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Command Reference */
+        .commands-section { margin-bottom: 32px; }
+        .section-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 8px; }
+        .section-title span { font-size: 1rem; }
+
+        .command-grid { display: flex; flex-direction: column; gap: 8px; }
+        .command-item { background: var(--surface-subtle); border: 1px solid transparent; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: grid; grid-template-columns: 220px 1fr; gap: 12px; align-items: center; }
+        .command-item:hover { background: var(--surface-medium); border-color: var(--border-subtle); }
+        .command-item.active { background: var(--surface-active); border-color: var(--accent-primary); }
+        .command-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--terminal-blue); font-weight: 500; }
+        .command-purpose { font-size: 0.8rem; color: var(--text-muted); }
+        .command-alias { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+
+        /* Info boxes */
+        .info-box { background: var(--surface-subtle); border-radius: 8px; padding: 16px; margin-bottom: 24px; border-left: 3px solid var(--accent-primary); }
+        .info-box-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .info-box code { font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px; }
+
+        /* Glossary */
+        .glossary-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border-subtle); }
+        .glossary-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .glossary-title span { font-size: 1rem; }
+        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+        .glossary-item { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; }
+        .glossary-term { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin-bottom: 4px; }
+        .glossary-def { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .terminal-container { position: static; margin-bottom: 32px; order: -1; }
+            .command-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">Windows PowerShell</h1>
+                <p class="page-subtitle">Cmdlet Reference</p>
+                <p class="page-intro">PowerShell is a powerful task automation and configuration management shell. Click any cmdlet below to see it in action in the terminal.</p>
+            </header>
+
+            <div class="info-box">
+                <div class="info-box-title">Verb-Noun Convention</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+                    PowerShell uses a <strong style="color: var(--text-primary);">Verb-Noun</strong> naming convention (e.g., <code>Get-Process</code>, <code>Set-Location</code>). Common verbs: <code>Get</code>, <code>Set</code>, <code>New</code>, <code>Remove</code>, <code>Start</code>, <code>Stop</code>, <code>Invoke</code>. PowerShell is <strong style="color: var(--text-primary);">not case-sensitive</strong>, but the convention is PascalCase.
+                </div>
+            </div>
+
+            <div class="main-layout">
+                <div class="commands-reference">
+
+                    <!-- Getting Help -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>❓</span> Getting Help</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_command')">
+                                <div class="command-name">Get-Command</div>
+                                <div class="command-purpose">List all available cmdlets</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_command_name')">
+                                <div class="command-name">Get-Command -Name &lt;pattern&gt;</div>
+                                <div class="command-purpose">Search for cmdlets matching a pattern (use wildcards *)</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_help')">
+                                <div class="command-name">Get-Help &lt;cmdlet&gt;</div>
+                                <div class="command-purpose">Display help for a cmdlet</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_help_examples')">
+                                <div class="command-name">Get-Help &lt;cmdlet&gt; -Examples</div>
+                                <div class="command-purpose">Show examples for a cmdlet</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Information -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>💻</span> System Information</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_computerinfo')">
+                                <div class="command-name">Get-ComputerInfo</div>
+                                <div class="command-purpose">Display detailed system information</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_host')">
+                                <div class="command-name">Get-Host</div>
+                                <div class="command-purpose">Show PowerShell version and host info</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('psversiontable')">
+                                <div class="command-name">$PSVersionTable</div>
+                                <div class="command-purpose">Display PowerShell version details</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📍</span> Navigation</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_location')">
+                                <div>
+                                    <div class="command-name">Get-Location</div>
+                                    <div class="command-alias">Alias: pwd</div>
+                                </div>
+                                <div class="command-purpose">Show current directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('set_location')">
+                                <div>
+                                    <div class="command-name">Set-Location &lt;path&gt;</div>
+                                    <div class="command-alias">Alias: cd</div>
+                                </div>
+                                <div class="command-purpose">Change directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_childitem')">
+                                <div>
+                                    <div class="command-name">Get-ChildItem</div>
+                                    <div class="command-alias">Alias: ls, dir</div>
+                                </div>
+                                <div class="command-purpose">List directory contents</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_childitem_recurse')">
+                                <div class="command-name">Get-ChildItem -Recurse</div>
+                                <div class="command-purpose">List contents including subdirectories</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Operations -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>📂</span> File Operations</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_content')">
+                                <div class="command-name">Get-Content &lt;file&gt;</div>
+                                <div class="command-purpose">Display file contents</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('new_item_file')">
+                                <div class="command-name">New-Item -ItemType File</div>
+                                <div class="command-purpose">Create a new file</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('new_item_directory')">
+                                <div class="command-name">New-Item -ItemType Directory</div>
+                                <div class="command-purpose">Create a new directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('remove_item')">
+                                <div class="command-name">Remove-Item &lt;path&gt;</div>
+                                <div class="command-purpose">Delete a file or directory</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('copy_item')">
+                                <div class="command-name">Copy-Item &lt;source&gt; &lt;dest&gt;</div>
+                                <div class="command-purpose">Copy a file</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('move_item')">
+                                <div class="command-name">Move-Item &lt;source&gt; &lt;dest&gt;</div>
+                                <div class="command-purpose">Move a file</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process & Service Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>⚡</span> Process & Service Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_process')">
+                                <div class="command-name">Get-Process</div>
+                                <div class="command-purpose">List all running processes</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_process_name')">
+                                <div class="command-name">Get-Process -Name &lt;name&gt;</div>
+                                <div class="command-purpose">Get specific process by name</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('stop_process')">
+                                <div class="command-name">Stop-Process -Id &lt;number&gt;</div>
+                                <div class="command-purpose">Kill a process by PID</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_service')">
+                                <div class="command-name">Get-Service</div>
+                                <div class="command-purpose">List all services</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_service_name')">
+                                <div class="command-name">Get-Service -Name &lt;name&gt;</div>
+                                <div class="command-purpose">Get specific service</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('start_service')">
+                                <div class="command-name">Start-Service &lt;name&gt;</div>
+                                <div class="command-purpose">Start a service</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('stop_service')">
+                                <div class="command-name">Stop-Service &lt;name&gt;</div>
+                                <div class="command-purpose">Stop a service</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>🌐</span> Network Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_netipaddress')">
+                                <div class="command-name">Get-NetIPAddress</div>
+                                <div class="command-purpose">Show IP configuration</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_netadapter')">
+                                <div class="command-name">Get-NetAdapter</div>
+                                <div class="command-purpose">List network adapters</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('test_connection')">
+                                <div class="command-name">Test-Connection &lt;target&gt;</div>
+                                <div class="command-purpose">PowerShell equivalent of ping</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_nettcpconnection')">
+                                <div class="command-name">Get-NetTCPConnection</div>
+                                <div class="command-purpose">Show TCP connections (like netstat)</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('resolve_dnsname')">
+                                <div class="command-name">Resolve-DnsName &lt;domain&gt;</div>
+                                <div class="command-purpose">DNS lookup</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User & Group Commands -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>👥</span> User & Group Commands</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('get_localuser')">
+                                <div class="command-name">Get-LocalUser</div>
+                                <div class="command-purpose">List local users</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_localgroup')">
+                                <div class="command-name">Get-LocalGroup</div>
+                                <div class="command-purpose">List local groups</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('get_localgroupmember')">
+                                <div class="command-name">Get-LocalGroupMember &lt;group&gt;</div>
+                                <div class="command-purpose">List members of a group</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtering & Piping -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>🔀</span> Filtering & Piping</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('where_object')">
+                                <div class="command-name">Where-Object { condition }</div>
+                                <div class="command-purpose">Filter results based on condition</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('select_object')">
+                                <div class="command-name">Select-Object -First &lt;n&gt;</div>
+                                <div class="command-purpose">Select first n results</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('sort_object')">
+                                <div class="command-name">Sort-Object -Property &lt;prop&gt;</div>
+                                <div class="command-purpose">Sort results by property</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('format_table')">
+                                <div class="command-name">Format-Table</div>
+                                <div class="command-purpose">Display as table</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('format_list')">
+                                <div class="command-name">Format-List</div>
+                                <div class="command-purpose">Display as list</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remote Execution -->
+                    <div class="commands-section">
+                        <div class="section-title"><span>🖥️</span> Remote Execution</div>
+                        <div class="command-grid">
+                            <div class="command-item" onclick="showCommand('invoke_command')">
+                                <div class="command-name">Invoke-Command -ComputerName</div>
+                                <div class="command-purpose">Run commands on remote machine</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('enter_pssession')">
+                                <div class="command-name">Enter-PSSession -ComputerName</div>
+                                <div class="command-purpose">Start interactive remote session</div>
+                            </div>
+                            <div class="command-item" onclick="showCommand('exit_pssession')">
+                                <div class="command-name">Exit-PSSession</div>
+                                <div class="command-purpose">End remote session</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="terminal-container">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dot red"></div>
+                            <div class="terminal-dot yellow"></div>
+                            <div class="terminal-dot green"></div>
+                            <div class="terminal-title">Windows PowerShell</div>
+                        </div>
+                        <div class="terminal-body" id="terminalBody">
+                            <div class="terminal-line">
+                                <span class="terminal-output">Windows PowerShell</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Copyright (C) Microsoft Corporation.</span>
+                            </div>
+                            <div class="terminal-line">&nbsp;</div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">PS C:\Users\User&gt;</span> <span class="terminal-comment"># Click a cmdlet to see it in action</span>
+                            </div>
+                            <div class="terminal-line">&nbsp;</div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">Select any cmdlet from the left to</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-output">see example usage and output.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="terminal-info" id="terminalInfo">
+                        <div class="terminal-info-title">Tip</div>
+                        <div class="terminal-info-text">PowerShell is a powerful automation shell built on .NET. Cmdlets return objects, not just text — making it easy to filter, sort, and manipulate data.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glossary Section -->
+            <div class="glossary-section">
+                <div class="glossary-title"><span>📖</span> Glossary</div>
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <div class="glossary-term">Cmdlet</div>
+                        <div class="glossary-def">A PowerShell command — uses Verb-Noun naming convention (e.g., Get-Process)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Alias</div>
+                        <div class="glossary-def">A shortcut name for a cmdlet (e.g., ls is alias for Get-ChildItem)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Pipeline</div>
+                        <div class="glossary-def">Passing output from one cmdlet to another using the pipe symbol |</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">ScriptBlock</div>
+                        <div class="glossary-def">A block of code enclosed in { } that can be executed</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">PascalCase</div>
+                        <div class="glossary-def">Capitalising the first letter of each word (e.g., Get-Process)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">-Property</div>
+                        <div class="glossary-def">A parameter used to specify which property to act on</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Where-Object</div>
+                        <div class="glossary-def">Cmdlet for filtering results based on conditions</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Invoke-Command</div>
+                        <div class="glossary-def">Cmdlet for running commands locally or on remote machines</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const commands = {
+            get_command: {
+                lines: [
+                    { type: 'command', text: 'Get-Command' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">CommandType     Name                            Version    Source</span>' },
+                    { type: 'output', text: '-----------     ----                            -------    ------' },
+                    { type: 'output', text: 'Cmdlet          Add-AppxPackage                 2.0.1.0    Appx' },
+                    { type: 'output', text: 'Cmdlet          Add-Content                     7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          Get-Process                     7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          Get-Service                     7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: '<span class="terminal-comment"># ... hundreds more cmdlets</span>' }
+                ],
+                info: 'Lists all available cmdlets, functions, aliases, and scripts. This is your starting point for discovering what commands are available in PowerShell.'
+            },
+            get_command_name: {
+                lines: [
+                    { type: 'command', text: 'Get-Command <span class="terminal-flag">-Name</span> <span class="terminal-arg">*Process*</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">CommandType     Name                            Version    Source</span>' },
+                    { type: 'output', text: '-----------     ----                            -------    ------' },
+                    { type: 'output', text: 'Cmdlet          <span class="terminal-success">Debug-Process</span>                   7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          <span class="terminal-success">Get-Process</span>                     7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          <span class="terminal-success">Start-Process</span>                   7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          <span class="terminal-success">Stop-Process</span>                    7.0.0.0    Microsoft.PowerShell.Management' },
+                    { type: 'output', text: 'Cmdlet          <span class="terminal-success">Wait-Process</span>                    7.0.0.0    Microsoft.PowerShell.Management' }
+                ],
+                info: 'Use wildcards (*) to search for cmdlets by pattern. Great for discovering related commands when you know part of the name.'
+            },
+            get_help: {
+                lines: [
+                    { type: 'command', text: 'Get-Help <span class="terminal-arg">Get-Process</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">NAME</span>' },
+                    { type: 'output', text: '    Get-Process' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">SYNOPSIS</span>' },
+                    { type: 'output', text: '    Gets the processes that are running on the local computer.' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">SYNTAX</span>' },
+                    { type: 'output', text: '    Get-Process [[-Name] &lt;String[]&gt;] [-Module] [-FileVersionInfo]' },
+                    { type: 'output', text: '    [&lt;CommonParameters&gt;]' }
+                ],
+                info: 'Displays help documentation for any cmdlet including syntax, description, and parameters. Add -Full for complete documentation or -Online to open web docs.'
+            },
+            get_help_examples: {
+                lines: [
+                    { type: 'command', text: 'Get-Help <span class="terminal-arg">Get-Process</span> <span class="terminal-flag">-Examples</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">NAME</span>' },
+                    { type: 'output', text: '    Get-Process' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">EXAMPLE 1</span>' },
+                    { type: 'output', text: '    PS> Get-Process' },
+                    { type: 'output', text: '    Gets all processes running on the local computer.' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">EXAMPLE 2</span>' },
+                    { type: 'output', text: '    PS> Get-Process -Name "explorer"' },
+                    { type: 'output', text: '    Gets the process named explorer.' }
+                ],
+                info: 'Shows practical examples of how to use a cmdlet. This is often the fastest way to learn how to use a new command.'
+            },
+            get_computerinfo: {
+                lines: [
+                    { type: 'command', text: 'Get-ComputerInfo' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">WindowsProductName</span>              : Windows 11 Pro' },
+                    { type: 'output', text: '<span class="terminal-header-text">WindowsVersion</span>                  : 2009' },
+                    { type: 'output', text: '<span class="terminal-header-text">OsHardwareAbstractionLayer</span>      : 10.0.22631.2428' },
+                    { type: 'output', text: '<span class="terminal-header-text">CsName</span>                          : DESKTOP-A1B2C3D' },
+                    { type: 'output', text: '<span class="terminal-header-text">CsProcessors</span>                    : {Intel Core i7-12700K}' },
+                    { type: 'output', text: '<span class="terminal-header-text">CsTotalPhysicalMemory</span>           : 17179869184' },
+                    { type: 'output', text: '<span class="terminal-comment"># ... many more properties</span>' }
+                ],
+                info: 'Returns comprehensive system information as an object with hundreds of properties. Use Select-Object to filter specific properties you need.'
+            },
+            get_host: {
+                lines: [
+                    { type: 'command', text: 'Get-Host' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name</span>             : ConsoleHost' },
+                    { type: 'output', text: '<span class="terminal-header-text">Version</span>          : <span class="terminal-success">7.4.0</span>' },
+                    { type: 'output', text: '<span class="terminal-header-text">InstanceId</span>       : 8c5e2a1d-3f4b-5c6d-7e8f-9a0b1c2d3e4f' },
+                    { type: 'output', text: '<span class="terminal-header-text">UI</span>               : System.Management.Automation.Internal.Host.InternalHostUserInterface' },
+                    { type: 'output', text: '<span class="terminal-header-text">CurrentCulture</span>   : en-US' },
+                    { type: 'output', text: '<span class="terminal-header-text">CurrentUICulture</span> : en-US' }
+                ],
+                info: 'Shows information about the PowerShell host application, including version and culture settings. Useful for scripting compatibility checks.'
+            },
+            psversiontable: {
+                lines: [
+                    { type: 'command', text: '<span class="terminal-variable">$PSVersionTable</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name</span>                           <span class="terminal-header-text">Value</span>' },
+                    { type: 'output', text: '----                           -----' },
+                    { type: 'output', text: 'PSVersion                      <span class="terminal-success">7.4.0</span>' },
+                    { type: 'output', text: 'PSEdition                      Core' },
+                    { type: 'output', text: 'GitCommitId                    7.4.0' },
+                    { type: 'output', text: 'OS                             Microsoft Windows 10.0.22631' },
+                    { type: 'output', text: 'Platform                       Win32NT' },
+                    { type: 'output', text: 'PSCompatibleVersions           {1.0, 2.0, 3.0, 4.0...}' }
+                ],
+                info: 'Built-in automatic variable containing PowerShell version details. PSEdition shows "Core" for PowerShell 7+ or "Desktop" for Windows PowerShell 5.1.'
+            },
+            get_location: {
+                lines: [
+                    { type: 'command', text: 'Get-Location' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Path</span>' },
+                    { type: 'output', text: '----' },
+                    { type: 'output', text: 'C:\\Users\\User' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'pwd  <span class="terminal-comment"># Alias works too</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Path</span>' },
+                    { type: 'output', text: '----' },
+                    { type: 'output', text: 'C:\\Users\\User' }
+                ],
+                info: 'Returns the current working directory as an object. The alias "pwd" (print working directory) works just like in Linux/Unix shells.'
+            },
+            set_location: {
+                lines: [
+                    { type: 'command', text: 'Set-Location <span class="terminal-arg">C:\\Windows</span>' },
+                    { type: 'prompt', path: 'C:\\Windows' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'cd <span class="terminal-arg">..</span>  <span class="terminal-comment"># Alias works too</span>' },
+                    { type: 'prompt', path: 'C:\\' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Set-Location <span class="terminal-arg">~</span>  <span class="terminal-comment"># Go to home directory</span>' },
+                    { type: 'prompt', path: 'C:\\Users\\User' }
+                ],
+                info: 'Changes the current working directory. Supports relative paths, absolute paths, and ~ for the home directory. The alias "cd" is commonly used.'
+            },
+            get_childitem: {
+                lines: [
+                    { type: 'command', text: 'Get-ChildItem' },
+                    { type: 'blank' },
+                    { type: 'output', text: '    <span class="terminal-header-text">Directory: C:\\Users\\User</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Mode                 LastWriteTime         Length Name</span>' },
+                    { type: 'output', text: '----                 -------------         ------ ----' },
+                    { type: 'output', text: 'd----          01/15/2024  10:30 AM                <span class="terminal-arg">Desktop</span>' },
+                    { type: 'output', text: 'd----          01/15/2024  09:15 AM                <span class="terminal-arg">Documents</span>' },
+                    { type: 'output', text: 'd----          01/14/2024  03:45 PM                <span class="terminal-arg">Downloads</span>' },
+                    { type: 'output', text: '-a---          01/10/2024  08:00 AM           1024 notes.txt' }
+                ],
+                info: 'Lists files and directories in the current location. Returns objects with properties like Mode (d=directory, a=archive), LastWriteTime, Length, and Name.'
+            },
+            get_childitem_recurse: {
+                lines: [
+                    { type: 'command', text: 'Get-ChildItem <span class="terminal-flag">-Recurse</span> <span class="terminal-flag">-Filter</span> <span class="terminal-arg">*.txt</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '    <span class="terminal-header-text">Directory: C:\\Users\\User</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Mode                 LastWriteTime         Length Name</span>' },
+                    { type: 'output', text: '----                 -------------         ------ ----' },
+                    { type: 'output', text: '-a---          01/10/2024  08:00 AM           1024 notes.txt' },
+                    { type: 'blank' },
+                    { type: 'output', text: '    <span class="terminal-header-text">Directory: C:\\Users\\User\\Documents</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '-a---          01/12/2024  02:30 PM           2048 report.txt' }
+                ],
+                info: 'Recursively searches through all subdirectories. Combine with -Filter to find specific file types. Great for searching entire directory trees.'
+            },
+            get_content: {
+                lines: [
+                    { type: 'command', text: 'Get-Content <span class="terminal-arg">config.txt</span>' },
+                    { type: 'output', text: 'server_name=localhost' },
+                    { type: 'output', text: 'port=8080' },
+                    { type: 'output', text: 'debug=true' },
+                    { type: 'output', text: 'max_connections=100' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Content <span class="terminal-arg">log.txt</span> <span class="terminal-flag">-Tail</span> <span class="terminal-arg">5</span>  <span class="terminal-comment"># Last 5 lines</span>' },
+                    { type: 'output', text: '[INFO] Connection established' },
+                    { type: 'output', text: '[INFO] Request processed' }
+                ],
+                info: 'Reads and displays file contents. Use -Tail for last N lines (like tail in Linux), -Head for first N lines, or -Wait to continuously monitor a file.'
+            },
+            new_item_file: {
+                lines: [
+                    { type: 'command', text: 'New-Item <span class="terminal-flag">-Path</span> <span class="terminal-arg">.</span> <span class="terminal-flag">-Name</span> <span class="terminal-arg">"newfile.txt"</span> <span class="terminal-flag">-ItemType</span> <span class="terminal-arg">File</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '    <span class="terminal-header-text">Directory: C:\\Users\\User</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Mode                 LastWriteTime         Length Name</span>' },
+                    { type: 'output', text: '----                 -------------         ------ ----' },
+                    { type: 'output', text: '-a---          01/15/2024  02:30 PM              0 <span class="terminal-success">newfile.txt</span>' }
+                ],
+                info: 'Creates a new empty file. Add -Value "content" to create a file with initial content. The cmdlet returns the created item object.'
+            },
+            new_item_directory: {
+                lines: [
+                    { type: 'command', text: 'New-Item <span class="terminal-flag">-Path</span> <span class="terminal-arg">.</span> <span class="terminal-flag">-Name</span> <span class="terminal-arg">"NewFolder"</span> <span class="terminal-flag">-ItemType</span> <span class="terminal-arg">Directory</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '    <span class="terminal-header-text">Directory: C:\\Users\\User</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Mode                 LastWriteTime         Length Name</span>' },
+                    { type: 'output', text: '----                 -------------         ------ ----' },
+                    { type: 'output', text: 'd----          01/15/2024  02:30 PM                <span class="terminal-success">NewFolder</span>' }
+                ],
+                info: 'Creates a new directory. You can also use the alias "mkdir". Parent directories are created automatically if they don\'t exist.'
+            },
+            remove_item: {
+                lines: [
+                    { type: 'command', text: 'Remove-Item <span class="terminal-arg">unwanted.txt</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Remove-Item <span class="terminal-arg">OldFolder</span> <span class="terminal-flag">-Recurse</span>  <span class="terminal-comment"># Delete folder and contents</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Remove-Item <span class="terminal-arg">*.tmp</span>  <span class="terminal-comment"># Wildcards supported</span>' },
+                    { type: 'output', text: '<span class="terminal-error">Warning: Deletions are permanent!</span>' }
+                ],
+                info: 'Deletes files or directories. Use -Recurse for directories with contents. Add -Force to delete read-only or hidden items. Be careful — no Recycle Bin!'
+            },
+            copy_item: {
+                lines: [
+                    { type: 'command', text: 'Copy-Item <span class="terminal-arg">report.txt</span> <span class="terminal-arg">backup.txt</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Copy-Item <span class="terminal-arg">Documents</span> <span class="terminal-arg">D:\\Backup</span> <span class="terminal-flag">-Recurse</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Copies entire Documents folder to D:\\Backup</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Copy-Item <span class="terminal-arg">*.txt</span> <span class="terminal-arg">Archive\\</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Copies all .txt files to Archive folder</span>' }
+                ],
+                info: 'Copies files or directories. Use -Recurse for directories. Wildcards are supported for copying multiple files at once.'
+            },
+            move_item: {
+                lines: [
+                    { type: 'command', text: 'Move-Item <span class="terminal-arg">report.txt</span> <span class="terminal-arg">Archive\\</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Move-Item <span class="terminal-arg">oldname.txt</span> <span class="terminal-arg">newname.txt</span>  <span class="terminal-comment"># Rename</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Move-Item <span class="terminal-arg">*.log</span> <span class="terminal-arg">Logs\\</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Moves all .log files to Logs folder</span>' }
+                ],
+                info: 'Moves files or directories to a new location. Also used for renaming by specifying a new name in the same directory.'
+            },
+            get_process: {
+                lines: [
+                    { type: 'command', text: 'Get-Process' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName</span>' },
+                    { type: 'output', text: '-------  ------    -----      -----     ------     --  -- -----------' },
+                    { type: 'output', text: '    523      28    85240      92456      12.45   4512   1 explorer' },
+                    { type: 'output', text: '   1245      89   312456     298432      45.67   9876   1 chrome' },
+                    { type: 'output', text: '    234      15    18432      22456       2.34   1128   0 svchost' },
+                    { type: 'output', text: '    156      12    45678      52340       8.90   2340   1 code' }
+                ],
+                info: 'Lists all running processes with detailed information including handles, memory usage (PM/WS), CPU time, and process ID. Returns objects that can be filtered and sorted.'
+            },
+            get_process_name: {
+                lines: [
+                    { type: 'command', text: 'Get-Process <span class="terminal-flag">-Name</span> <span class="terminal-arg">chrome</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName</span>' },
+                    { type: 'output', text: '-------  ------    -----      -----     ------     --  -- -----------' },
+                    { type: 'output', text: '   1245      89   312456     298432      45.67   9876   1 <span class="terminal-success">chrome</span>' },
+                    { type: 'output', text: '    456      34    98765      87654      12.34  10234   1 <span class="terminal-success">chrome</span>' },
+                    { type: 'output', text: '    234      23    54321      45678       5.67  10456   1 <span class="terminal-success">chrome</span>' }
+                ],
+                info: 'Gets processes by name. Chrome typically shows multiple processes (one per tab). Wildcards are supported: Get-Process -Name "ch*"'
+            },
+            stop_process: {
+                lines: [
+                    { type: 'command', text: 'Stop-Process <span class="terminal-flag">-Id</span> <span class="terminal-arg">9876</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Stop-Process <span class="terminal-flag">-Name</span> <span class="terminal-arg">notepad</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Process <span class="terminal-arg">chrome</span> | Stop-Process <span class="terminal-flag">-Force</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Forcefully stops all Chrome processes</span>' }
+                ],
+                info: 'Terminates a process by ID or name. Use -Force for immediate termination. Can be piped from Get-Process for powerful combinations.'
+            },
+            get_service: {
+                lines: [
+                    { type: 'command', text: 'Get-Service' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Status   Name               DisplayName</span>' },
+                    { type: 'output', text: '------   ----               -----------' },
+                    { type: 'output', text: '<span class="terminal-success">Running</span>  wuauserv           Windows Update' },
+                    { type: 'output', text: '<span class="terminal-success">Running</span>  WinDefend          Microsoft Defender Antivirus' },
+                    { type: 'output', text: '<span class="terminal-error">Stopped</span>  Spooler            Print Spooler' },
+                    { type: 'output', text: '<span class="terminal-success">Running</span>  Dhcp               DHCP Client' }
+                ],
+                info: 'Lists all Windows services with their status (Running/Stopped), name, and display name. Returns service objects that can be started, stopped, or queried further.'
+            },
+            get_service_name: {
+                lines: [
+                    { type: 'command', text: 'Get-Service <span class="terminal-flag">-Name</span> <span class="terminal-arg">Spooler</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Status   Name               DisplayName</span>' },
+                    { type: 'output', text: '------   ----               -----------' },
+                    { type: 'output', text: '<span class="terminal-error">Stopped</span>  Spooler            Print Spooler' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Service <span class="terminal-arg">Spooler</span> | Select-Object <span class="terminal-arg">*</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Shows all properties of the service</span>' }
+                ],
+                info: 'Gets a specific service by name. Pipe to Select-Object * to see all properties including StartType, DependentServices, and more.'
+            },
+            start_service: {
+                lines: [
+                    { type: 'command', text: 'Start-Service <span class="terminal-arg">Spooler</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Service <span class="terminal-arg">Spooler</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Status   Name               DisplayName</span>' },
+                    { type: 'output', text: '------   ----               -----------' },
+                    { type: 'output', text: '<span class="terminal-success">Running</span>  Spooler            Print Spooler' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># Requires Administrator privileges</span>' }
+                ],
+                info: 'Starts a stopped Windows service. Requires Administrator privileges. Use -PassThru to return the service object after starting.'
+            },
+            stop_service: {
+                lines: [
+                    { type: 'command', text: 'Stop-Service <span class="terminal-arg">Spooler</span>' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Service <span class="terminal-arg">Spooler</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Status   Name               DisplayName</span>' },
+                    { type: 'output', text: '------   ----               -----------' },
+                    { type: 'output', text: '<span class="terminal-error">Stopped</span>  Spooler            Print Spooler' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># Requires Administrator privileges</span>' }
+                ],
+                info: 'Stops a running Windows service. Requires Administrator privileges. Use -Force to stop services that have dependent services.'
+            },
+            get_netipaddress: {
+                lines: [
+                    { type: 'command', text: 'Get-NetIPAddress' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">IPAddress         : 192.168.1.105</span>' },
+                    { type: 'output', text: 'InterfaceIndex    : 12' },
+                    { type: 'output', text: 'InterfaceAlias    : Ethernet' },
+                    { type: 'output', text: 'AddressFamily     : <span class="terminal-success">IPv4</span>' },
+                    { type: 'output', text: 'PrefixLength      : 24' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">IPAddress         : fe80::1234:5678:abcd:ef00</span>' },
+                    { type: 'output', text: 'AddressFamily     : IPv6' }
+                ],
+                info: 'Shows IP addresses configured on all network interfaces. Returns objects with detailed information including prefix length (subnet), interface name, and address family.'
+            },
+            get_netadapter: {
+                lines: [
+                    { type: 'command', text: 'Get-NetAdapter' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name         InterfaceDescription          ifIndex Status       MacAddress</span>' },
+                    { type: 'output', text: '----         --------------------          ------- ------       ----------' },
+                    { type: 'output', text: 'Ethernet     Intel I225-V                       12 <span class="terminal-success">Up</span>           00-1A-2B-3C-4D-5E' },
+                    { type: 'output', text: 'Wi-Fi        Intel Wi-Fi 6 AX201                 8 <span class="terminal-error">Disconnected</span> 11-22-33-44-55-66' },
+                    { type: 'output', text: 'Bluetooth    Bluetooth Device                    4 <span class="terminal-error">Disconnected</span> AA-BB-CC-DD-EE-FF' }
+                ],
+                info: 'Lists all network adapters with their status, MAC address, and interface details. Shows physical adapters, Wi-Fi, Bluetooth, and virtual adapters.'
+            },
+            test_connection: {
+                lines: [
+                    { type: 'command', text: 'Test-Connection <span class="terminal-arg">8.8.8.8</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '   <span class="terminal-header-text">Destination: 8.8.8.8</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Ping Source           Address       Latency BufferSize Status</span>' },
+                    { type: 'output', text: '                                       (ms)        (B)' },
+                    { type: 'output', text: '---- ------           -------       ------- ---------- ------' },
+                    { type: 'output', text: '   1 DESKTOP-A1B2C3D  8.8.8.8            <span class="terminal-success">14</span>         32 <span class="terminal-success">Success</span>' },
+                    { type: 'output', text: '   2 DESKTOP-A1B2C3D  8.8.8.8            <span class="terminal-success">13</span>         32 <span class="terminal-success">Success</span>' },
+                    { type: 'output', text: '   3 DESKTOP-A1B2C3D  8.8.8.8            <span class="terminal-success">15</span>         32 <span class="terminal-success">Success</span>' },
+                    { type: 'output', text: '   4 DESKTOP-A1B2C3D  8.8.8.8            <span class="terminal-success">14</span>         32 <span class="terminal-success">Success</span>' }
+                ],
+                info: 'PowerShell\'s equivalent of ping. Returns objects with latency, status, and more. Use -Count to specify number of pings, -Quiet for simple True/False result.'
+            },
+            get_nettcpconnection: {
+                lines: [
+                    { type: 'command', text: 'Get-NetTCPConnection' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">LocalAddress  LocalPort RemoteAddress  RemotePort State        OwningProcess</span>' },
+                    { type: 'output', text: '------------  --------- -------------  ---------- -----        -------------' },
+                    { type: 'output', text: '0.0.0.0            135 0.0.0.0                 0 <span class="terminal-arg">Listen</span>                1128' },
+                    { type: 'output', text: '0.0.0.0            445 0.0.0.0                 0 <span class="terminal-arg">Listen</span>                   4' },
+                    { type: 'output', text: '192.168.1.105    49234 52.96.166.45          443 <span class="terminal-success">Established</span>           9876' },
+                    { type: 'output', text: '192.168.1.105    49301 140.82.112.26         443 <span class="terminal-success">Established</span>          12340' }
+                ],
+                info: 'Shows all TCP connections and listening ports with owning process IDs. PowerShell equivalent of netstat. Pipe to Where-Object to filter by state or port.'
+            },
+            resolve_dnsname: {
+                lines: [
+                    { type: 'command', text: 'Resolve-DnsName <span class="terminal-arg">google.com</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name                           Type   TTL   Section    IPAddress</span>' },
+                    { type: 'output', text: '----                           ----   ---   -------    ---------' },
+                    { type: 'output', text: 'google.com                     A      299   Answer     <span class="terminal-success">142.250.185.78</span>' },
+                    { type: 'output', text: 'google.com                     AAAA   299   Answer     2607:f8b0:4004:800::200e' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Resolve-DnsName <span class="terminal-arg">google.com</span> <span class="terminal-flag">-Type</span> <span class="terminal-arg">MX</span>  <span class="terminal-comment"># Query MX records</span>' }
+                ],
+                info: 'Performs DNS lookups. More powerful than nslookup — returns structured objects and supports querying specific record types (A, AAAA, MX, NS, TXT, etc.).'
+            },
+            get_localuser: {
+                lines: [
+                    { type: 'command', text: 'Get-LocalUser' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name               Enabled Description</span>' },
+                    { type: 'output', text: '----               ------- -----------' },
+                    { type: 'output', text: 'Administrator      <span class="terminal-error">False</span>   Built-in account for administering the computer' },
+                    { type: 'output', text: 'DefaultAccount     <span class="terminal-error">False</span>   A user account managed by the system.' },
+                    { type: 'output', text: 'Guest              <span class="terminal-error">False</span>   Built-in account for guest access' },
+                    { type: 'output', text: 'User               <span class="terminal-success">True</span>    ' },
+                    { type: 'output', text: 'WDAGUtilityAccount <span class="terminal-error">False</span>   Used by Windows Defender Application Guard' }
+                ],
+                info: 'Lists all local user accounts with their enabled status. Use Get-LocalUser username | Select-Object * for detailed information about a specific user.'
+            },
+            get_localgroup: {
+                lines: [
+                    { type: 'command', text: 'Get-LocalGroup' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name                                Description</span>' },
+                    { type: 'output', text: '----                                -----------' },
+                    { type: 'output', text: '<span class="terminal-success">Administrators</span>                      Administrators have complete and unrestricted access' },
+                    { type: 'output', text: 'Device Owners                       Members can change system-wide settings' },
+                    { type: 'output', text: 'Guests                              Guests have limited access' },
+                    { type: 'output', text: 'Remote Desktop Users                Members can log on remotely' },
+                    { type: 'output', text: 'Users                               Users are prevented from making system-wide changes' }
+                ],
+                info: 'Lists all local security groups on the system. Groups control what permissions users have. The Administrators group has full system access.'
+            },
+            get_localgroupmember: {
+                lines: [
+                    { type: 'command', text: 'Get-LocalGroupMember <span class="terminal-arg">Administrators</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">ObjectClass Name                    PrincipalSource</span>' },
+                    { type: 'output', text: '----------- ----                    ---------------' },
+                    { type: 'output', text: 'User        DESKTOP-A1B2C3D\\<span class="terminal-success">Administrator</span>  Local' },
+                    { type: 'output', text: 'User        DESKTOP-A1B2C3D\\<span class="terminal-success">User</span>           Local' }
+                ],
+                info: 'Shows all members of a local security group. Essential for security auditing — knowing who has Administrator access is critical.'
+            },
+            where_object: {
+                lines: [
+                    { type: 'command', text: 'Get-Process | Where-Object { <span class="terminal-variable">$_.CPU</span> <span class="terminal-flag">-gt</span> <span class="terminal-arg">10</span> }' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName</span>' },
+                    { type: 'output', text: '-------  ------    -----      -----     ------     --  -- -----------' },
+                    { type: 'output', text: '    523      28    85240      92456      <span class="terminal-success">12.45</span>   4512   1 explorer' },
+                    { type: 'output', text: '   1245      89   312456     298432      <span class="terminal-success">45.67</span>   9876   1 chrome' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Service | Where-Object Status <span class="terminal-flag">-eq</span> <span class="terminal-arg">"Running"</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Simplified syntax for common comparisons</span>' }
+                ],
+                info: 'Filters pipeline results based on conditions. $_ represents the current object. Common operators: -eq (equal), -ne (not equal), -gt (greater than), -lt (less than), -like (wildcard match).'
+            },
+            select_object: {
+                lines: [
+                    { type: 'command', text: 'Get-Process | Select-Object <span class="terminal-flag">-First</span> <span class="terminal-arg">3</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName</span>' },
+                    { type: 'output', text: '-------  ------    -----      -----     ------     --  -- -----------' },
+                    { type: 'output', text: '    523      28    85240      92456      12.45   4512   1 explorer' },
+                    { type: 'output', text: '   1245      89   312456     298432      45.67   9876   1 chrome' },
+                    { type: 'output', text: '    234      15    18432      22456       2.34   1128   0 svchost' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'Get-Process | Select-Object <span class="terminal-arg">Name, CPU, Id</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># Select specific properties only</span>' }
+                ],
+                info: 'Selects objects or properties from results. Use -First N for first N items, -Last N for last N, -Skip N to skip, or specify property names to select only certain columns.'
+            },
+            sort_object: {
+                lines: [
+                    { type: 'command', text: 'Get-Process | Sort-Object <span class="terminal-flag">-Property</span> <span class="terminal-arg">CPU</span> <span class="terminal-flag">-Descending</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName</span>' },
+                    { type: 'output', text: '-------  ------    -----      -----     ------     --  -- -----------' },
+                    { type: 'output', text: '   1245      89   312456     298432      <span class="terminal-success">45.67</span>   9876   1 chrome' },
+                    { type: 'output', text: '    523      28    85240      92456      <span class="terminal-success">12.45</span>   4512   1 explorer' },
+                    { type: 'output', text: '    156      12    45678      52340       <span class="terminal-success">8.90</span>   2340   1 code' },
+                    { type: 'output', text: '    234      15    18432      22456       <span class="terminal-success">2.34</span>   1128   0 svchost' }
+                ],
+                info: 'Sorts objects by one or more properties. Add -Descending for reverse order. Can sort by multiple properties: Sort-Object Status, Name'
+            },
+            format_table: {
+                lines: [
+                    { type: 'command', text: 'Get-Service | Format-Table <span class="terminal-arg">Name, Status, StartType</span> <span class="terminal-flag">-AutoSize</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name        Status  StartType</span>' },
+                    { type: 'output', text: '----        ------  ---------' },
+                    { type: 'output', text: 'wuauserv    Running Automatic' },
+                    { type: 'output', text: 'WinDefend   Running Automatic' },
+                    { type: 'output', text: 'Spooler     Stopped Manual' },
+                    { type: 'output', text: 'Dhcp        Running Automatic' }
+                ],
+                info: 'Formats output as a table. Use -AutoSize for optimal column widths. Specify property names to control which columns appear and their order.'
+            },
+            format_list: {
+                lines: [
+                    { type: 'command', text: 'Get-Service <span class="terminal-arg">Spooler</span> | Format-List <span class="terminal-arg">*</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Name</span>                : Spooler' },
+                    { type: 'output', text: '<span class="terminal-header-text">DisplayName</span>         : Print Spooler' },
+                    { type: 'output', text: '<span class="terminal-header-text">Status</span>              : Stopped' },
+                    { type: 'output', text: '<span class="terminal-header-text">StartType</span>           : Manual' },
+                    { type: 'output', text: '<span class="terminal-header-text">ServiceType</span>         : Win32OwnProcess, InteractiveProcess' },
+                    { type: 'output', text: '<span class="terminal-header-text">DependentServices</span>   : {Fax}' },
+                    { type: 'output', text: '<span class="terminal-header-text">ServicesDependedOn</span>  : {RPCSS, http}' }
+                ],
+                info: 'Formats output as a vertical list of properties. Great for viewing all properties of a single object. Use * to show all properties or specify names.'
+            },
+            invoke_command: {
+                lines: [
+                    { type: 'command', text: 'Invoke-Command <span class="terminal-flag">-ComputerName</span> <span class="terminal-arg">Server01</span> <span class="terminal-flag">-ScriptBlock</span> { Get-Process }' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-header-text">Handles  NPM(K)    PM(K)   WS(K)   CPU(s)     Id  SI ProcessName   PSComputerName</span>' },
+                    { type: 'output', text: '-------  ------    -----   -----   ------     --  -- -----------   --------------' },
+                    { type: 'output', text: '    523      28    85240   92456    12.45   4512   1 explorer      <span class="terminal-arg">Server01</span>' },
+                    { type: 'output', text: '   1245      89   312456  298432    45.67   9876   1 sqlservr      <span class="terminal-arg">Server01</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># Requires WinRM enabled on remote machine</span>' }
+                ],
+                info: 'Runs commands on remote computers. The ScriptBlock contains the commands to execute. Requires PowerShell Remoting (WinRM) to be enabled on the target machine.'
+            },
+            enter_pssession: {
+                lines: [
+                    { type: 'command', text: 'Enter-PSSession <span class="terminal-flag">-ComputerName</span> <span class="terminal-arg">Server01</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-success">[Server01]:</span> PS C:\\Users\\Admin\\Documents>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># You are now in an interactive session on Server01</span>' },
+                    { type: 'output', text: '<span class="terminal-comment"># All commands run on the remote machine</span>' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-success">[Server01]:</span> PS> Get-ComputerInfo | Select-Object CsName' },
+                    { type: 'output', text: 'CsName : Server01' }
+                ],
+                info: 'Starts an interactive remote session. Your prompt changes to show the remote computer name. All commands you type run on the remote machine until you exit.'
+            },
+            exit_pssession: {
+                lines: [
+                    { type: 'output', text: '<span class="terminal-success">[Server01]:</span> PS C:\\Users\\Admin> Exit-PSSession' },
+                    { type: 'blank' },
+                    { type: 'prompt' },
+                    { type: 'blank' },
+                    { type: 'output', text: '<span class="terminal-comment"># You are back on your local machine</span>' },
+                    { type: 'blank' },
+                    { type: 'command', text: 'hostname' },
+                    { type: 'output', text: 'DESKTOP-A1B2C3D' }
+                ],
+                info: 'Ends an interactive remote session and returns to your local machine. The prompt changes back to show your local computer. You can also just type "exit".'
+            }
+        };
+
+        function showCommand(cmd) {
+            const data = commands[cmd];
+            if (!data) return;
+
+            // Update active state
+            document.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Build terminal output
+            const terminalBody = document.getElementById('terminalBody');
+            let html = '';
+
+            data.lines.forEach(line => {
+                if (line.type === 'command') {
+                    html += `<div class="terminal-line"><span class="terminal-prompt">PS C:\\Users\\User&gt;</span> <span class="terminal-command">${line.text}</span></div>`;
+                } else if (line.type === 'output') {
+                    html += `<div class="terminal-line"><span class="terminal-output">${line.text}</span></div>`;
+                } else if (line.type === 'prompt') {
+                    const path = line.path || 'C:\\Users\\User';
+                    html += `<div class="terminal-line"><span class="terminal-prompt">PS ${path}&gt;</span></div>`;
+                } else if (line.type === 'blank') {
+                    html += `<div class="terminal-line">&nbsp;</div>`;
+                }
+            });
+
+            terminalBody.innerHTML = html;
+
+            // Update info
+            document.getElementById('terminalInfo').innerHTML = `
+                <div class="terminal-info-title">About this cmdlet</div>
+                <div class="terminal-info-text">${data.info}</div>
+            `;
+        }
+
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+

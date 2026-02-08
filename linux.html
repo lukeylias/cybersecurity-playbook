@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
-    <title>Linux Fundamentals - Cybersecurity Fundamentals</title>
+    <title>Linux Command Line - Cybersecurity Fundamentals</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -161,6 +161,10 @@
                             <div class="nav-dropdown-item-title">Network Fundamentals</div>
                             <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
                         </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
                         <a href="osi-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">OSI Model</div>
                             <div class="nav-dropdown-item-desc">7-layer communication framework</div>
@@ -168,6 +172,10 @@
                         <a href="tcp-ip-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">TCP/IP Model</div>
                             <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
                         </a>
                         <a href="dns.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">DNS Lookup</div>
@@ -204,7 +212,7 @@
                     <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
                     <div class="nav-dropdown-menu">
                         <a href="linux.html" class="nav-dropdown-item current">
-                            <div class="nav-dropdown-item-title">Linux Fundamentals</div>
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
                             <div class="nav-dropdown-item-desc">Command line essentials</div>
                         </a>
                         <a href="linux-admin.html" class="nav-dropdown-item">
@@ -218,11 +226,28 @@
                     <div class="nav-dropdown-menu">
                         <a href="windows-essentials.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Windows Essentials</div>
-                            <div class="nav-dropdown-item-desc">File system, utilities & command line</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
                         </a>
                         <a href="windows-security.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Windows Security</div>
                             <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
                         </a>
                     </div>
                 </div>
@@ -233,7 +258,7 @@
     <div class="page">
         <div class="page-content">
             <header class="page-header">
-                <h1 class="page-title">Linux Fundamentals</h1>
+                <h1 class="page-title">Linux Command Line</h1>
                 <p class="page-subtitle">Command Line Essentials</p>
                 <p class="page-intro">The command line is your direct interface to the operating system. Click any command below to see it in action in the terminal.</p>
             </header>

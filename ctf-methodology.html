@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>CTF Methodology - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --border-medium: rgba(74, 111, 165, 0.3);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --terminal-purple: #c084fc;
+            --phase-recon: #60a5fa;
+            --phase-enum: #a78bfa;
+            --phase-exploit: #f87171;
+            --phase-post: #4ade80;
+            --phase-docs: #facc15;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-title { color: var(--text-primary); font-size: 1.5rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+        /* Flow Diagram */
+        .flow-diagram { margin: 40px 0 50px; padding: 30px 20px; background: var(--surface-subtle); border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .flow-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .flow-phase { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 20px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; min-width: 120px; transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .flow-phase:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+        .flow-phase-num { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; }
+        .flow-phase-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); font-weight: 500; }
+        .flow-phase[data-phase="recon"] { border-left: 3px solid var(--phase-recon); }
+        .flow-phase[data-phase="enum"] { border-left: 3px solid var(--phase-enum); }
+        .flow-phase[data-phase="exploit"] { border-left: 3px solid var(--phase-exploit); }
+        .flow-phase[data-phase="post"] { border-left: 3px solid var(--phase-post); }
+        .flow-phase[data-phase="docs"] { border-left: 3px solid var(--phase-docs); }
+        .flow-arrow { color: var(--text-dim); font-size: 1.2rem; }
+        @media (max-width: 700px) {
+            .flow-container { flex-direction: column; gap: 12px; }
+            .flow-arrow { transform: rotate(90deg); }
+            .flow-phase { width: 100%; max-width: 200px; }
+        }
+
+        /* Phase Sections */
+        .phase-section { margin-bottom: 40px; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
+        .phase-header { padding: 20px 24px; background: var(--surface-subtle); border-bottom: 1px solid var(--border-subtle); cursor: pointer; display: flex; align-items: center; gap: 16px; transition: background 0.2s; }
+        .phase-header:hover { background: var(--surface-medium); }
+        .phase-icon { width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .phase-header-content { flex: 1; }
+        .phase-number { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 4px; }
+        .phase-title { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+        .phase-question { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+        .phase-toggle { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); padding: 6px 12px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-primary); }
+
+        .phase-section[data-phase="recon"] .phase-icon { background: rgba(96, 165, 250, 0.15); color: var(--phase-recon); border: 1px solid rgba(96, 165, 250, 0.3); }
+        .phase-section[data-phase="enum"] .phase-icon { background: rgba(167, 139, 250, 0.15); color: var(--phase-enum); border: 1px solid rgba(167, 139, 250, 0.3); }
+        .phase-section[data-phase="exploit"] .phase-icon { background: rgba(248, 113, 113, 0.15); color: var(--phase-exploit); border: 1px solid rgba(248, 113, 113, 0.3); }
+        .phase-section[data-phase="post"] .phase-icon { background: rgba(74, 222, 128, 0.15); color: var(--phase-post); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .phase-section[data-phase="docs"] .phase-icon { background: rgba(250, 204, 21, 0.15); color: var(--phase-docs); border: 1px solid rgba(250, 204, 21, 0.3); }
+
+        .phase-content { padding: 24px; display: none; }
+        .phase-section.open .phase-content { display: block; }
+        .phase-section.open .phase-toggle { background: var(--surface-subtle); }
+
+        /* Reference Tables */
+        .reference-table { background: var(--bg-primary); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); margin-bottom: 20px; }
+        .reference-table table { width: 100%; border-collapse: collapse; }
+        .reference-table th, .reference-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+        .reference-table th { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; background: var(--surface-subtle); }
+        .reference-table td { font-size: 0.85rem; color: var(--text-secondary); }
+        .reference-table td:first-child { font-family: var(--font-mono); color: var(--text-primary); font-weight: 500; }
+        .reference-table tr:last-child td { border-bottom: none; }
+        .reference-table tr:hover td { background: var(--surface-subtle); }
+        .reference-table code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; }
+
+        /* Command blocks */
+        .command-block { background: #0c0c0c; border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-family: var(--font-mono); font-size: 0.8rem; overflow-x: auto; }
+        .command-block-title { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .command-line { color: #aaa; margin-bottom: 4px; }
+        .command-line .prompt { color: var(--terminal-green); }
+        .command-line .cmd { color: #fff; }
+        .command-line .flag { color: var(--terminal-yellow); }
+        .command-line .comment { color: #666; font-style: italic; }
+
+        /* Checklists */
+        .checklist { background: var(--surface-subtle); border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
+        .checklist-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .checklist-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-checkbox { width: 18px; height: 18px; border: 2px solid var(--accent-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .checklist-checkbox:hover { background: var(--surface-medium); }
+        .checklist-checkbox.checked { background: var(--accent-primary); }
+        .checklist-checkbox.checked::after { content: '✓'; color: var(--bg-primary); font-size: 0.7rem; font-weight: bold; }
+        .checklist-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .checklist-item.checked .checklist-label { color: var(--text-dim); text-decoration: line-through; }
+
+        /* Section titles */
+        .section-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+
+        /* Flag locations */
+        .flag-locations { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+        .flag-card { background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; }
+        .flag-card-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .flag-card-title span { font-size: 1rem; }
+        .flag-path { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-purple); margin-bottom: 4px; }
+        @media (max-width: 600px) {
+            .flag-locations { grid-template-columns: 1fr; }
+        }
+
+        /* Troubleshooting */
+        .troubleshooting-section { margin-top: 50px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
+        .troubleshooting-title { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; }
+
+        /* Documentation list */
+        .doc-list { list-style: none; }
+        .doc-list li { padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 12px; }
+        .doc-list li:last-child { border-bottom: none; }
+        .doc-list li::before { content: '→'; color: var(--accent-primary); font-family: var(--font-mono); }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">☰</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">CTF Methodology</h1>
+                <p class="page-subtitle">A Systematic Approach to Capture-the-Flag Challenges</p>
+                <p class="page-intro">A practical checklist for penetration testing practice and CTF exercises. Work through each phase systematically — don't skip steps.</p>
+            </header>
+
+            <!-- Flow Diagram -->
+            <div class="flow-diagram">
+                <div class="flow-container">
+                    <a href="#recon" class="flow-phase" data-phase="recon">
+                        <span class="flow-phase-num">PHASE 1</span>
+                        <span class="flow-phase-name">Reconnaissance</span>
+                    </a>
+                    <span class="flow-arrow">→</span>
+                    <a href="#enum" class="flow-phase" data-phase="enum">
+                        <span class="flow-phase-num">PHASE 2</span>
+                        <span class="flow-phase-name">Enumeration</span>
+                    </a>
+                    <span class="flow-arrow">→</span>
+                    <a href="#exploit" class="flow-phase" data-phase="exploit">
+                        <span class="flow-phase-num">PHASE 3</span>
+                        <span class="flow-phase-name">Exploitation</span>
+                    </a>
+                    <span class="flow-arrow">→</span>
+                    <a href="#post" class="flow-phase" data-phase="post">
+                        <span class="flow-phase-num">PHASE 4</span>
+                        <span class="flow-phase-name">Post-Exploitation</span>
+                    </a>
+                    <span class="flow-arrow">→</span>
+                    <a href="#docs" class="flow-phase" data-phase="docs">
+                        <span class="flow-phase-num">PHASE 5</span>
+                        <span class="flow-phase-name">Documentation</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Phase 1: Reconnaissance -->
+            <section id="recon" class="phase-section open" data-phase="recon">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">🔍</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 1</div>
+                        <div class="phase-title">Reconnaissance</div>
+                        <div class="phase-question">"What exists? What can I see?"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <div class="reference-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Goal</th>
+                                    <th>Command / Tool</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Find live hosts</td>
+                                    <td><code>nmap -sn &lt;target-range&gt;</code></td>
+                                    <td>Ping sweep</td>
+                                </tr>
+                                <tr>
+                                    <td>Find open ports</td>
+                                    <td><code>nmap &lt;target&gt;</code></td>
+                                    <td>Default top 1000 ports</td>
+                                </tr>
+                                <tr>
+                                    <td>Full port scan</td>
+                                    <td><code>nmap -p- &lt;target&gt;</code></td>
+                                    <td>All 65535 ports (slow)</td>
+                                </tr>
+                                <tr>
+                                    <td>Quick scan</td>
+                                    <td><code>nmap -F &lt;target&gt;</code></td>
+                                    <td>Top 100 ports (fast)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Checklist</div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Target IP confirmed</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Ports identified</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Services noted</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 2: Enumeration -->
+            <section id="enum" class="phase-section open" data-phase="enum">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">📋</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 2</div>
+                        <div class="phase-title">Enumeration</div>
+                        <div class="phase-question">"What can I learn about what I found?"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <div class="reference-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Tools</th>
+                                    <th>What to look for</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>HTTP (80/443)</td>
+                                    <td>Browser, gobuster dir, nikto</td>
+                                    <td>Directories, login pages, versions</td>
+                                </tr>
+                                <tr>
+                                    <td>SSH (22)</td>
+                                    <td>nc banner grab</td>
+                                    <td>Version, try default creds later</td>
+                                </tr>
+                                <tr>
+                                    <td>SMB (445)</td>
+                                    <td>enum4linux, smbclient</td>
+                                    <td>Shares, users</td>
+                                </tr>
+                                <tr>
+                                    <td>FTP (21)</td>
+                                    <td>ftp, check anonymous login</td>
+                                    <td>Files, upload ability</td>
+                                </tr>
+                                <tr>
+                                    <td>DNS (53)</td>
+                                    <td>nslookup, dig</td>
+                                    <td>Zone transfers, subdomains</td>
+                                </tr>
+                                <tr>
+                                    <td>Unknown ports</td>
+                                    <td><code>nc &lt;ip&gt; &lt;port&gt;</code>, <code>nmap -sV</code></td>
+                                    <td>Banner grab, identify service</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="command-block">
+                        <div class="command-block-title">Common Gobuster Command</div>
+                        <div class="command-line">
+                            <span class="prompt">$ </span><span class="cmd">gobuster dir</span> <span class="flag">-u</span> http://&lt;target&gt; <span class="flag">-w</span> /usr/share/wordlists/dirb/common.txt
+                        </div>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Checklist</div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Service versions identified (nmap -sV)</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Web directories enumerated</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Banners grabbed from unknown services</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Subdomains checked (if applicable)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 3: Exploitation -->
+            <section id="exploit" class="phase-section open" data-phase="exploit">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">💥</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 3</div>
+                        <div class="phase-title">Exploitation</div>
+                        <div class="phase-question">"Can I get in?"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <div class="reference-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Vector</th>
+                                    <th>Tools</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Default credentials</td>
+                                    <td>Manual, hydra</td>
+                                    <td>admin:admin, root:root, service defaults</td>
+                                </tr>
+                                <tr>
+                                    <td>Brute force login</td>
+                                    <td><code>hydra -l &lt;user&gt; -P &lt;wordlist&gt; &lt;target&gt; &lt;service&gt;</code></td>
+                                    <td>SSH, FTP, web forms</td>
+                                </tr>
+                                <tr>
+                                    <td>Known CVEs</td>
+                                    <td><code>searchsploit &lt;service version&gt;</code></td>
+                                    <td>Check exploit-db</td>
+                                </tr>
+                                <tr>
+                                    <td>Web vulnerabilities</td>
+                                    <td>Manual, burpsuite</td>
+                                    <td>SQLi, command injection, LFI</td>
+                                </tr>
+                                <tr>
+                                    <td>File upload</td>
+                                    <td>Manual</td>
+                                    <td>Upload reverse shell if allowed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="command-block">
+                        <div class="command-block-title">Getting a Shell - Start Listener First</div>
+                        <div class="command-line">
+                            <span class="prompt">$ </span><span class="cmd">nc</span> <span class="flag">-lvnp</span> 4444 <span class="comment"># Listener on your machine</span>
+                        </div>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Checklist</div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Default creds tried</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Known exploits searched</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Web vulnerabilities tested</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Initial access gained</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 4: Post-Exploitation -->
+            <section id="post" class="phase-section open" data-phase="post">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">🚀</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 4</div>
+                        <div class="phase-title">Post-Exploitation</div>
+                        <div class="phase-question">"I'm in. Now what?"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <div class="section-label">Situational Awareness Commands</div>
+                    <div class="command-block">
+                        <div class="command-line"><span class="cmd">whoami</span> <span class="comment"># Who am I?</span></div>
+                        <div class="command-line"><span class="cmd">id</span> <span class="comment"># What groups?</span></div>
+                        <div class="command-line"><span class="cmd">hostname</span> <span class="comment"># What machine?</span></div>
+                        <div class="command-line"><span class="cmd">ip addr</span> / <span class="cmd">ifconfig</span> <span class="comment"># What network?</span></div>
+                        <div class="command-line"><span class="cmd">pwd</span> <span class="comment"># Where am I?</span></div>
+                        <div class="command-line"><span class="cmd">ls -la</span> <span class="comment"># What's here?</span></div>
+                    </div>
+
+                    <div class="section-label">Privilege Escalation</div>
+                    <div class="reference-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>OS</th>
+                                    <th>Tool</th>
+                                    <th>Command</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Linux</td>
+                                    <td>LinPEAS</td>
+                                    <td><code>./linpeas.sh</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Windows</td>
+                                    <td>WinPEAS</td>
+                                    <td><code>.\winpeas.exe</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Linux</td>
+                                    <td>Manual</td>
+                                    <td><code>sudo -l</code>, check SUID binaries</td>
+                                </tr>
+                                <tr>
+                                    <td>Both</td>
+                                    <td>GTFOBins / LOLBAS</td>
+                                    <td>Search for exploitable binaries</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="section-label">Common Flag Locations</div>
+                    <div class="flag-locations">
+                        <div class="flag-card">
+                            <div class="flag-card-title"><span>🐧</span> Linux</div>
+                            <div class="flag-path">/root/root.txt</div>
+                            <div class="flag-path">/home/&lt;user&gt;/user.txt</div>
+                        </div>
+                        <div class="flag-card">
+                            <div class="flag-card-title"><span>🪟</span> Windows</div>
+                            <div class="flag-path">C:\Users\Administrator\Desktop\</div>
+                            <div class="flag-path">C:\Users\&lt;user&gt;\Desktop\</div>
+                        </div>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Checklist</div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Situational awareness complete</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Privilege escalation vectors checked</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">User flag found</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Root/admin flag found</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 5: Documentation -->
+            <section id="docs" class="phase-section open" data-phase="docs">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">📝</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 5</div>
+                        <div class="phase-title">Documentation</div>
+                        <div class="phase-question">"What did I do?"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <ul class="doc-list">
+                        <li>Screenshot everything important</li>
+                        <li>Note every command that worked</li>
+                        <li>Record timestamps</li>
+                        <li>Save credentials found</li>
+                        <li>Document the full path from start to flag</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="troubleshooting-section">
+                <h2 class="troubleshooting-title">Quick Troubleshooting</h2>
+                <div class="reference-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Try This</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nmap slow</td>
+                                <td>Use <code>-F</code> for fast scan, or <code>-p &lt;specific ports&gt;</code></td>
+                            </tr>
+                            <tr>
+                                <td>Can't reach target</td>
+                                <td>Check VPN connection, verify IP</td>
+                            </tr>
+                            <tr>
+                                <td>Gobuster finds nothing</td>
+                                <td>Try different wordlist, check for redirects</td>
+                            </tr>
+                            <tr>
+                                <td>Exploit doesn't work</td>
+                                <td>Check versions match, try alternatives</td>
+                            </tr>
+                            <tr>
+                                <td>Shell dies immediately</td>
+                                <td>Use a more stable shell, try different payload</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        function togglePhase(header) {
+            const section = header.closest('.phase-section');
+            section.classList.toggle('open');
+            const toggle = header.querySelector('.phase-toggle');
+            toggle.textContent = section.classList.contains('open') ? 'COLLAPSE' : 'EXPAND';
+        }
+
+        function toggleCheck(checkbox) {
+            checkbox.classList.toggle('checked');
+            checkbox.closest('.checklist-item').classList.toggle('checked');
+        }
+
+        // Smooth scroll for flow diagram links
+        document.querySelectorAll('.flow-phase').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    // Open the section if collapsed
+                    if (!target.classList.contains('open')) {
+                        target.classList.add('open');
+                        target.querySelector('.phase-toggle').textContent = 'COLLAPSE';
+                    }
+                    // Scroll to it
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

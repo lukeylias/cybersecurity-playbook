@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
-    <title>TCP/IP Model - Cybersecurity Fundamentals</title>
+    <title>ARP Protocol - Cybersecurity Fundamentals</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,21 +26,9 @@
             --surface-active: rgba(74, 111, 165, 0.25);
             --font-mono: 'DM Mono', monospace;
             --font-sans: 'DM Sans', system-ui, sans-serif;
-            
-            /* Layer colors - gradient from deep blue (L1) to teal (L7) */
-            --layer-7: #5fa8a0;
-            --layer-6: #539a96;
-            --layer-5: #478c8c;
-            --layer-4: #3d7e82;
-            --layer-3: #3a7078;
+            --red-team: #d4785a;
+            --red-team-glow: rgba(212, 120, 90, 0.3);
             --layer-2: #3a626e;
-            --layer-1: #3d5a80;
-            
-            /* TCP/IP layer colors */
-            --tcpip-application: #5fa8a0;
-            --tcpip-transport: #3d7e82;
-            --tcpip-network: #3a7078;
-            --tcpip-link: #3d5a80;
         }
 
         body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
@@ -78,234 +66,92 @@
 
         /* Page Layout */
         .page { padding-top: 60px; min-height: 100vh; }
-        .page-content { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
-        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-content { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+        .page-header { text-align: center; margin-bottom: 32px; }
         .page-title { color: var(--text-primary); font-size: 1.5rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
-        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        .page-intro { font-size: 1rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto; line-height: 1.7; }
 
-        /* Model Comparison Visualization */
-        .model-comparison {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 40px;
-            margin-bottom: 60px;
-            padding: 40px 20px;
+        /* Problem/Solution Box */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .problem-box, .solution-box {
             background: var(--surface-subtle);
-            border-radius: 16px;
             border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
             position: relative;
-            overflow: hidden;
         }
 
-        .model-column {
+        .problem-box { border-left: 3px solid var(--red-team); }
+        .solution-box { border-left: 3px solid var(--accent-light); }
+
+        .box-header {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 8px;
-            z-index: 1;
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
-        .model-title {
+        .box-icon { font-size: 1.2rem; }
+
+        .box-title {
             font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: var(--accent-light);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 16px;
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border-radius: 4px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .model-layer {
-            width: 160px;
-            padding: 14px 16px;
-            text-align: center;
-            border-radius: 8px;
-            border: 2px solid;
-            background: var(--bg-secondary);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .model-layer:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .model-layer-num {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-        }
-
-        .model-layer-name {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        /* OSI Layer Colors */
-        .osi-7 { border-color: var(--layer-7); }
-        .osi-6 { border-color: var(--layer-6); }
-        .osi-5 { border-color: var(--layer-5); }
-        .osi-4 { border-color: var(--layer-4); }
-        .osi-3 { border-color: var(--layer-3); }
-        .osi-2 { border-color: var(--layer-2); }
-        .osi-1 { border-color: var(--layer-1); }
-
-        .osi-7 .model-layer-name { color: var(--layer-7); }
-        .osi-6 .model-layer-name { color: var(--layer-6); }
-        .osi-5 .model-layer-name { color: var(--layer-5); }
-        .osi-4 .model-layer-name { color: var(--layer-4); }
-        .osi-3 .model-layer-name { color: var(--layer-3); }
-        .osi-2 .model-layer-name { color: var(--layer-2); }
-        .osi-1 .model-layer-name { color: var(--layer-1); }
-
-        /* TCP/IP Layer Colors and Heights */
-        .tcpip-application {
-            border-color: var(--tcpip-application);
-            height: 158px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .tcpip-transport {
-            border-color: var(--tcpip-transport);
-        }
-        .tcpip-network {
-            border-color: var(--tcpip-network);
-        }
-        .tcpip-link {
-            border-color: var(--tcpip-link);
-            height: 104px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .tcpip-application .model-layer-name { color: var(--tcpip-application); }
-        .tcpip-transport .model-layer-name { color: var(--tcpip-transport); }
-        .tcpip-network .model-layer-name { color: var(--tcpip-network); }
-        .tcpip-link .model-layer-name { color: var(--tcpip-link); }
-
-        /* Connecting Lines SVG */
-        .connection-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .connection-line {
-            stroke: var(--border-medium);
-            stroke-width: 2;
-            fill: none;
-            stroke-dasharray: 6 4;
-            opacity: 0.6;
-        }
-
-        .connection-zone {
-            fill: rgba(74, 111, 165, 0.08);
-            stroke: none;
-        }
-
-        /* Middle Arrow Indicator */
-        .mapping-arrow {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 20px 0;
-            z-index: 1;
-        }
-
-        .arrow-icon {
-            font-size: 1.5rem;
-            color: var(--accent-primary);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .arrow-label {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
         }
 
-        /* Callout Box */
-        .callout-box {
-            background: linear-gradient(135deg, rgba(74, 111, 165, 0.15) 0%, rgba(95, 168, 160, 0.1) 100%);
-            border: 1px solid var(--border-medium);
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 48px;
+        .problem-box .box-title { color: var(--red-team); }
+        .solution-box .box-title { color: var(--accent-light); }
+
+        .box-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .box-list li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding-left: 20px;
             position: relative;
-            overflow: hidden;
         }
 
-        .callout-box::before {
+        .box-list li::before {
             content: '';
             position: absolute;
-            top: 0;
             left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--layer-7), var(--accent-primary));
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
         }
 
-        .callout-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+        .problem-box .box-list li::before { background: var(--red-team); opacity: 0.6; }
+        .solution-box .box-list li::before { background: var(--accent-light); opacity: 0.6; }
+
+        @media (max-width: 700px) {
+            .problem-solution { grid-template-columns: 1fr; }
         }
 
-        .callout-icon {
-            font-size: 1.5rem;
+        /* ARP Process Visual */
+        .arp-process {
+            margin-bottom: 48px;
         }
-
-        .callout-title {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .callout-box p {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-
-        .callout-box p strong {
-            color: var(--text-primary);
-        }
-
-        /* Reference Table */
-        .reference-section { margin-bottom: 48px; }
 
         .section-title {
             font-size: 1.1rem;
             font-weight: 500;
             color: var(--text-primary);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -317,6 +163,157 @@
             height: 1px;
             background: var(--border-subtle);
         }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .process-step {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--layer-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--layer-2);
+        }
+
+        .step-content { flex: 1; }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .step-type {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-broadcast {
+            background: rgba(212, 120, 90, 0.2);
+            color: var(--red-team);
+        }
+
+        .type-unicast {
+            background: rgba(74, 111, 165, 0.2);
+            color: var(--accent-light);
+        }
+
+        .step-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .step-packet {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .packet-direction {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .packet-addr {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: var(--surface-medium);
+            color: var(--text-primary);
+        }
+
+        .packet-arrow {
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+        }
+
+        .packet-message {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Cache Result */
+        .cache-result {
+            background: linear-gradient(135deg, rgba(74, 111, 165, 0.15) 0%, rgba(58, 98, 110, 0.15) 100%);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cache-icon { font-size: 1.5rem; }
+
+        .cache-text {
+            flex: 1;
+        }
+
+        .cache-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .cache-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .cache-entry {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            background: var(--bg-secondary);
+            padding: 10px 14px;
+            border-radius: 6px;
+            color: var(--accent-light);
+        }
+
+        /* Reference Tables */
+        .reference-section { margin-bottom: 48px; }
 
         .reference-table {
             width: 100%;
@@ -351,70 +348,139 @@
 
         .reference-table tr:hover td { background: var(--surface-subtle); }
 
-        .reference-table .layer-cell {
+        .reference-table .concept-cell {
             font-family: var(--font-mono);
             font-weight: 500;
             color: var(--text-primary);
         }
 
-        .reference-table .protocol-cell {
+        .reference-table .code-cell {
             font-family: var(--font-mono);
             color: var(--accent-light);
         }
 
-        .reference-table .port-cell {
-            font-family: var(--font-mono);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .reference-table .tcpip-cell {
-            font-weight: 500;
-        }
-
-        /* Row color coding by TCP/IP layer */
-        .row-application .tcpip-cell { color: var(--tcpip-application); }
-        .row-transport .tcpip-cell { color: var(--tcpip-transport); }
-        .row-network .tcpip-cell { color: var(--tcpip-network); }
-        .row-link .tcpip-cell { color: var(--tcpip-link); }
-
-        /* Key Points Cards */
-        .key-points {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 48px;
-        }
-
-        .key-point-card {
+        /* Layer Context Box */
+        .layer-context {
             background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 24px;
-            transition: all 0.2s ease;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
         }
 
-        .key-point-card:hover {
-            border-color: var(--border-medium);
-            background: var(--surface-medium);
+        .layer-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-shrink: 0;
         }
 
-        .key-point-icon {
-            font-size: 1.5rem;
-            margin-bottom: 12px;
+        .layer-block {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-secondary);
+            color: var(--text-muted);
         }
 
-        .key-point-text {
+        .layer-block.active {
+            border-color: var(--layer-2);
+            color: var(--layer-2);
+            background: rgba(58, 98, 110, 0.15);
+        }
+
+        .layer-block.bridge {
+            border-color: var(--accent-primary);
+            color: var(--accent-light);
+            background: rgba(74, 111, 165, 0.15);
+        }
+
+        .layer-info {
+            flex: 1;
+        }
+
+        .layer-info-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .layer-info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .layer-info-list li {
             font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
+            color: var(--text-muted);
+            padding-left: 16px;
+            position: relative;
         }
 
-        .key-point-text strong {
+        .layer-info-list li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+        }
+
+        @media (max-width: 600px) {
+            .layer-context { flex-direction: column; align-items: stretch; }
+            .layer-visual { flex-direction: row; justify-content: center; }
+            .layer-block { padding: 6px 12px; font-size: 0.65rem; }
+        }
+
+        /* Red Team Box */
+        .red-team-box {
+            background: rgba(212, 120, 90, 0.1);
+            border: 1px solid rgba(212, 120, 90, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+
+        .red-team-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .red-team-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .red-team-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--red-team);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .red-team-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .red-team-box strong {
             color: var(--text-primary);
         }
 
-        /* Cross Reference Link */
+        /* Cross Reference */
         .cross-reference {
             display: flex;
             align-items: center;
@@ -433,18 +499,14 @@
             background: var(--surface-medium);
         }
 
-        .cross-reference-icon {
-            font-size: 1.5rem;
-        }
+        .cross-reference-icon { font-size: 1.5rem; }
 
         .cross-reference-text {
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        .cross-reference-text strong {
-            color: var(--accent-light);
-        }
+        .cross-reference-text strong { color: var(--accent-light); }
 
         .cross-reference-arrow {
             color: var(--accent-primary);
@@ -452,40 +514,14 @@
         }
 
         /* Responsive */
-        @media (max-width: 800px) {
-            .model-comparison {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-            }
-
-            .mapping-arrow {
-                writing-mode: horizontal-tb;
-                flex-direction: row;
-            }
-
-            .arrow-label {
-                writing-mode: horizontal-tb;
-            }
-
-            .connection-lines {
-                display: none;
-            }
-
-            .model-layer {
-                width: 200px;
-            }
-
-            .tcpip-application,
-            .tcpip-link {
-                height: auto;
-            }
-        }
-
         @media (max-width: 600px) {
             .reference-table { font-size: 0.8rem; }
             .reference-table th, .reference-table td { padding: 10px 12px; }
-            .key-points { grid-template-columns: 1fr; }
+            .process-step { grid-template-columns: 1fr; }
+            .step-number { width: 36px; height: 36px; font-size: 1rem; }
+            .step-packet { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .cache-result { flex-direction: column; text-align: center; }
+            .cache-entry { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -513,11 +549,11 @@
                             <div class="nav-dropdown-item-title">OSI Model</div>
                             <div class="nav-dropdown-item-desc">7-layer communication framework</div>
                         </a>
-                        <a href="tcp-ip-model.html" class="nav-dropdown-item current">
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">TCP/IP Model</div>
                             <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
                         </a>
-                        <a href="arp.html" class="nav-dropdown-item">
+                        <a href="arp.html" class="nav-dropdown-item current">
                             <div class="nav-dropdown-item-title">ARP Protocol</div>
                             <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
                         </a>
@@ -602,198 +638,215 @@
     <div class="page">
         <div class="page-content">
             <header class="page-header">
-                <h1 class="page-title">TCP/IP Model</h1>
-                <p class="page-subtitle">Mapping to the OSI Framework</p>
+                <h1 class="page-title">ARP &mdash; Address Resolution Protocol</h1>
+                <p class="page-subtitle">Translating IP addresses to MAC addresses for local delivery</p>
+                <p class="page-intro">When your device knows an IP address but needs to physically send data on the local network, ARP finds the MAC address.</p>
             </header>
 
-            <!-- Visual Comparison -->
-            <div class="model-comparison" id="modelComparison">
-                <!-- OSI Model Column -->
-                <div class="model-column">
-                    <div class="model-title">OSI Model</div>
-                    <div class="model-layer osi-7">
-                        <div class="model-layer-num">Layer 7</div>
-                        <div class="model-layer-name">Application</div>
+            <!-- Problem / Solution -->
+            <div class="problem-solution">
+                <div class="problem-box">
+                    <div class="box-header">
+                        <span class="box-icon">&#10067;</span>
+                        <span class="box-title">The Problem</span>
                     </div>
-                    <div class="model-layer osi-6">
-                        <div class="model-layer-num">Layer 6</div>
-                        <div class="model-layer-name">Presentation</div>
-                    </div>
-                    <div class="model-layer osi-5">
-                        <div class="model-layer-num">Layer 5</div>
-                        <div class="model-layer-name">Session</div>
-                    </div>
-                    <div class="model-layer osi-4">
-                        <div class="model-layer-num">Layer 4</div>
-                        <div class="model-layer-name">Transport</div>
-                    </div>
-                    <div class="model-layer osi-3">
-                        <div class="model-layer-num">Layer 3</div>
-                        <div class="model-layer-name">Network</div>
-                    </div>
-                    <div class="model-layer osi-2">
-                        <div class="model-layer-num">Layer 2</div>
-                        <div class="model-layer-name">Data Link</div>
-                    </div>
-                    <div class="model-layer osi-1">
-                        <div class="model-layer-num">Layer 1</div>
-                        <div class="model-layer-name">Physical</div>
-                    </div>
+                    <ul class="box-list">
+                        <li>You want to send data to 192.168.1.50</li>
+                        <li>Your network card only understands MAC addresses</li>
+                        <li>How do you find the MAC?</li>
+                    </ul>
                 </div>
-
-                <!-- Middle Arrow -->
-                <div class="mapping-arrow">
-                    <span class="arrow-icon">&harr;</span>
-                    <span class="arrow-label">Maps To</span>
+                <div class="solution-box">
+                    <div class="box-header">
+                        <span class="box-icon">&#10003;</span>
+                        <span class="box-title">The Solution</span>
+                    </div>
+                    <ul class="box-list">
+                        <li>ARP broadcasts: "Who has 192.168.1.50?"</li>
+                        <li>That device responds: "Me &mdash; here's my MAC"</li>
+                        <li>Now you can send directly</li>
+                    </ul>
                 </div>
-
-                <!-- TCP/IP Model Column -->
-                <div class="model-column">
-                    <div class="model-title">TCP/IP Model</div>
-                    <div class="model-layer tcpip-application">
-                        <div class="model-layer-num">Layer 4</div>
-                        <div class="model-layer-name">Application</div>
-                    </div>
-                    <div class="model-layer tcpip-transport">
-                        <div class="model-layer-num">Layer 3</div>
-                        <div class="model-layer-name">Transport</div>
-                    </div>
-                    <div class="model-layer tcpip-network">
-                        <div class="model-layer-num">Layer 2</div>
-                        <div class="model-layer-name">Network</div>
-                    </div>
-                    <div class="model-layer tcpip-link">
-                        <div class="model-layer-num">Layer 1</div>
-                        <div class="model-layer-name">Link</div>
-                    </div>
-                </div>
-
-                <!-- Connection Lines SVG -->
-                <svg class="connection-lines" viewBox="0 0 600 500" preserveAspectRatio="xMidYMid meet">
-                    <!-- Application zone (OSI 5-7 to TCP/IP Application) -->
-                    <path class="connection-zone" d="M 160 60 Q 300 60 440 60 L 440 200 Q 300 200 160 200 Z" opacity="0.3"/>
-                    
-                    <!-- Connection lines -->
-                    <line class="connection-line" x1="200" y1="85" x2="400" y2="130" />
-                    <line class="connection-line" x1="200" y1="130" x2="400" y2="130" />
-                    <line class="connection-line" x1="200" y1="175" x2="400" y2="130" />
-                    <line class="connection-line" x1="200" y1="225" x2="400" y2="225" />
-                    <line class="connection-line" x1="200" y1="275" x2="400" y2="275" />
-                    <line class="connection-line" x1="200" y1="325" x2="400" y2="365" />
-                    <line class="connection-line" x1="200" y1="375" x2="400" y2="365" />
-                </svg>
             </div>
 
-            <!-- Callout Box -->
-            <div class="callout-box">
-                <div class="callout-header">
-                    <span class="callout-icon">&#128161;</span>
-                    <span class="callout-title">OSI vs TCP/IP</span>
+            <!-- ARP Process Visual -->
+            <div class="arp-process">
+                <h2 class="section-title">How ARP Works</h2>
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <span class="step-title">ARP Request</span>
+                                <span class="step-type type-broadcast">Broadcast</span>
+                            </div>
+                            <p class="step-description">Your device sends a message to everyone on the local network asking who owns the target IP.</p>
+                            <div class="step-packet">
+                                <div class="packet-direction">
+                                    <span class="packet-addr">Your MAC</span>
+                                    <span class="packet-arrow">&rarr;</span>
+                                    <span class="packet-addr">ff:ff:ff:ff:ff:ff</span>
+                                </div>
+                                <span class="packet-message">"Who has 192.168.1.50? Tell 192.168.1.10"</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <span class="step-title">ARP Reply</span>
+                                <span class="step-type type-unicast">Unicast</span>
+                            </div>
+                            <p class="step-description">Only the device with that IP responds, sending its MAC address directly back to you.</p>
+                            <div class="step-packet">
+                                <div class="packet-direction">
+                                    <span class="packet-addr">aa:bb:cc:dd:ee:ff</span>
+                                    <span class="packet-arrow">&rarr;</span>
+                                    <span class="packet-addr">Your MAC</span>
+                                </div>
+                                <span class="packet-message">"192.168.1.50 is at aa:bb:cc:dd:ee:ff"</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p><strong>OSI is the theoretical model with 7 layers</strong> &mdash; great for learning and understanding the distinct responsibilities of each network function. <strong>TCP/IP is the practical model with 4 layers</strong> &mdash; based on how the internet actually works. Both describe the same process, just grouped differently. In conversation, people use terms from both interchangeably. When you hear "Layer 3 switch" or "Layer 7 firewall," that's OSI terminology being used in practical contexts.</p>
+
+                <div class="cache-result">
+                    <span class="cache-icon">&#128190;</span>
+                    <div class="cache-text">
+                        <div class="cache-title">Result Cached</div>
+                        <div class="cache-desc">The mapping is stored in your ARP table so future packets don't need another lookup.</div>
+                    </div>
+                    <div class="cache-entry">192.168.1.50 &rarr; aa:bb:cc:dd:ee:ff</div>
+                </div>
             </div>
 
-            <!-- Main Comparison Table -->
+            <!-- Key Concepts Table -->
             <div class="reference-section">
-                <h2 class="section-title">Layer Mapping Reference</h2>
+                <h2 class="section-title">Key Concepts</h2>
                 <table class="reference-table">
                     <thead>
                         <tr>
-                            <th>OSI Layer</th>
-                            <th>OSI Name</th>
-                            <th>TCP/IP Layer</th>
-                            <th>Common Protocols</th>
-                            <th>Common Ports</th>
+                            <th>Concept</th>
+                            <th>Explanation</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="row-application">
-                            <td class="layer-cell">7</td>
-                            <td>Application</td>
-                            <td class="tcpip-cell">Application</td>
-                            <td class="protocol-cell">HTTP, HTTPS, FTP, SSH, DNS, SMTP</td>
-                            <td class="port-cell">80, 443, 21, 22, 53, 25</td>
+                        <tr>
+                            <td class="concept-cell">ARP Request</td>
+                            <td>Broadcast asking "who has this IP?"</td>
                         </tr>
-                        <tr class="row-application">
-                            <td class="layer-cell">6</td>
-                            <td>Presentation</td>
-                            <td class="tcpip-cell">Application</td>
-                            <td class="protocol-cell">TLS/SSL, JPEG, ASCII</td>
-                            <td class="port-cell">&mdash;</td>
+                        <tr>
+                            <td class="concept-cell">ARP Reply</td>
+                            <td>Response containing the MAC address</td>
                         </tr>
-                        <tr class="row-application">
-                            <td class="layer-cell">5</td>
-                            <td>Session</td>
-                            <td class="tcpip-cell">Application</td>
-                            <td class="protocol-cell">NetBIOS, RPC</td>
-                            <td class="port-cell">137-139</td>
+                        <tr>
+                            <td class="concept-cell">ARP Cache</td>
+                            <td>Local table storing IP-to-MAC mappings</td>
                         </tr>
-                        <tr class="row-transport">
-                            <td class="layer-cell">4</td>
-                            <td>Transport</td>
-                            <td class="tcpip-cell">Transport</td>
-                            <td class="protocol-cell">TCP, UDP</td>
-                            <td class="port-cell">&mdash; (ports assigned here)</td>
+                        <tr>
+                            <td class="concept-cell">Cache Expiry</td>
+                            <td>Entries expire after minutes to stay fresh</td>
                         </tr>
-                        <tr class="row-network">
-                            <td class="layer-cell">3</td>
-                            <td>Network</td>
-                            <td class="tcpip-cell">Network</td>
-                            <td class="protocol-cell">IP, ICMP</td>
-                            <td class="port-cell">&mdash;</td>
-                        </tr>
-                        <tr class="row-link">
-                            <td class="layer-cell">2</td>
-                            <td>Data Link</td>
-                            <td class="tcpip-cell">Link</td>
-                            <td class="protocol-cell">Ethernet, ARP</td>
-                            <td class="port-cell">&mdash;</td>
-                        </tr>
-                        <tr class="row-link">
-                            <td class="layer-cell">1</td>
-                            <td>Physical</td>
-                            <td class="tcpip-cell">Link</td>
-                            <td class="protocol-cell">&mdash;</td>
-                            <td class="port-cell">&mdash;</td>
+                        <tr>
+                            <td class="concept-cell">Broadcast MAC</td>
+                            <td><code style="font-family: var(--font-mono); color: var(--accent-light);">ff:ff:ff:ff:ff:ff</code> &mdash; "send to everyone"</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Key Points Section -->
-            <div class="reference-section">
-                <h2 class="section-title">Key Points</h2>
-                <div class="key-points">
-                    <div class="key-point-card">
-                        <div class="key-point-icon">&#128337;</div>
-                        <p class="key-point-text"><strong>TCP/IP came first.</strong> It was developed before OSI and is what the internet actually runs on. OSI was created later as a more detailed conceptual framework.</p>
-                    </div>
-                    <div class="key-point-card">
-                        <div class="key-point-icon">&#128218;</div>
-                        <p class="key-point-text"><strong>OSI is more detailed.</strong> The 7-layer model is better for understanding specific responsibilities and for learning how network communication works at a granular level.</p>
-                    </div>
-                    <div class="key-point-card">
-                        <div class="key-point-icon">&#128172;</div>
-                        <p class="key-point-text"><strong>"Layer 3 switch" or "Layer 7 firewall"</strong> &mdash; when you hear these terms, they're using OSI terminology. This is the standard for describing network device capabilities.</p>
-                    </div>
-                    <div class="key-point-card">
-                        <div class="key-point-icon">&#128260;</div>
-                        <p class="key-point-text"><strong>Terms are interchangeable.</strong> When someone says "Application layer" or "Transport layer," it could refer to either model. Context usually makes it clear.</p>
-                    </div>
+            <!-- Where ARP Fits -->
+            <div class="layer-context">
+                <div class="layer-visual">
+                    <div class="layer-block">Layer 3 &mdash; IP</div>
+                    <div class="layer-block bridge active">ARP</div>
+                    <div class="layer-block">Layer 2 &mdash; MAC</div>
+                </div>
+                <div class="layer-info">
+                    <div class="layer-info-title">Where ARP Fits</div>
+                    <ul class="layer-info-list">
+                        <li>Layer 2 protocol (works with MAC addresses)</li>
+                        <li>Bridges Layer 3 (IP) to Layer 2 (MAC)</li>
+                        <li>Only used for local network communication</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Cross Reference to OSI -->
+            <!-- When ARP Happens -->
+            <div class="reference-section">
+                <h2 class="section-title">When ARP Happens</h2>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>ARP Used For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sending to local device</td>
+                            <td>Find that device's MAC</td>
+                        </tr>
+                        <tr>
+                            <td>Sending to remote address</td>
+                            <td>Find your router's MAC</td>
+                        </tr>
+                        <tr>
+                            <td>Receiving from internet</td>
+                            <td>Router finds your MAC</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commands Reference -->
+            <div class="reference-section">
+                <h2 class="section-title">Commands Reference</h2>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>OS</th>
+                            <th>Command</th>
+                            <th>What It Shows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Linux / Mac</td>
+                            <td class="code-cell">arp -a</td>
+                            <td>Your ARP cache</td>
+                        </tr>
+                        <tr>
+                            <td>Windows</td>
+                            <td class="code-cell">arp -a</td>
+                            <td>Your ARP cache</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Red Team Relevance -->
+            <div class="red-team-box">
+                <div class="red-team-header">
+                    <div class="red-team-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+                    </div>
+                    <span class="red-team-title">Red Team Relevance</span>
+                </div>
+                <p><strong>ARP has no authentication.</strong> Any device can respond to an ARP request &mdash; even if it's lying. This enables <strong>ARP Spoofing</strong>: an attacker responds to ARP requests with their own MAC, redirecting traffic through their machine. This is a common technique for <strong>man-in-the-middle attacks</strong> on local networks.</p>
+            </div>
+
+            <!-- Cross Reference -->
             <a href="osi-model.html" class="cross-reference">
                 <span class="cross-reference-icon">&#128279;</span>
-                <span class="cross-reference-text">Learn more about the <strong>OSI Model</strong> with interactive layer exploration</span>
+                <span class="cross-reference-text">Learn more about <strong>Layer 2 (Data Link)</strong> in the OSI Model</span>
                 <span class="cross-reference-arrow">&rarr;</span>
             </a>
         </div>
     </div>
 
     <script>
-        // ==================== NAV DROPDOWN ====================
         function toggleDropdown(btn) {
             const dropdown = btn.parentElement;
             const wasOpen = dropdown.classList.contains('open');
@@ -809,4 +862,5 @@
     </script>
 </body>
 </html>
+
 

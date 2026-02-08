@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>Ports Reference - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --border-medium: rgba(74, 111, 165, 0.3);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --red-team: #d4785a;
+            --red-team-glow: rgba(212, 120, 90, 0.3);
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        /* Page Layout */
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-title { color: var(--text-primary); font-size: 1.5rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Section Styling */
+        .content-section { margin-bottom: 48px; }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+        .section-intro {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+            border-left: 3px solid var(--accent-primary);
+        }
+        .explanation-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Port Flow Diagram */
+        .port-flow-diagram {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 32px 24px;
+            margin: 28px 0;
+            text-align: center;
+        }
+        .port-flow-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .port-flow-node {
+            background: var(--bg-primary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 180px;
+        }
+        .port-flow-node-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .port-flow-node-address {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .port-flow-node-detail {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent-light);
+            margin-top: 4px;
+        }
+        .port-flow-arrow {
+            color: var(--accent-primary);
+            font-size: 1.5rem;
+        }
+        .port-flow-caption {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        @media (max-width: 600px) {
+            .port-flow-visual { flex-direction: column; }
+            .port-flow-arrow { transform: rotate(90deg); }
+        }
+
+        /* Reference Tables */
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: var(--surface-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 20px;
+        }
+        .reference-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-medium);
+            background: var(--surface-medium);
+        }
+        .reference-table th:first-child { border-radius: 8px 0 0 0; }
+        .reference-table th:last-child { border-radius: 0 8px 0 0; }
+        .reference-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+        .reference-table tr:last-child td { border-bottom: none; }
+        .reference-table tr:hover td { background: var(--surface-medium); }
+        .reference-table .port-cell {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .reference-table .protocol-cell {
+            font-family: var(--font-mono);
+            color: var(--accent-light);
+        }
+        .reference-table code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--terminal-green);
+            background: rgba(74, 222, 128, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Protocol Tags */
+        .protocol-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .protocol-tcp {
+            background: rgba(74, 111, 165, 0.2);
+            color: var(--accent-light);
+        }
+        .protocol-udp {
+            background: rgba(106, 168, 79, 0.2);
+            color: #8bc57a;
+        }
+        .protocol-both {
+            background: rgba(147, 112, 219, 0.2);
+            color: #b39ddb;
+        }
+
+        /* Category Rows */
+        .category-row td {
+            background: var(--surface-medium) !important;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            padding: 10px 16px;
+        }
+
+        /* Security Note */
+        .security-note {
+            background: rgba(212, 120, 90, 0.1);
+            border: 1px solid rgba(212, 120, 90, 0.3);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .security-note-icon {
+            color: var(--red-team);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        .security-note-content { flex: 1; }
+        .security-note-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--red-team);
+            margin-bottom: 6px;
+        }
+        .security-note p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Compact Table */
+        .compact-table td, .compact-table th {
+            padding: 10px 14px;
+        }
+
+        /* Command Block */
+        .command-block {
+            background: #0c0c0c;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+        .command-block-title {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .command-line {
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        .command-line:last-child { margin-bottom: 0; }
+        .command-line .prompt { color: var(--terminal-green); }
+        .command-line .cmd { color: #fff; }
+        .command-line .flag { color: var(--terminal-yellow); }
+        .command-line .comment { color: #666; font-style: italic; }
+
+        /* Red Team Box */
+        .red-team-section {
+            background: rgba(212, 120, 90, 0.08);
+            border: 1px solid rgba(212, 120, 90, 0.25);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 28px;
+        }
+        .red-team-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .red-team-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .red-team-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--red-team);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .red-team-section .reference-table {
+            background: rgba(212, 120, 90, 0.05);
+            border-color: rgba(212, 120, 90, 0.2);
+        }
+        .red-team-section .reference-table th {
+            background: rgba(212, 120, 90, 0.1);
+            color: var(--red-team);
+        }
+
+        /* Glossary */
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .glossary-item {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+        }
+        .glossary-item:hover {
+            border-color: var(--accent-primary);
+            background: var(--surface-medium);
+        }
+        .glossary-term {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent-light);
+            margin-bottom: 6px;
+        }
+        .glossary-def {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Note */
+        .note-box {
+            background: var(--surface-subtle);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-left: 3px solid var(--accent-primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">&#9776;</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <header class="page-header">
+                <h1 class="page-title">Ports Reference</h1>
+                <p class="page-subtitle">The Definitive Guide to Network Ports</p>
+            </header>
+
+            <!-- Section 1: Understanding Ports -->
+            <section class="content-section">
+                <h2 class="section-title">What is a Port?</h2>
+                
+                <div class="explanation-box">
+                    <p>A port is a numbered endpoint that identifies a specific service or conversation. Think of an IP address as a building's address, and ports as the different doors inside.</p>
+                </div>
+
+                <h3 style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 16px;">Destination vs Source Ports</h3>
+                
+                <table class="reference-table compact-table">
+                    <thead>
+                        <tr>
+                            <th>Port Type</th>
+                            <th>Who Uses It</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="port-cell">Destination Port</td>
+                            <td>Server</td>
+                            <td>"Which service do you want?"</td>
+                            <td><code>443</code> &mdash; you're requesting HTTPS</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">Source Port</td>
+                            <td>Client</td>
+                            <td>"Where should I send the reply?"</td>
+                            <td><code>52847</code> &mdash; random, temporary</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="note-box">
+                    When your browser connects to a website, it uses a random high source port (like 52847) and connects to the server's destination port (like 443). The server responds to your source port so your device knows which application the response belongs to.
+                </div>
+
+                <div class="port-flow-diagram">
+                    <div class="port-flow-visual">
+                        <div class="port-flow-node">
+                            <div class="port-flow-node-label">Your Laptop</div>
+                            <div class="port-flow-node-address">192.168.1.50:52847</div>
+                            <div class="port-flow-node-detail">Source port</div>
+                        </div>
+                        <div class="port-flow-arrow">&rarr;</div>
+                        <div class="port-flow-node">
+                            <div class="port-flow-node-label">Google</div>
+                            <div class="port-flow-node-address">142.250.80.46:443</div>
+                            <div class="port-flow-node-detail">Destination port</div>
+                        </div>
+                    </div>
+                    <div class="port-flow-caption">Your browser uses a random source port; the server listens on a well-known destination port</div>
+                </div>
+            </section>
+
+            <!-- Section 2: Common Ports -->
+            <section class="content-section">
+                <h2 class="section-title">Common Ports</h2>
+                <p class="section-intro">Ports you'll see constantly in scanning and enumeration.</p>
+
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Port</th>
+                            <th>Service</th>
+                            <th>Protocol</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-row">
+                            <td colspan="4">Web & HTTP</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">80</td>
+                            <td>HTTP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Unencrypted web traffic</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">443</td>
+                            <td>HTTPS</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Encrypted web traffic (TLS/SSL)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">8080</td>
+                            <td>HTTP Alternate</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Common alternative HTTP port, proxies</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">8443</td>
+                            <td>HTTPS Alternate</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Common alternative HTTPS port</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Remote Access</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">22</td>
+                            <td>SSH</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Secure Shell &mdash; encrypted remote access</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">23</td>
+                            <td>Telnet</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Unencrypted remote access (insecure)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">3389</td>
+                            <td>RDP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Remote Desktop Protocol (Windows)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">5900</td>
+                            <td>VNC</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Virtual Network Computing</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">File Transfer</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">20/21</td>
+                            <td>FTP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>File Transfer Protocol (data/control)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">22</td>
+                            <td>SFTP/SCP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Secure file transfer over SSH</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">69</td>
+                            <td>TFTP</td>
+                            <td><span class="protocol-tag protocol-udp">UDP</span></td>
+                            <td>Trivial FTP (simple, no auth)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">445</td>
+                            <td>SMB</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Windows file sharing</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">139</td>
+                            <td>NetBIOS</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Legacy Windows networking</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Email</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">25</td>
+                            <td>SMTP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Email sending (server-to-server)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">587</td>
+                            <td>SMTP (Submission)</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Email sending (client-to-server)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">110</td>
+                            <td>POP3</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Email retrieval (downloads to client)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">143</td>
+                            <td>IMAP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Email retrieval (syncs with server)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">993</td>
+                            <td>IMAPS</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>IMAP over TLS</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">995</td>
+                            <td>POP3S</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>POP3 over TLS</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Network Services</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">53</td>
+                            <td>DNS</td>
+                            <td><span class="protocol-tag protocol-both">TCP/UDP</span></td>
+                            <td>Domain Name System</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">67/68</td>
+                            <td>DHCP</td>
+                            <td><span class="protocol-tag protocol-udp">UDP</span></td>
+                            <td>Dynamic IP assignment (server/client)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">123</td>
+                            <td>NTP</td>
+                            <td><span class="protocol-tag protocol-udp">UDP</span></td>
+                            <td>Network Time Protocol</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">161/162</td>
+                            <td>SNMP</td>
+                            <td><span class="protocol-tag protocol-udp">UDP</span></td>
+                            <td>Network device management</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">389</td>
+                            <td>LDAP</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Directory services (Active Directory)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">636</td>
+                            <td>LDAPS</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>LDAP over TLS</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">88</td>
+                            <td>Kerberos</td>
+                            <td><span class="protocol-tag protocol-both">TCP/UDP</span></td>
+                            <td>Authentication protocol</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Databases</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">3306</td>
+                            <td>MySQL</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>MySQL / MariaDB database</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">5432</td>
+                            <td>PostgreSQL</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>PostgreSQL database</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">1433</td>
+                            <td>MSSQL</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Microsoft SQL Server</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">27017</td>
+                            <td>MongoDB</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>MongoDB database</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">6379</td>
+                            <td>Redis</td>
+                            <td><span class="protocol-tag protocol-tcp">TCP</span></td>
+                            <td>Redis in-memory store</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="security-note">
+                    <span class="security-note-icon">&#9888;</span>
+                    <div class="security-note-content">
+                        <div class="security-note-title">Security Note</div>
+                        <p>Open ports are entry points. In security assessments, always scan for unexpected open ports &mdash; they can indicate misconfiguration, backdoors, or unnecessary attack surface. Services like Telnet (23), FTP (21), and unencrypted protocols should be disabled or replaced with secure alternatives.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Port Ranges -->
+            <section class="content-section">
+                <h2 class="section-title">Port Ranges</h2>
+
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Range</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="port-cell">0&ndash;1023</td>
+                            <td>Well-known ports</td>
+                            <td>Reserved for common services (HTTP, SSH, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">1024&ndash;49151</td>
+                            <td>Registered ports</td>
+                            <td>Assigned to specific applications</td>
+                        </tr>
+                        <tr>
+                            <td class="port-cell">49152&ndash;65535</td>
+                            <td>Dynamic/ephemeral</td>
+                            <td>Used for temporary source ports</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Section 4: Red Team Quick Reference -->
+            <section class="content-section">
+                <h2 class="section-title">Red Team Quick Reference</h2>
+                <p class="section-intro">What to try when you see these ports open.</p>
+
+                <div class="red-team-section">
+                    <div class="red-team-header">
+                        <div class="red-team-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="2" x2="12" y2="6"/>
+                                <line x1="12" y1="18" x2="12" y2="22"/>
+                                <line x1="2" y1="12" x2="6" y2="12"/>
+                                <line x1="18" y1="12" x2="22" y2="12"/>
+                            </svg>
+                        </div>
+                        <span class="red-team-title">First Things to Try</span>
+                    </div>
+
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Port</th>
+                                <th>Service</th>
+                                <th>First Things to Try</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="port-cell">21</td>
+                                <td>FTP</td>
+                                <td>Anonymous login (<code>ftp &lt;ip&gt;</code>, user: <code>anonymous</code>)</td>
+                            </tr>
+                            <tr>
+                                <td class="port-cell">22</td>
+                                <td>SSH</td>
+                                <td>Banner grab, brute force if you have usernames</td>
+                            </tr>
+                            <tr>
+                                <td class="port-cell">80/443</td>
+                                <td>HTTP/S</td>
+                                <td>Browse it, run <code>gobuster</code>, check source code</td>
+                            </tr>
+                            <tr>
+                                <td class="port-cell">445</td>
+                                <td>SMB</td>
+                                <td><code>enum4linux</code>, <code>smbclient -L</code></td>
+                            </tr>
+                            <tr>
+                                <td class="port-cell">3389</td>
+                                <td>RDP</td>
+                                <td>If you have creds, connect with <code>rdesktop</code> or <code>xfreerdp</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="command-block">
+                    <div class="command-block-title">Check What's Listening on Your Machine</div>
+                    <div class="command-line">
+                        <span class="comment"># Linux</span>
+                    </div>
+                    <div class="command-line">
+                        <span class="prompt">$ </span><span class="cmd">netstat</span> <span class="flag">-tlnp</span>
+                    </div>
+                    <div class="command-line" style="margin-top: 12px;">
+                        <span class="comment"># Windows</span>
+                    </div>
+                    <div class="command-line">
+                        <span class="prompt">C:\&gt; </span><span class="cmd">netstat</span> <span class="flag">-ano</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Glossary -->
+            <section class="content-section">
+                <h2 class="section-title">Glossary</h2>
+                <p class="section-intro">Key terms used on this page.</p>
+
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <div class="glossary-term">TCP</div>
+                        <div class="glossary-def">Transmission Control Protocol &mdash; reliable, connection-based delivery. Ensures data arrives complete and in order.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">UDP</div>
+                        <div class="glossary-def">User Datagram Protocol &mdash; fast but unreliable. No guarantee of delivery or order.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">FTP</div>
+                        <div class="glossary-def">File Transfer Protocol &mdash; used to transfer files between machines.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">SSH</div>
+                        <div class="glossary-def">Secure Shell &mdash; encrypted remote command-line access to a machine.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Telnet</div>
+                        <div class="glossary-def">Older remote access protocol &mdash; unencrypted, insecure, largely replaced by SSH.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">SMTP</div>
+                        <div class="glossary-def">Simple Mail Transfer Protocol &mdash; used for sending emails.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">DNS</div>
+                        <div class="glossary-def">Domain Name System &mdash; translates domain names (google.com) to IP addresses.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">HTTP</div>
+                        <div class="glossary-def">HyperText Transfer Protocol &mdash; how browsers request and receive web pages.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">HTTPS</div>
+                        <div class="glossary-def">HTTP Secure &mdash; encrypted version of HTTP using TLS.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">POP3</div>
+                        <div class="glossary-def">Post Office Protocol 3 &mdash; downloads emails from server to your device.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">IMAP</div>
+                        <div class="glossary-def">Internet Message Access Protocol &mdash; syncs emails with server (emails stay on server).</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">SMB</div>
+                        <div class="glossary-def">Server Message Block &mdash; Windows protocol for file and printer sharing.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">MySQL</div>
+                        <div class="glossary-def">An open-source relational database system. Stores and retrieves structured data.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">PostgreSQL</div>
+                        <div class="glossary-def">Another open-source relational database system, known for advanced features.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">RDP</div>
+                        <div class="glossary-def">Remote Desktop Protocol &mdash; Windows protocol for graphical remote access to a machine.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Banner grab</div>
+                        <div class="glossary-def">Connecting to a port to see what information the service reveals about itself (version, software).</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">enum4linux</div>
+                        <div class="glossary-def">A tool for enumerating information from Windows/SMB systems (users, shares, etc.).</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">smbclient</div>
+                        <div class="glossary-def">A command-line tool for accessing SMB/Windows file shares.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">rdesktop</div>
+                        <div class="glossary-def">A Linux tool for connecting to Windows machines via RDP.</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">xfreerdp</div>
+                        <div class="glossary-def">Another Linux tool for RDP connections, with more features than rdesktop.</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+
