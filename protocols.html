@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>Protocol Reference - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --border-medium: rgba(74, 111, 165, 0.3);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --red-team: #d4785a;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        /* Page Layout */
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        /* Hero Section */
+        .hero { text-align: center; margin-bottom: 50px; }
+        .hero-title { color: var(--text-primary); font-size: 1.6rem; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .hero-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 32px; }
+
+        /* Hero Diagram */
+        .hero-diagram { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 32px 24px; margin: 0 auto; max-width: 700px; }
+        .hero-diagram svg { width: 100%; max-width: 600px; height: auto; }
+
+        /* Animated data flow */
+        @keyframes dataFlow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .data-flow { stroke-dasharray: 6 4; animation: dataFlow 0.8s linear infinite; }
+        .pulse-port { animation: pulse 2s ease-in-out infinite; }
+
+        /* Main Concept Section */
+        .concept-section { margin-bottom: 60px; }
+        .concept-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 16px; }
+        .concept-text { text-align: center; font-size: 0.95rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 28px; line-height: 1.7; }
+        .concept-visual { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 40px 24px; }
+        .concept-visual svg { width: 100%; max-width: 700px; height: auto; display: block; margin: 0 auto; }
+
+        /* Protocol Cards */
+        .protocols-section { margin-bottom: 60px; }
+        .section-title { font-size: 1.2rem; font-weight: 500; color: var(--text-primary); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+
+        .protocol-card { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 32px; overflow: hidden; }
+        .protocol-card-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); background: var(--surface-medium); }
+        .protocol-port { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 500; color: var(--accent-light); min-width: 80px; text-align: center; }
+        .protocol-port small { display: block; font-size: 0.6rem; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; }
+        .protocol-info { flex: 1; }
+        .protocol-name { font-size: 1.1rem; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+        .protocol-purpose { font-size: 0.85rem; color: var(--text-muted); }
+        .protocol-card-body { padding: 24px; }
+
+        /* Protocol Flow Diagram */
+        .flow-diagram { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 20px; margin-bottom: 20px; overflow-x: auto; }
+        .flow-diagram svg { width: 100%; min-width: 500px; height: auto; display: block; }
+
+        /* Connection Commands */
+        .connect-section { margin-bottom: 20px; }
+        .connect-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .connect-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        .connect-item { background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; }
+        .connect-item-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+        .connect-item-code { font-family: var(--font-mono); font-size: 0.9rem; color: var(--terminal-green); }
+
+        /* Command Tables */
+        .cmd-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
+        .cmd-table th { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-primary); text-align: left; padding: 10px 14px; background: var(--surface-medium); border-bottom: 1px solid var(--border-medium); }
+        .cmd-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+        .cmd-table tr:last-child td { border-bottom: none; }
+        .cmd-table tr:hover td { background: var(--surface-subtle); }
+        .cmd-table code { font-family: var(--font-mono); color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; }
+
+        /* Protocol Note */
+        .protocol-note { background: var(--surface-subtle); border-left: 3px solid var(--accent-primary); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .protocol-note code { font-family: var(--font-mono); color: var(--accent-light); background: rgba(74, 111, 165, 0.15); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; }
+
+        /* Red Team Tips */
+        .red-team-box { background: rgba(212, 120, 90, 0.08); border: 1px solid rgba(212, 120, 90, 0.25); border-radius: 8px; padding: 16px 20px; }
+        .red-team-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .red-team-icon { color: var(--red-team); font-size: 1rem; }
+        .red-team-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--red-team); text-transform: uppercase; letter-spacing: 1px; }
+        .red-team-list { list-style: none; }
+        .red-team-list li { font-size: 0.85rem; color: var(--text-secondary); padding: 6px 0 6px 20px; position: relative; border-bottom: 1px solid rgba(212, 120, 90, 0.15); }
+        .red-team-list li:last-child { border-bottom: none; }
+        .red-team-list li::before { content: '›'; position: absolute; left: 4px; color: var(--red-team); font-weight: bold; }
+        .red-team-list code { font-family: var(--font-mono); color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 1px 5px; border-radius: 3px; font-size: 0.8rem; }
+
+        /* Comparison Table */
+        .comparison-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; background: var(--bg-primary); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); }
+        .comparison-table th { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-primary); text-align: left; padding: 12px 16px; background: var(--surface-medium); }
+        .comparison-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table .port-cell { font-family: var(--font-mono); font-weight: 500; color: var(--accent-light); }
+        .comparison-table .encrypted { color: var(--terminal-green); }
+        .comparison-table .unencrypted { color: var(--terminal-yellow); }
+
+        /* Conversation Flow */
+        .conversation { background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .conv-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
+        .conv-step:last-child { border-bottom: none; }
+        .conv-direction { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); min-width: 80px; padding-top: 2px; }
+        .conv-direction.you { color: var(--terminal-blue); }
+        .conv-direction.server { color: var(--terminal-green); }
+        .conv-message { flex: 1; }
+        .conv-cmd { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary); margin-bottom: 2px; }
+        .conv-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Quick Reference Table */
+        .quick-ref-section { margin-bottom: 60px; }
+        .quick-ref-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--surface-subtle); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-subtle); }
+        .quick-ref-table th { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-primary); text-align: left; padding: 14px 18px; background: var(--surface-medium); }
+        .quick-ref-table td { padding: 12px 18px; border-bottom: 1px solid var(--border-subtle); }
+        .quick-ref-table tr:last-child td { border-bottom: none; }
+        .quick-ref-table tr:hover td { background: var(--surface-medium); }
+        .quick-ref-table .protocol-col { font-weight: 500; color: var(--text-primary); }
+        .quick-ref-table .port-col { font-family: var(--font-mono); color: var(--accent-light); }
+        .quick-ref-table code { font-family: var(--font-mono); color: var(--terminal-green); background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; }
+
+        /* Glossary */
+        .glossary-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
+        .glossary-toggle { width: 100%; background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 8px; cursor: pointer; }
+        .glossary-toggle summary { padding: 16px 20px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        .glossary-toggle summary::-webkit-details-marker { display: none; }
+        .glossary-toggle summary::after { content: '+'; font-size: 1.2rem; color: var(--accent-primary); transition: transform 0.2s; }
+        .glossary-toggle[open] summary::after { content: '−'; }
+        .glossary-content { padding: 0 20px 20px; }
+        .glossary-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .glossary-table th { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-primary); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-medium); }
+        .glossary-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); }
+        .glossary-table tr:last-child td { border-bottom: none; }
+        .glossary-table .term-cell { font-family: var(--font-mono); font-weight: 500; color: var(--text-secondary); width: 140px; }
+
+        @media (max-width: 700px) {
+            .hero-title { font-size: 1.3rem; }
+            .protocol-card-header { flex-direction: column; text-align: center; }
+            .protocol-port { min-width: auto; }
+            .connect-grid { grid-template-columns: 1fr; }
+            .flow-diagram { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">&#9776;</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="protocols.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">Protocol Reference</div>
+                            <div class="nav-dropdown-item-desc">How services communicate</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <!-- Hero Section -->
+            <header class="hero">
+                <h1 class="hero-title">Protocols &mdash; How Services Communicate</h1>
+                <p class="hero-subtitle">What they are, which port they use, and how to connect</p>
+                
+                <div class="hero-diagram">
+                    <svg viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Grid background -->
+                        <defs>
+                            <pattern id="heroGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(74, 111, 165, 0.1)" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="600" height="200" fill="url(#heroGrid)"/>
+                        
+                        <!-- Laptop -->
+                        <g transform="translate(40, 70)">
+                            <rect x="0" y="50" width="80" height="5" rx="2" fill="#4a6fa5"/>
+                            <rect x="5" y="20" width="70" height="30" rx="3" fill="#0d1c30" stroke="#4a6fa5" stroke-width="1.5"/>
+                            <rect x="10" y="25" width="60" height="20" rx="2" fill="#0a1628"/>
+                            <text x="40" y="38" font-family="DM Mono, monospace" font-size="8" fill="#7ba3d4" text-anchor="middle">YOU</text>
+                        </g>
+                        
+                        <!-- Connection lines with labels -->
+                        <g class="data-flow">
+                            <path d="M 130 75 Q 200 40 350 55" stroke="#7ba3d4" stroke-width="1.5" fill="none"/>
+                            <path d="M 130 90 Q 200 75 350 80" stroke="#4a6fa5" stroke-width="1.5" fill="none"/>
+                            <path d="M 130 105 Q 200 110 350 105" stroke="#4a6fa5" stroke-width="1.5" fill="none"/>
+                            <path d="M 130 120 Q 200 145 350 130" stroke="#4a6fa5" stroke-width="1.5" fill="none"/>
+                        </g>
+                        
+                        <!-- Protocol labels -->
+                        <g font-family="DM Mono, monospace" font-size="9" fill="#a8b8c8">
+                            <text x="220" y="42">HTTP :80</text>
+                            <text x="220" y="72">FTP :21</text>
+                            <text x="220" y="102">SSH :22</text>
+                            <text x="220" y="137">SMTP :25</text>
+                        </g>
+                        
+                        <!-- Server -->
+                        <g transform="translate(350, 30)">
+                            <rect x="0" y="10" width="180" height="130" rx="4" fill="#0d1c30" stroke="#4a6fa5" stroke-width="1.5"/>
+                            <rect x="10" y="0" width="160" height="16" rx="3" fill="#4a6fa5" opacity="0.3"/>
+                            <text x="90" y="12" font-family="DM Mono, monospace" font-size="8" fill="#7ba3d4" text-anchor="middle">SERVER 10.10.10.5</text>
+                            
+                            <!-- Port doors -->
+                            <g class="pulse-port">
+                                <rect x="15" y="30" width="35" height="45" rx="3" fill="#0a1628" stroke="#7ba3d4" stroke-width="1"/>
+                                <text x="32" y="55" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">80</text>
+                                <circle cx="32" cy="70" r="5" fill="none" stroke="#7ba3d4" stroke-width="1"/>
+                            </g>
+                            <g>
+                                <rect x="55" y="30" width="35" height="45" rx="3" fill="#0a1628" stroke="#4a6fa5" stroke-width="1"/>
+                                <text x="72" y="55" font-family="DM Mono, monospace" font-size="10" fill="#c4d4e8" text-anchor="middle">21</text>
+                                <rect x="65" y="62" width="14" height="10" rx="1" fill="none" stroke="#4a6fa5" stroke-width="1"/>
+                            </g>
+                            <g>
+                                <rect x="95" y="30" width="35" height="45" rx="3" fill="#0a1628" stroke="#4a6fa5" stroke-width="1"/>
+                                <text x="112" y="55" font-family="DM Mono, monospace" font-size="10" fill="#c4d4e8" text-anchor="middle">22</text>
+                                <rect x="105" y="62" width="14" height="8" rx="1" fill="none" stroke="#4a6fa5" stroke-width="1"/>
+                                <text x="108" y="68" font-family="DM Mono, monospace" font-size="5" fill="#4a6fa5">_</text>
+                            </g>
+                            <g>
+                                <rect x="135" y="30" width="35" height="45" rx="3" fill="#0a1628" stroke="#4a6fa5" stroke-width="1"/>
+                                <text x="152" y="55" font-family="DM Mono, monospace" font-size="10" fill="#c4d4e8" text-anchor="middle">25</text>
+                                <path d="M145 65 L152 70 L159 65 L159 72 L145 72 Z" fill="none" stroke="#4a6fa5" stroke-width="1"/>
+                            </g>
+                            
+                            <!-- Labels under doors -->
+                            <g font-family="DM Mono, monospace" font-size="7" fill="#a8b8c8" text-anchor="middle">
+                                <text x="32" y="90">HTTP</text>
+                                <text x="72" y="90">FTP</text>
+                                <text x="112" y="90">SSH</text>
+                                <text x="152" y="90">SMTP</text>
+                            </g>
+                            
+                            <!-- Server status lights -->
+                            <g transform="translate(15, 105)">
+                                <circle cx="0" cy="0" r="3" fill="#4ade80"/>
+                                <circle cx="12" cy="0" r="3" fill="#4ade80"/>
+                                <circle cx="24" cy="0" r="3" fill="#4a6fa5"/>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </header>
+
+            <!-- Main Concept Visual -->
+            <section class="concept-section">
+                <div class="concept-title">The Key Concept</div>
+                <p class="concept-text">When you scan a target and find open ports, each port tells you what service is running and how to talk to it.</p>
+                
+                <div class="concept-visual">
+                    <svg viewBox="0 0 700 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Grid -->
+                        <defs>
+                            <pattern id="conceptGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(74, 111, 165, 0.08)" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="700" height="280" fill="url(#conceptGrid)"/>
+                        
+                        <!-- Server Building -->
+                        <g transform="translate(200, 20)">
+                            <!-- Building body -->
+                            <rect x="0" y="30" width="300" height="200" rx="4" fill="rgba(74, 111, 165, 0.08)" stroke="#4a6fa5" stroke-width="2"/>
+                            
+                            <!-- Roof -->
+                            <path d="M -10 30 L 150 0 L 310 30" stroke="#4a6fa5" stroke-width="2" fill="none"/>
+                            <polygon points="-10,30 150,0 310,30" fill="rgba(74, 111, 165, 0.05)"/>
+                            
+                            <!-- Title -->
+                            <text x="150" y="55" font-family="DM Mono, monospace" font-size="11" fill="#7ba3d4" text-anchor="middle" letter-spacing="2">TARGET SERVER</text>
+                            
+                            <!-- Door 80 - HTTP -->
+                            <g transform="translate(20, 80)" class="pulse-port">
+                                <rect x="0" y="0" width="55" height="130" rx="4" fill="#0a1628" stroke="#7ba3d4" stroke-width="2"/>
+                                <text x="27" y="30" font-family="DM Mono, monospace" font-size="18" fill="#e8f0f8" text-anchor="middle" font-weight="500">80</text>
+                                <!-- Globe icon -->
+                                <circle cx="27" cy="65" r="18" fill="none" stroke="#7ba3d4" stroke-width="1.5"/>
+                                <ellipse cx="27" cy="65" rx="8" ry="18" fill="none" stroke="#7ba3d4" stroke-width="1"/>
+                                <line x1="9" y1="65" x2="45" y2="65" stroke="#7ba3d4" stroke-width="1"/>
+                                <text x="27" y="105" font-family="DM Mono, monospace" font-size="10" fill="#7ba3d4" text-anchor="middle">HTTP</text>
+                                <text x="27" y="118" font-family="DM Sans, sans-serif" font-size="8" fill="#a8b8c8" text-anchor="middle">Browser</text>
+                            </g>
+                            
+                            <!-- Door 21 - FTP -->
+                            <g transform="translate(85, 80)">
+                                <rect x="0" y="0" width="55" height="130" rx="4" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="27" y="30" font-family="DM Mono, monospace" font-size="18" fill="#c4d4e8" text-anchor="middle" font-weight="500">21</text>
+                                <!-- Folder icon -->
+                                <rect x="10" y="50" width="34" height="26" rx="2" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <path d="M10 56 L10 52 Q10 50 12 50 L22 50 L25 54 L38 54 Q42 54 42 58" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="27" y="105" font-family="DM Mono, monospace" font-size="10" fill="#4a6fa5" text-anchor="middle">FTP</text>
+                                <text x="27" y="118" font-family="DM Sans, sans-serif" font-size="8" fill="#a8b8c8" text-anchor="middle">Files</text>
+                            </g>
+                            
+                            <!-- Door 22 - SSH -->
+                            <g transform="translate(150, 80)">
+                                <rect x="0" y="0" width="55" height="130" rx="4" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="27" y="30" font-family="DM Mono, monospace" font-size="18" fill="#c4d4e8" text-anchor="middle" font-weight="500">22</text>
+                                <!-- Terminal icon -->
+                                <rect x="8" y="48" width="38" height="28" rx="3" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="14" y="66" font-family="DM Mono, monospace" font-size="10" fill="#4a6fa5">$_</text>
+                                <text x="27" y="105" font-family="DM Mono, monospace" font-size="10" fill="#4a6fa5" text-anchor="middle">SSH</text>
+                                <text x="27" y="118" font-family="DM Sans, sans-serif" font-size="8" fill="#a8b8c8" text-anchor="middle">Terminal</text>
+                            </g>
+                            
+                            <!-- Door 25 - SMTP -->
+                            <g transform="translate(215, 80)">
+                                <rect x="0" y="0" width="55" height="130" rx="4" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="27" y="30" font-family="DM Mono, monospace" font-size="18" fill="#c4d4e8" text-anchor="middle" font-weight="500">25</text>
+                                <!-- Envelope icon -->
+                                <rect x="8" y="50" width="38" height="26" rx="2" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <path d="M8 52 L27 66 L46 52" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="27" y="105" font-family="DM Mono, monospace" font-size="10" fill="#4a6fa5" text-anchor="middle">SMTP</text>
+                                <text x="27" y="118" font-family="DM Sans, sans-serif" font-size="8" fill="#a8b8c8" text-anchor="middle">Email</text>
+                            </g>
+                        </g>
+                        
+                        <!-- Labels -->
+                        <text x="350" y="265" font-family="DM Mono, monospace" font-size="10" fill="#a8b8c8" text-anchor="middle">Each port is a door to a different service</text>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Protocol Cards -->
+            <section class="protocols-section">
+                <h2 class="section-title">Protocol Reference</h2>
+
+                <!-- HTTP/HTTPS -->
+                <article class="protocol-card" id="http">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">80<small>/443</small></div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">HTTP / HTTPS</div>
+                            <div class="protocol-purpose">View and interact with websites</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Protocol</th>
+                                    <th>Port</th>
+                                    <th>Encryption</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>HTTP</td>
+                                    <td class="port-cell">80</td>
+                                    <td class="unencrypted">Not encrypted</td>
+                                </tr>
+                                <tr>
+                                    <td>HTTPS</td>
+                                    <td class="port-cell">443</td>
+                                    <td class="encrypted">Encrypted (TLS)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Connect</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Browser</div>
+                                    <div class="connect-item-code">http://10.10.10.5</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Terminal</div>
+                                    <div class="connect-item-code">curl http://10.10.10.5</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 520 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Your Browser -->
+                                <rect x="10" y="25" width="120" height="50" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="70" y="55" font-family="DM Mono, monospace" font-size="11" fill="#e8f0f8" text-anchor="middle">Your Browser</text>
+                                
+                                <!-- Arrow 1 -->
+                                <g class="data-flow">
+                                    <path d="M 135 40 L 230 40" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    <polygon points="230,40 222,36 222,44" fill="#7ba3d4"/>
+                                </g>
+                                <text x="182" y="32" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">GET /index.html</text>
+                                
+                                <!-- Server -->
+                                <rect x="235" y="25" width="100" height="50" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="285" y="55" font-family="DM Mono, monospace" font-size="11" fill="#e8f0f8" text-anchor="middle">Server</text>
+                                
+                                <!-- Arrow 2 -->
+                                <g class="data-flow">
+                                    <path d="M 340 60 L 435 60" stroke="#4ade80" stroke-width="1.5"/>
+                                    <polygon points="435,60 427,56 427,64" fill="#4ade80"/>
+                                </g>
+                                <text x="387" y="78" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">HTML response</text>
+                                
+                                <!-- Your Browser (response) -->
+                                <rect x="440" y="25" width="70" height="50" rx="6" fill="#0a1628" stroke="#4ade80" stroke-width="1.5"/>
+                                <text x="475" y="50" font-family="DM Mono, monospace" font-size="9" fill="#4ade80" text-anchor="middle">Page</text>
+                                <text x="475" y="62" font-family="DM Mono, monospace" font-size="9" fill="#4ade80" text-anchor="middle">Loads</text>
+                            </svg>
+                        </div>
+
+                        <div class="protocol-note">
+                            You don't need to add <code>:80</code> &mdash; browsers assume it for <code>http://</code>
+                        </div>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Run <code>gobuster dir -u http://IP -w wordlist</code> for hidden directories</li>
+                                <li>Check page source for comments and hidden info</li>
+                                <li>Look for login pages, admin panels, backup files</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- FTP -->
+                <article class="protocol-card" id="ftp">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">21</div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">FTP</div>
+                            <div class="protocol-purpose">Transfer files to/from a server</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 520 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Your Machine -->
+                                <rect x="10" y="15" width="100" height="50" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="60" y="45" font-family="DM Mono, monospace" font-size="11" fill="#e8f0f8" text-anchor="middle">Your Machine</text>
+                                
+                                <!-- Bidirectional arrows -->
+                                <g class="data-flow">
+                                    <path d="M 115 32 L 280 32" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    <polygon points="280,32 272,28 272,36" fill="#7ba3d4"/>
+                                    <path d="M 280 48 L 115 48" stroke="#4ade80" stroke-width="1.5"/>
+                                    <polygon points="115,48 123,44 123,52" fill="#4ade80"/>
+                                </g>
+                                <text x="197" y="26" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">put file.txt</text>
+                                <text x="197" y="62" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">get file.txt</text>
+                                
+                                <!-- File Server -->
+                                <rect x="285" y="15" width="110" height="50" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="340" y="45" font-family="DM Mono, monospace" font-size="11" fill="#e8f0f8" text-anchor="middle">File Server</text>
+                                
+                                <!-- Files icon -->
+                                <g transform="translate(420, 20)">
+                                    <rect x="0" y="5" width="30" height="35" rx="3" fill="none" stroke="#4a6fa5" stroke-width="1"/>
+                                    <rect x="10" y="0" width="30" height="35" rx="3" fill="#0a1628" stroke="#4a6fa5" stroke-width="1"/>
+                                    <line x1="16" y1="12" x2="34" y2="12" stroke="#4a6fa5" stroke-width="1"/>
+                                    <line x1="16" y1="18" x2="30" y2="18" stroke="#4a6fa5" stroke-width="1"/>
+                                    <line x1="16" y1="24" x2="34" y2="24" stroke="#4a6fa5" stroke-width="1"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Connect</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Connect to FTP</div>
+                                    <div class="connect-item-code">ftp 10.10.10.5</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Then enter credentials</div>
+                                    <div class="connect-item-code">Username: anonymous</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="conversation">
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">USER anonymous</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction server">&larr; Server</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">331 Password required</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">PASS email@example.com</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction server">&larr; Server</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">230 Login successful</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">LIST</div>
+                                    <div class="conv-desc">Server shows available files</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="cmd-table">
+                            <thead>
+                                <tr>
+                                    <th>Command</th>
+                                    <th>What it does</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>ls</code></td>
+                                    <td>List files</td>
+                                </tr>
+                                <tr>
+                                    <td><code>get file.txt</code></td>
+                                    <td>Download file</td>
+                                </tr>
+                                <tr>
+                                    <td><code>put file.txt</code></td>
+                                    <td>Upload file</td>
+                                </tr>
+                                <tr>
+                                    <td><code>quit</code></td>
+                                    <td>Disconnect</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Try anonymous login first (user: <code>anonymous</code>, pass: anything)</li>
+                                <li>Look for config files, backups, credentials</li>
+                                <li>Check if you can upload files (potential webshell)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- SSH -->
+                <article class="protocol-card" id="ssh">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">22</div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">SSH</div>
+                            <div class="protocol-purpose">Secure remote command-line access</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 520 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Your Terminal -->
+                                <g transform="translate(10, 15)">
+                                    <rect x="0" y="0" width="100" height="60" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                    <rect x="8" y="8" width="84" height="44" rx="3" fill="#0d1c30"/>
+                                    <text x="15" y="28" font-family="DM Mono, monospace" font-size="9" fill="#4ade80">$ ssh user@</text>
+                                    <text x="15" y="42" font-family="DM Mono, monospace" font-size="9" fill="#4ade80">10.10.10.5</text>
+                                </g>
+                                
+                                <!-- Encrypted Tunnel -->
+                                <g transform="translate(130, 25)">
+                                    <rect x="0" y="0" width="200" height="40" rx="20" fill="none" stroke="#7ba3d4" stroke-width="2" stroke-dasharray="4 2"/>
+                                    <text x="100" y="25" font-family="DM Mono, monospace" font-size="9" fill="#7ba3d4" text-anchor="middle">Encrypted Tunnel</text>
+                                    <!-- Lock icons -->
+                                    <g transform="translate(15, 12)">
+                                        <rect x="0" y="4" width="12" height="10" rx="2" fill="#7ba3d4"/>
+                                        <path d="M2 4 L2 2 Q2 -2 6 -2 Q10 -2 10 2 L10 4" fill="none" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    </g>
+                                    <g transform="translate(173, 12)">
+                                        <rect x="0" y="4" width="12" height="10" rx="2" fill="#7ba3d4"/>
+                                        <path d="M2 4 L2 2 Q2 -2 6 -2 Q10 -2 10 2 L10 4" fill="none" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    </g>
+                                </g>
+                                
+                                <!-- Remote Shell -->
+                                <g transform="translate(350, 15)">
+                                    <rect x="0" y="0" width="110" height="60" rx="6" fill="#0a1628" stroke="#4ade80" stroke-width="1.5"/>
+                                    <rect x="8" y="8" width="94" height="44" rx="3" fill="#0d1c30"/>
+                                    <text x="15" y="26" font-family="DM Mono, monospace" font-size="9" fill="#4ade80">user@target:~$</text>
+                                    <text x="15" y="42" font-family="DM Mono, monospace" font-size="9" fill="#a8b8c8">whoami</text>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Connect</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">With password</div>
+                                    <div class="connect-item-code">ssh username@10.10.10.5</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">With SSH key</div>
+                                    <div class="connect-item-code">ssh -i key.pem user@10.10.10.5</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="protocol-note">
+                            You need valid credentials &mdash; username plus password or SSH key
+                        </div>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Banner grab for version: <code>nc 10.10.10.5 22</code></li>
+                                <li>Brute force with hydra if you have usernames</li>
+                                <li>Check for key-based auth, look for leaked private keys</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- SMTP -->
+                <article class="protocol-card" id="smtp">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">25</div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">SMTP</div>
+                            <div class="protocol-purpose">Sending emails</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 580 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Your Machine -->
+                                <rect x="10" y="20" width="90" height="40" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="55" y="45" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">You</text>
+                                
+                                <!-- Arrow 1 -->
+                                <path d="M 105 40 L 160 40" stroke="#7ba3d4" stroke-width="1.5" class="data-flow"/>
+                                <polygon points="160,40 152,36 152,44" fill="#7ba3d4"/>
+                                
+                                <!-- Mail Server -->
+                                <rect x="165" y="20" width="100" height="40" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="215" y="45" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">Mail Server</text>
+                                
+                                <!-- Arrow 2 -->
+                                <path d="M 270 40 L 325 40" stroke="#7ba3d4" stroke-width="1.5" class="data-flow"/>
+                                <polygon points="325,40 317,36 317,44" fill="#7ba3d4"/>
+                                
+                                <!-- Recipient Server -->
+                                <rect x="330" y="20" width="120" height="40" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="390" y="45" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">Recipient Server</text>
+                                
+                                <!-- Arrow 3 -->
+                                <path d="M 455 40 L 495 40" stroke="#4ade80" stroke-width="1.5" class="data-flow"/>
+                                <polygon points="495,40 487,36 487,44" fill="#4ade80"/>
+                                
+                                <!-- Recipient -->
+                                <rect x="500" y="20" width="70" height="40" rx="6" fill="#0a1628" stroke="#4ade80" stroke-width="1.5"/>
+                                <text x="535" y="45" font-family="DM Mono, monospace" font-size="10" fill="#4ade80" text-anchor="middle">Recipient</text>
+                            </svg>
+                        </div>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Connect</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Manual connection</div>
+                                    <div class="connect-item-code">telnet 10.10.10.5 25</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">Or with netcat</div>
+                                    <div class="connect-item-code">nc 10.10.10.5 25</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="conversation">
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">HELO mydomain.com</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">MAIL FROM: me@example.com</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">RCPT TO: target@example.com</div>
+                                </div>
+                            </div>
+                            <div class="conv-step">
+                                <div class="conv-direction you">You &rarr;</div>
+                                <div class="conv-message">
+                                    <div class="conv-cmd">DATA</div>
+                                    <div class="conv-desc">Then type message, end with single period (.)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Check for open relay (can you send to external addresses?)</li>
+                                <li>User enumeration with <code>VRFY username</code> command</li>
+                                <li>Try <code>EXPN</code> to expand mailing lists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- DNS -->
+                <article class="protocol-card" id="dns">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">53<small>UDP/TCP</small></div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">DNS</div>
+                            <div class="protocol-purpose">Translate domain names to IP addresses</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 520 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Your Machine -->
+                                <rect x="10" y="25" width="110" height="40" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="65" y="50" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">Your Machine</text>
+                                
+                                <!-- Question -->
+                                <g class="data-flow">
+                                    <path d="M 125 35 L 220 35" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    <polygon points="220,35 212,31 212,39" fill="#7ba3d4"/>
+                                </g>
+                                <text x="172" y="28" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">"example.com?"</text>
+                                
+                                <!-- DNS Server -->
+                                <rect x="225" y="25" width="100" height="40" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                <text x="275" y="50" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">DNS Server</text>
+                                
+                                <!-- Response -->
+                                <g class="data-flow">
+                                    <path d="M 330 55 L 425 55" stroke="#4ade80" stroke-width="1.5"/>
+                                    <polygon points="425,55 417,51 417,59" fill="#4ade80"/>
+                                </g>
+                                <text x="377" y="72" font-family="DM Mono, monospace" font-size="8" fill="#a8b8c8" text-anchor="middle">"142.250.80.46"</text>
+                                
+                                <!-- Result -->
+                                <rect x="430" y="25" width="80" height="40" rx="6" fill="#0a1628" stroke="#4ade80" stroke-width="1.5"/>
+                                <text x="470" y="42" font-family="DM Mono, monospace" font-size="8" fill="#4ade80" text-anchor="middle">142.250</text>
+                                <text x="470" y="54" font-family="DM Mono, monospace" font-size="8" fill="#4ade80" text-anchor="middle">.80.46</text>
+                            </svg>
+                        </div>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Use</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">nslookup</div>
+                                    <div class="connect-item-code">nslookup example.com</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">dig (more detailed)</div>
+                                    <div class="connect-item-code">dig example.com</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Zone transfer attempt: <code>dig axfr @nameserver domain.com</code></li>
+                                <li>Subdomain enumeration with wordlists</li>
+                                <li>Reverse DNS lookups on IP ranges</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- POP3/IMAP -->
+                <article class="protocol-card" id="email">
+                    <div class="protocol-card-header">
+                        <div class="protocol-port">110<small>/143</small></div>
+                        <div class="protocol-info">
+                            <div class="protocol-name">POP3 / IMAP</div>
+                            <div class="protocol-purpose">Receiving and reading emails</div>
+                        </div>
+                    </div>
+                    <div class="protocol-card-body">
+                        <div class="flow-diagram">
+                            <svg viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Mail Server -->
+                                <g transform="translate(10, 15)">
+                                    <rect x="0" y="0" width="120" height="50" rx="6" fill="#0a1628" stroke="#4a6fa5" stroke-width="1.5"/>
+                                    <text x="60" y="22" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">Mail Server</text>
+                                    <!-- Inbox icon -->
+                                    <rect x="20" y="28" width="80" height="14" rx="2" fill="none" stroke="#4a6fa5" stroke-width="1"/>
+                                    <rect x="25" y="31" width="12" height="8" rx="1" fill="#4a6fa5"/>
+                                    <rect x="40" y="31" width="12" height="8" rx="1" fill="#4a6fa5"/>
+                                    <rect x="55" y="31" width="12" height="8" rx="1" fill="#4a6fa5"/>
+                                    <rect x="70" y="31" width="12" height="8" rx="1" fill="#4a6fa5" opacity="0.5"/>
+                                </g>
+                                
+                                <!-- Arrow -->
+                                <g class="data-flow">
+                                    <path d="M 135 40 L 230 40" stroke="#7ba3d4" stroke-width="1.5"/>
+                                    <polygon points="230,40 222,36 222,44" fill="#7ba3d4"/>
+                                </g>
+                                
+                                <!-- Your Device -->
+                                <g transform="translate(235, 15)">
+                                    <rect x="0" y="0" width="110" height="50" rx="6" fill="#0a1628" stroke="#4ade80" stroke-width="1.5"/>
+                                    <text x="55" y="22" font-family="DM Mono, monospace" font-size="10" fill="#e8f0f8" text-anchor="middle">Your Device</text>
+                                    <text x="55" y="42" font-family="DM Mono, monospace" font-size="9" fill="#4ade80" text-anchor="middle">Emails sync</text>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Protocol</th>
+                                    <th>Port</th>
+                                    <th>Behavior</th>
+                                    <th>Best for</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>POP3</td>
+                                    <td class="port-cell">110</td>
+                                    <td>Downloads &amp; deletes from server</td>
+                                    <td>Single device</td>
+                                </tr>
+                                <tr>
+                                    <td>IMAP</td>
+                                    <td class="port-cell">143</td>
+                                    <td>Syncs, stays on server</td>
+                                    <td>Multiple devices</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="connect-section">
+                            <div class="connect-label">How to Connect</div>
+                            <div class="connect-grid">
+                                <div class="connect-item">
+                                    <div class="connect-item-label">POP3</div>
+                                    <div class="connect-item-code">telnet 10.10.10.5 110</div>
+                                </div>
+                                <div class="connect-item">
+                                    <div class="connect-item-label">IMAP</div>
+                                    <div class="connect-item-code">telnet 10.10.10.5 143</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="red-team-box">
+                            <div class="red-team-header">
+                                <span class="red-team-icon">&#9881;</span>
+                                <span class="red-team-title">Red Team Tips</span>
+                            </div>
+                            <ul class="red-team-list">
+                                <li>Try default/common credentials</li>
+                                <li>Look for emails containing passwords or sensitive info</li>
+                                <li>Check secure versions (POP3S: 995, IMAPS: 993)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Quick Reference Table -->
+            <section class="quick-ref-section">
+                <h2 class="section-title">Quick Reference</h2>
+                
+                <table class="quick-ref-table">
+                    <thead>
+                        <tr>
+                            <th>Protocol</th>
+                            <th>Port</th>
+                            <th>What you do</th>
+                            <th>Command to connect</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="protocol-col">HTTP</td>
+                            <td class="port-col">80</td>
+                            <td>Browse website</td>
+                            <td>Browser or <code>curl http://IP</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">HTTPS</td>
+                            <td class="port-col">443</td>
+                            <td>Browse secure site</td>
+                            <td>Browser or <code>curl https://IP</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">FTP</td>
+                            <td class="port-col">21</td>
+                            <td>Transfer files</td>
+                            <td><code>ftp IP</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">SSH</td>
+                            <td class="port-col">22</td>
+                            <td>Remote shell</td>
+                            <td><code>ssh user@IP</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">SMTP</td>
+                            <td class="port-col">25</td>
+                            <td>Send email</td>
+                            <td><code>telnet IP 25</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">DNS</td>
+                            <td class="port-col">53</td>
+                            <td>Lookup domains</td>
+                            <td><code>nslookup</code> or <code>dig</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">POP3</td>
+                            <td class="port-col">110</td>
+                            <td>Receive email</td>
+                            <td><code>telnet IP 110</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">IMAP</td>
+                            <td class="port-col">143</td>
+                            <td>Sync email</td>
+                            <td><code>telnet IP 143</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">RDP</td>
+                            <td class="port-col">3389</td>
+                            <td>Windows remote desktop</td>
+                            <td><code>rdesktop IP</code></td>
+                        </tr>
+                        <tr>
+                            <td class="protocol-col">SMB</td>
+                            <td class="port-col">445</td>
+                            <td>Windows file shares</td>
+                            <td><code>smbclient -L IP</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Glossary -->
+            <section class="glossary-section">
+                <details class="glossary-toggle">
+                    <summary>Glossary &mdash; Key terms used on this page</summary>
+                    <div class="glossary-content">
+                        <table class="glossary-table">
+                            <thead>
+                                <tr>
+                                    <th>Term</th>
+                                    <th>What it is</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="term-cell">Banner grab</td>
+                                    <td>Connecting to a port to see what info the service reveals (version, software name)</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Open relay</td>
+                                    <td>An SMTP server that allows anyone to send email through it &mdash; often exploited for spam</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Zone transfer</td>
+                                    <td>Copying all DNS records from a server &mdash; often misconfigured to allow anyone to dump the zone</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Anonymous login</td>
+                                    <td>FTP servers that allow login without real credentials (user: anonymous)</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">TLS/SSL</td>
+                                    <td>Encryption protocols that secure data in transit &mdash; the "S" in HTTPS</td>
+                                </tr>
+                                <tr>
+                                    <td class="term-cell">Port</td>
+                                    <td>A numbered endpoint (0-65535) identifying a specific service on a machine</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+
